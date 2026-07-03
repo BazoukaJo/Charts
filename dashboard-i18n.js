@@ -35,11 +35,6 @@
     "Select Countries to Compare",
     "Sélectionner les pays à comparer",
   );
-  add(
-    "country.europeAggregateNote",
-    "Europe is a derived aggregate of the European countries included in this dashboard, not a sovereign-country series.",
-    "L'Europe est un agrégat dérivé des pays européens inclus dans ce tableau de bord, et non une série d'État souverain.",
-  );
   add("country.europeAggregateLabel", "Europe (Aggregate)", "Europe (Agrégat)");
 
   add("tab.economic", "Economic", "Économie");
@@ -53,11 +48,33 @@
   add("tab.trade", "Trade", "Commerce");
   add("tab.immigration", "Migration", "Migration");
   add("tab.wellbeing", "Quality of Life", "Qualité de vie");
+  add("tab.governance", "Governance", "Gouvernance");
+  add("tab.inequality", "Inequality", "Inégalités");
+  add("tab.investment", "Investment", "Investissement");
+  add("tab.energy", "Energy & Industry", "Énergie & industrie");
+  add("tab.humanitarian", "Humanitarian", "Humanitaire");
+  add("tab.labor", "Labor", "Travail");
+
+  add("nav.group.macro", "Macro", "Macro");
+  add("nav.group.people", "People", "Population");
+  add("nav.group.society", "Society", "Société");
+  add("nav.group.planet", "Planet", "Planète");
+  add("nav.group.tech", "Tech", "Technologie");
+  add(
+    "nav.searchPlaceholder",
+    "Search indicators (e.g. Gini, CO₂, Edelman, unemployment…)",
+    "Rechercher un indicateur (ex. Gini, CO₂, Edelman, chômage…)",
+  );
+  add(
+    "nav.searchAria",
+    "Search dashboard indicators",
+    "Rechercher un indicateur du tableau de bord",
+  );
 
   add(
     "sec.statsSummary",
-    "Key Statistics Summary (Latest Year 2026)",
-    "Indicateurs clés (dernière année 2026)",
+    "Key Indicators Overview",
+    "Indicateurs clés — graphiques",
   );
   add(
     "sec.yoy",
@@ -103,6 +120,19 @@
     "Quality of Life & Social Progress",
     "Qualité de vie et progrès social",
   );
+  add("sec.governance", "Governance & Rights", "Gouvernance et droits");
+  add("sec.inequality", "Inequality & Fiscal Pressure", "Inégalités et pression fiscale");
+  add("sec.investment", "Investment & Finance", "Investissement et finance");
+  add("sec.energy", "Energy & Industry", "Énergie et industrie");
+  add("sec.humanitarian", "Humanitarian & Global Affairs", "Humanitaire et affaires mondiales");
+  add("sec.mediaTrust", "Media Trust (Edelman anchors 2012+)", "Confiance médias (Edelman 2012+)");
+  add("sec.educationExt", "Education (extended)", "Éducation (étendu)");
+  add("sec.macroExt", "Macro & Fiscal (extended, WDI)", "Macro & fiscal (étendu, WDI)");
+  add("sec.demographicsExt", "Population Dynamics (WDI)", "Dynamique démographique (WDI)");
+  add("sec.healthExt2", "Disease & Risk Factors (WDI)", "Maladies et facteurs de risque (WDI)");
+  add("sec.environmentExt", "Environment & Access (WDI)", "Environnement et accès (WDI)");
+  add("sec.techExt", "Innovation Output (WDI)", "Production d'innovation (WDI)");
+  add("sec.labor", "Labor Market (WDI)", "Marché du travail (WDI)");
   add("sec.media", "Speech & Media", "Expression et médias");
   add("sec.religion", "Religious Composition", "Composition religieuse");
   add(
@@ -303,6 +333,44 @@
   add("badge.highWdi", "High (WDI)", "Élevé (WDI)");
   add("badge.partialWdi", "Partial WDI", "WDI partiel");
   add("badge.mixedWdiPop", "Mixed (WDI pop)", "Mixte (pop. WDI)");
+  add("badge.partialEdelman", "Partial (Edelman)", "Partiel (Edelman)");
+  add("badge.yoy", "YoY", "A/A");
+  add(
+    "badge.lowModelled",
+    "Low Accuracy — Modelled",
+    "Faible précision — Modélisé",
+  );
+  add(
+    "badge.lowWhr2012",
+    "Low Accuracy — WHR data begins 2012",
+    "Faible précision — données WHR à partir de 2012",
+  );
+  add(
+    "badge.lowCpi1995",
+    "Low Accuracy — CPI exists since 1995 only",
+    "Faible précision — IPC disponible seulement depuis 1995",
+  );
+  add(
+    "badge.lowPre1990",
+    "Low Accuracy — Modelled pre-1990",
+    "Faible précision — modélisé avant 1990",
+  );
+
+  add(
+    "note.giniInQol",
+    "Gini coefficient chart is in the <strong>Quality of Life</strong> tab — now WDI-anchored when live data loads.",
+    "Le graphique du coefficient de Gini se trouve dans l'onglet <strong>Qualité de vie</strong> — ancré WDI lorsque les données en direct sont chargées.",
+  );
+  add(
+    "note.mediaTrustGov",
+    "<strong>Media trust sources:</strong> Values from 2012 onward are anchored to the Edelman Trust Barometer (traditional media vs. search engines + social media). Pre-2012 points are backward-modelled. See also the Quality of Life tab for market-share trends.",
+    "<strong>Sources confiance médias :</strong> les valeurs à partir de 2012 sont ancrées au Trust Barometer d’Edelman (médias traditionnels vs moteurs de recherche + réseaux sociaux). Les points avant 2012 sont modélisés rétrospectivement. Voir aussi l’onglet Qualité de vie pour les parts de marché.",
+  );
+  add(
+    "note.mediaTrustSpeech",
+    "This block separates the institutional environment for speech from trust in old and new media. From 2012 onward, trust ratings are anchored to the <strong>Edelman Trust Barometer</strong> (traditional media vs. search engines + social media). Pre-2012 values are modelled. Trust can fall even in free systems when polarization rises.",
+    "Ce bloc sépare l’environnement institutionnel de l’expression de la confiance envers les médias anciens et nouveaux. À partir de 2012, les scores de confiance sont ancrés au <strong>Trust Barometer d'Edelman</strong> (médias traditionnels vs moteurs de recherche + réseaux sociaux). Avant 2012, les valeurs sont modélisées. La confiance peut baisser même dans des systèmes libres lorsque la polarisation augmente.",
+  );
 
   add("chart.axis.year", "Year", "Année");
 
@@ -366,8 +434,8 @@
 
   add(
     "provenance.html",
-    '<strong>Data sources:</strong> On load, the page requests <a href="https://data.worldbank.org/" target="_blank" rel="noopener">World Bank World Development Indicators</a> (WDI) and merges: GDP (current US$), GDP per capita, GNI per capita (Atlas), current health expenditure per capita, secondary school enrollment (gross), goods &amp; services exports/imports, unemployment, employment-to-population (15+, ILO modelled), life expectancy, crude birth/death rates, fertility, infant mortality, CO₂ per capita, renewable share, forest area, adult literacy, internet users, mobile subscriptions per 100 people, R&amp;D % of GDP, and population (for immigration-per-capita denominators). Trade balance is computed as exports minus imports from those series. Remaining charts use deterministic modelled series. WDI gaps are forward/backward-filled within each series. Chart pills update after merge: <strong>High (WDI)</strong> when the live indicator loaded; <strong>Partial WDI</strong> if the request failed for that series. <strong>If you open this file as <code>file://</code>, the browser may block the API</strong>, but the dashboard still works using built-in deterministic data (no backend required). Illegal migration and composite “indices” here are not official cross-country statistics.',
-    '<strong>Sources des données :</strong> au chargement, la page interroge les <a href="https://data.worldbank.org/" target="_blank" rel="noopener">Indicateurs du développement dans le monde</a> (WDI) de la Banque mondiale et fusionne notamment : PIB (US$ courants), PIB par habitant, RNB par habitant (méthode Atlas), dépenses de santé par habitant, scolarisation secondaire (brute), exportations/importations de biens et services, chômage, taux d’emploi (15+, modélisé OIT), espérance de vie, taux bruts de natalité/mortalité, fécondité, mortalité infantile, CO₂ par habitant, part des énergies renouvelables, surface forestière, alphabétisation des adultes, utilisateurs d’Internet, abonnements mobiles pour 100 habitants, R-D en % du PIB, et population (dénominateurs d’immigration par habitant). La balance commerciale est exportations moins importations. Les autres graphiques utilisent des séries modélisées déterministes. Les lacunes WDI sont comblées dans chaque série. Les pastilles se mettent à jour : <strong>Élevé (WDI)</strong> si l’indicateur a bien été chargé ; <strong>WDI partiel</strong> si la requête a échoué pour cette série. <strong>Si vous ouvrez ce fichier en <code>file://</code>, le navigateur peut bloquer l’API</strong>, mais le tableau de bord fonctionne quand même avec les données déterministes intégrées (aucun backend requis). Les migrations « illégales » et certains indices composites ne sont pas des statistiques officielles comparatives.',
+    '<strong>Data sources:</strong> On load, the page requests <a href="https://data.worldbank.org/" target="_blank" rel="noopener">World Bank World Development Indicators</a> (WDI) and merges: GDP (current US$), GDP per capita, GNI per capita (Atlas), current health expenditure per capita, secondary school enrollment (gross), goods &amp; services exports/imports, unemployment, employment-to-population (15+, ILO modelled), life expectancy, crude birth/death rates, fertility, infant mortality, CO₂ per capita, renewable share, forest area, adult literacy, internet users, mobile subscriptions per 100 people, R&amp;D % of GDP, and population (for immigration-per-capita denominators). Extended tabs add ~90 further WDI series (governance WGI, poverty, debt, FDI, energy, labor, patents, etc.) under the same merge rules. Trade balance is computed as exports minus imports from those series. Remaining charts use deterministic modelled series. WDI gaps are forward/backward-filled within each series. Chart pills update after merge: <strong>High (WDI)</strong> when the live indicator loaded; <strong>Partial WDI</strong> if the request failed for that series; <strong>Partial (Edelman)</strong> for media-trust anchors from 2012+. <strong>If you open this file as <code>file://</code>, the browser may block the API</strong>, but the dashboard still works using built-in deterministic data (no backend required). Illegal migration and composite “indices” here are not official cross-country statistics.',
+    '<strong>Sources des données :</strong> au chargement, la page interroge les <a href="https://data.worldbank.org/" target="_blank" rel="noopener">Indicateurs du développement dans le monde</a> (WDI) de la Banque mondiale et fusionne notamment : PIB (US$ courants), PIB par habitant, RNB par habitant (méthode Atlas), dépenses de santé par habitant, scolarisation secondaire (brute), exportations/importations de biens et services, chômage, taux d’emploi (15+, modélisé OIT), espérance de vie, taux bruts de natalité/mortalité, fécondité, mortalité infantile, CO₂ par habitant, part des énergies renouvelables, surface forestière, alphabétisation des adultes, utilisateurs d’Internet, abonnements mobiles pour 100 habitants, R-D en % du PIB, et population (dénominateurs d’immigration par habitant). Les onglets étendus ajoutent ~90 séries WDI supplémentaires (gouvernance WGI, pauvreté, dette, IDE, énergie, travail, brevets, etc.) selon les mêmes règles de fusion. La balance commerciale est exportations moins importations. Les autres graphiques utilisent des séries modélisées déterministes. Les lacunes WDI sont comblées dans chaque série. Les pastilles se mettent à jour : <strong>Élevé (WDI)</strong> si l’indicateur a bien été chargé ; <strong>WDI partiel</strong> si la requête a échoué pour cette série ; <strong>Partiel (Edelman)</strong> pour les ancrages confiance médias à partir de 2012. <strong>Si vous ouvrez ce fichier en <code>file://</code>, le navigateur peut bloquer l’API</strong>, mais le tableau de bord fonctionne quand même avec les données déterministes intégrées (aucun backend requis). Les migrations « illégales » et certains indices composites ne sont pas des statistiques officielles comparatives.',
   );
 
   var chartIds = [
@@ -450,6 +518,71 @@
     "muslimChart",
     "secularChart",
     "hinduBuddhistChart",
+    "ruleOfLawChart",
+    "govEffectivenessChart",
+    "regulatoryQualityChart",
+    "voiceAccountabilityChart",
+    "womenParliamentChart",
+    "govLegacyMediaTrustChart",
+    "govNewMediaTrustChart",
+    "povertyHeadcountChart",
+    "inflationChart",
+    "publicDebtChart",
+    "fdiInflowsChart",
+    "fdiOutflowsChart",
+    "capitalFormationChart",
+    "remittancesChart",
+    "marketCapChart",
+    "co2TotalChart",
+    "energyUseChart",
+    "fossilFuelChart",
+    "elecRenewableChart",
+    "pm25Chart",
+    "industryGdpChart",
+    "manufacturingGdpChart",
+    "hiTechExportsChart",
+    "protectedAreasChart",
+    "odaReceivedChart",
+    "netMigrationChart",
+    "militaryPersonnelChart",
+    "eduPrimaryChart",
+    "eduTertiaryChart",
+    "eduSpendingChart",
+    "under5MortalityChart",
+    "maternalMortalityChart",
+    "gdpGrowthChart",
+    "currentAccountChart",
+    "taxRevenueChart",
+    "tradeGdpChart",
+    "incomeBottom20Chart",
+    "incomeTop10Chart",
+    "poverty365Chart",
+    "controlCorruptionChart",
+    "politicalStabilityChart",
+    "hivPrevalenceChart",
+    "tuberculosisChart",
+    "suicideRateChart",
+    "alcoholConsumptionChart",
+    "co2IntensityChart",
+    "arableLandChart",
+    "freshwaterWithdrawalChart",
+    "electricityAccessChart",
+    "cleanFuelAccessChart",
+    "populationGrowthChart",
+    "urbanPopulationChart",
+    "ageDependencyChart",
+    "schoolLifeExpectancyChart",
+    "domesticCreditChart",
+    "youthUnemploymentChart",
+    "vulnerableEmploymentChart",
+    "femaleLaborForceChart",
+    "maleLaborForceChart",
+    "researchersChart",
+    "patentsChart",
+    "serviceExportsChart",
+    "militarySpendWdiChart",
+    "populationTotalChart",
+    "healthSpendGdpChart",
   ];
 
   var TITLES_EN = {
@@ -527,10 +660,75 @@
       "Corruption Perception Index (Score 0–100, higher = cleaner)",
     qolPoliticalChart: "Political Freedom Index (Score 0–10)",
     freeSpeechChart: "Free Speech Rating (Score 0–10)",
-    legacyMediaRatingChart: "Legacy Media Trust Rating (Score 0–10)",
-    newMediaRatingChart: "New Media Trust Rating (Score 0–10)",
+    legacyMediaRatingChart: "Legacy Media Trust Rating (Score 0–10, Edelman 2012+)",
+    newMediaRatingChart: "New Media Trust Rating (Score 0–10, Edelman 2012+)",
     legacyMediaShareChart: "Legacy Media Market Share (Share %)",
     newMediaShareChart: "New Media Market Share (Share %)",
+    ruleOfLawChart: "Rule of Law Index (WGI, −2.5 to +2.5)",
+    govEffectivenessChart: "Government Effectiveness (WGI)",
+    regulatoryQualityChart: "Regulatory Quality (WGI)",
+    voiceAccountabilityChart: "Voice & Accountability (WGI)",
+    womenParliamentChart: "Women in Parliament (%)",
+    govLegacyMediaTrustChart: "Legacy / Traditional Media Trust (Edelman, 0–10)",
+    govNewMediaTrustChart: "New / Digital Media Trust (Edelman, 0–10)",
+    povertyHeadcountChart: "Poverty Headcount ($2.15/day, %)",
+    inflationChart: "Inflation, CPI (annual %)",
+    publicDebtChart: "Public Debt (% of GDP)",
+    fdiInflowsChart: "FDI Inflows (% of GDP)",
+    fdiOutflowsChart: "FDI Outflows (% of GDP)",
+    capitalFormationChart: "Gross Capital Formation (% of GDP)",
+    remittancesChart: "Remittances Received (% of GDP)",
+    marketCapChart: "Stock Market Cap (% of GDP)",
+    co2TotalChart: "CO₂ Total Emissions (kt)",
+    energyUseChart: "Energy Use (kg oil eq. per capita)",
+    fossilFuelChart: "Fossil Fuel Share (% of energy)",
+    elecRenewableChart: "Electricity from Renewables (%)",
+    pm25Chart: "PM2.5 Air Pollution (μg/m³)",
+    industryGdpChart: "Industry Value Added (% of GDP)",
+    manufacturingGdpChart: "Manufacturing (% of GDP)",
+    hiTechExportsChart: "High-Tech Exports (% of mfg exports)",
+    protectedAreasChart: "Protected Areas (% of land)",
+    odaReceivedChart: "ODA Received (% of GNI)",
+    netMigrationChart: "Net Migration (people)",
+    militaryPersonnelChart: "Armed Forces (% of labor force)",
+    eduPrimaryChart: "Primary Enrollment (% gross)",
+    eduTertiaryChart: "Tertiary Enrollment (% gross)",
+    eduSpendingChart: "Education Spending (% of GDP)",
+    under5MortalityChart: "Under-5 Mortality (per 1,000 live births)",
+    maternalMortalityChart: "Maternal Mortality Ratio (per 100,000 live births)",
+    gdpGrowthChart: "GDP Growth (annual %)",
+    currentAccountChart: "Current Account Balance (% of GDP)",
+    taxRevenueChart: "Tax Revenue (% of GDP)",
+    tradeGdpChart: "Trade (% of GDP)",
+    incomeBottom20Chart: "Income Share – Bottom 20% (%)",
+    incomeTop10Chart: "Income Share – Top 10% (%)",
+    poverty365Chart: "Poverty Headcount ($3.65/day, %)",
+    controlCorruptionChart: "Control of Corruption (WGI, −2.5 to +2.5)",
+    politicalStabilityChart: "Political Stability (WGI, −2.5 to +2.5)",
+    hivPrevalenceChart: "HIV Prevalence (% ages 15–49)",
+    tuberculosisChart: "Tuberculosis Incidence (per 100,000)",
+    suicideRateChart: "Suicide Mortality Rate (per 100,000)",
+    alcoholConsumptionChart: "Alcohol Consumption (litres pure alcohol/capita)",
+    co2IntensityChart: "CO₂ Intensity (kg per PPP $ of GDP)",
+    arableLandChart: "Arable Land (% of land area)",
+    freshwaterWithdrawalChart: "Freshwater Withdrawal (billion m³)",
+    electricityAccessChart: "Access to Electricity (% of population)",
+    cleanFuelAccessChart: "Access to Clean Fuels for Cooking (%)",
+    populationGrowthChart: "Population Growth (annual %)",
+    urbanPopulationChart: "Urban Population (% of total)",
+    ageDependencyChart: "Age Dependency Ratio (% of working-age population)",
+    schoolLifeExpectancyChart: "School Life Expectancy (years)",
+    domesticCreditChart: "Domestic Credit to Private Sector (% of GDP)",
+    youthUnemploymentChart: "Youth Unemployment (% ages 15–24)",
+    vulnerableEmploymentChart: "Vulnerable Employment (% of total employment)",
+    femaleLaborForceChart: "Female Labor Force Participation (% ages 15+)",
+    maleLaborForceChart: "Male Labor Force Participation (% ages 15+)",
+    researchersChart: "Researchers in R&D (per million people)",
+    patentsChart: "Patent Applications (residents)",
+    serviceExportsChart: "Service Exports (billion USD)",
+    militarySpendWdiChart: "Military Expenditure (% of GDP, WDI)",
+    populationTotalChart: "Total Population (millions, WDI)",
+    healthSpendGdpChart: "Health Expenditure (% of GDP, WDI)",
     surgeryWaitChart: "Median Elective Surgery Wait Time (Weeks)",
     physiciansChart: "Physicians per 1,000 People (Physicians / 1k)",
     hospitalBedsChart: "Hospital Beds per 1,000 People (Beds / 1k)",
@@ -611,8 +809,10 @@
     corruptionChart: "Score (0–100, plus haut = plus propre)",
     qolPoliticalChart: "Score (0–10)",
     freeSpeechChart: "Score (0–10)",
-    legacyMediaRatingChart: "Score (0–10)",
-    newMediaRatingChart: "Score (0–10)",
+    legacyMediaRatingChart:
+      "Indice de confiance médias traditionnels (0–10, Edelman 2012+)",
+    newMediaRatingChart:
+      "Indice de confiance médias numériques (0–10, Edelman 2012+)",
     legacyMediaShareChart: "Part (%)",
     newMediaShareChart: "Part (%)",
     surgeryWaitChart: "Semaines",
@@ -623,6 +823,71 @@
     muslimChart: "% de la population",
     secularChart: "% de la population",
     hinduBuddhistChart: "% de la population",
+    ruleOfLawChart: "Indice État de droit (WGI)",
+    govEffectivenessChart: "Efficacité gouvernementale (WGI)",
+    regulatoryQualityChart: "Qualité réglementaire (WGI)",
+    voiceAccountabilityChart: "Voix et responsabilité (WGI)",
+    womenParliamentChart: "Femmes au parlement (%)",
+    govLegacyMediaTrustChart: "Confiance médias traditionnels (Edelman, 0–10)",
+    govNewMediaTrustChart: "Confiance médias numériques (Edelman, 0–10)",
+    povertyHeadcountChart: "Pauvreté ($2,15/jour, %)",
+    inflationChart: "Inflation IPC (%)",
+    publicDebtChart: "Dette publique (% PIB)",
+    fdiInflowsChart: "IDE entrants (% PIB)",
+    fdiOutflowsChart: "IDE sortants (% PIB)",
+    capitalFormationChart: "Formation brute de capital (% PIB)",
+    remittancesChart: "Transferts reçus (% PIB)",
+    marketCapChart: "Capitalisation boursière (% PIB)",
+    co2TotalChart: "Émissions CO₂ totales (kt)",
+    energyUseChart: "Consommation d’énergie (kg éq. pétrole/hab.)",
+    fossilFuelChart: "Part des énergies fossiles (%)",
+    elecRenewableChart: "Électricité renouvelable (%)",
+    pm25Chart: "Pollution PM2,5 (μg/m³)",
+    industryGdpChart: "Industrie (% PIB)",
+    manufacturingGdpChart: "Manufacture (% PIB)",
+    hiTechExportsChart: "Exportations high-tech (% export. manuf.)",
+    protectedAreasChart: "Aires protégées (% territoire)",
+    odaReceivedChart: "Aide publique reçue (% RNB)",
+    netMigrationChart: "Migration nette (personnes)",
+    militaryPersonnelChart: "Forces armées (% main-d’œuvre)",
+    eduPrimaryChart: "Scolarisation primaire (% brut)",
+    eduTertiaryChart: "Scolarisation tertiaire (% brut)",
+    eduSpendingChart: "Dépenses éducation (% PIB)",
+    under5MortalityChart: "Mortalité -5 ans (pour 1 000 naissances)",
+    maternalMortalityChart: "Mortalité maternelle (pour 100 000 naissances)",
+    gdpGrowthChart: "Croissance du PIB (% annuel)",
+    currentAccountChart: "Balance courante (% PIB)",
+    taxRevenueChart: "Recettes fiscales (% PIB)",
+    tradeGdpChart: "Commerce (% PIB)",
+    incomeBottom20Chart: "Part de revenu – 20 % les plus pauvres (%)",
+    incomeTop10Chart: "Part de revenu – 10 % les plus riches (%)",
+    poverty365Chart: "Pauvreté ($3,65/jour, %)",
+    controlCorruptionChart: "Contrôle de la corruption (WGI)",
+    politicalStabilityChart: "Stabilité politique (WGI)",
+    hivPrevalenceChart: "Prévalence du VIH (% 15–49 ans)",
+    tuberculosisChart: "Incidence tuberculose (pour 100 000)",
+    suicideRateChart: "Mortalité par suicide (pour 100 000)",
+    alcoholConsumptionChart: "Consommation d'alcool (litres/hab.)",
+    co2IntensityChart: "Intensité CO₂ (kg par $ PIB PPA)",
+    arableLandChart: "Terres arables (% du territoire)",
+    freshwaterWithdrawalChart: "Prélèvements d'eau douce (milliards m³)",
+    electricityAccessChart: "Accès à l'électricité (% pop.)",
+    cleanFuelAccessChart: "Accès aux combustibles propres (%)",
+    populationGrowthChart: "Croissance démographique (% annuel)",
+    urbanPopulationChart: "Population urbaine (% du total)",
+    ageDependencyChart: "Ratio de dépendance démographique (%)",
+    schoolLifeExpectancyChart: "Espérance de scolarisation (ans)",
+    domesticCreditChart: "Crédit intérieur au secteur privé (% PIB)",
+    youthUnemploymentChart: "Chômage des jeunes (% 15–24 ans)",
+    vulnerableEmploymentChart: "Emploi vulnérable (% emploi total)",
+    femaleLaborForceChart: "Participation féminine (% 15+)",
+    maleLaborForceChart: "Participation masculine (% 15+)",
+    researchersChart: "Chercheurs en R-D (par million)",
+    patentsChart: "Demandes de brevets (résidents)",
+    serviceExportsChart: "Exportations de services (milliards USD)",
+    militarySpendWdiChart: "Dépenses militaires (% PIB, WDI)",
+    populationTotalChart: "Population totale (millions, WDI)",
+    healthSpendGdpChart: "Dépenses de santé (% du PIB, WDI)",
   };
 
   var Y_EN = {
@@ -705,6 +970,71 @@
     muslimChart: "% of population",
     secularChart: "% of population",
     hinduBuddhistChart: "% of population",
+    ruleOfLawChart: "WGI index",
+    govEffectivenessChart: "WGI index",
+    regulatoryQualityChart: "WGI index",
+    voiceAccountabilityChart: "WGI index",
+    womenParliamentChart: "%",
+    govLegacyMediaTrustChart: "Score (0–10)",
+    govNewMediaTrustChart: "Score (0–10)",
+    povertyHeadcountChart: "%",
+    inflationChart: "Annual %",
+    publicDebtChart: "% of GDP",
+    fdiInflowsChart: "% of GDP",
+    fdiOutflowsChart: "% of GDP",
+    capitalFormationChart: "% of GDP",
+    remittancesChart: "% of GDP",
+    marketCapChart: "% of GDP",
+    co2TotalChart: "kt",
+    energyUseChart: "kg oil eq./capita",
+    fossilFuelChart: "% of energy",
+    elecRenewableChart: "%",
+    pm25Chart: "μg/m³",
+    industryGdpChart: "% of GDP",
+    manufacturingGdpChart: "% of GDP",
+    hiTechExportsChart: "% of mfg exports",
+    protectedAreasChart: "% of land",
+    odaReceivedChart: "% of GNI",
+    netMigrationChart: "People",
+    militaryPersonnelChart: "% of labor force",
+    eduPrimaryChart: "% gross",
+    eduTertiaryChart: "% gross",
+    eduSpendingChart: "% of GDP",
+    under5MortalityChart: "Per 1,000 live births",
+    maternalMortalityChart: "Per 100,000 live births",
+    gdpGrowthChart: "Annual %",
+    currentAccountChart: "% of GDP",
+    taxRevenueChart: "% of GDP",
+    tradeGdpChart: "% of GDP",
+    incomeBottom20Chart: "%",
+    incomeTop10Chart: "%",
+    poverty365Chart: "%",
+    controlCorruptionChart: "WGI index",
+    politicalStabilityChart: "WGI index",
+    hivPrevalenceChart: "%",
+    tuberculosisChart: "Per 100,000",
+    suicideRateChart: "Per 100,000",
+    alcoholConsumptionChart: "Litres/capita",
+    co2IntensityChart: "kg/PPP $",
+    arableLandChart: "% of land",
+    freshwaterWithdrawalChart: "Billion m³",
+    electricityAccessChart: "%",
+    cleanFuelAccessChart: "%",
+    populationGrowthChart: "Annual %",
+    urbanPopulationChart: "%",
+    ageDependencyChart: "%",
+    schoolLifeExpectancyChart: "Years",
+    domesticCreditChart: "% of GDP",
+    youthUnemploymentChart: "%",
+    vulnerableEmploymentChart: "%",
+    femaleLaborForceChart: "%",
+    maleLaborForceChart: "%",
+    researchersChart: "Per million",
+    patentsChart: "Applications",
+    serviceExportsChart: "Billion USD",
+    militarySpendWdiChart: "% of GDP",
+    populationTotalChart: "Millions",
+    healthSpendGdpChart: "% of GDP",
   };
 
   var Y_FR = {
@@ -775,8 +1105,10 @@
     corruptionChart: "Score (0–100, plus haut = plus propre)",
     qolPoliticalChart: "Score (0–10)",
     freeSpeechChart: "Score (0–10)",
-    legacyMediaRatingChart: "Score (0–10)",
-    newMediaRatingChart: "Score (0–10)",
+    legacyMediaRatingChart:
+      "Indice de confiance médias traditionnels (0–10, Edelman 2012+)",
+    newMediaRatingChart:
+      "Indice de confiance médias numériques (0–10, Edelman 2012+)",
     legacyMediaShareChart: "Part (%)",
     newMediaShareChart: "Part (%)",
     surgeryWaitChart: "Semaines",
@@ -787,6 +1119,71 @@
     muslimChart: "% de la population",
     secularChart: "% de la population",
     hinduBuddhistChart: "% de la population",
+    ruleOfLawChart: "Indice WGI",
+    govEffectivenessChart: "Indice WGI",
+    regulatoryQualityChart: "Indice WGI",
+    voiceAccountabilityChart: "Indice WGI",
+    womenParliamentChart: "%",
+    govLegacyMediaTrustChart: "Score (0–10)",
+    govNewMediaTrustChart: "Score (0–10)",
+    povertyHeadcountChart: "%",
+    inflationChart: "% annuel",
+    publicDebtChart: "% du PIB",
+    fdiInflowsChart: "% du PIB",
+    fdiOutflowsChart: "% du PIB",
+    capitalFormationChart: "% du PIB",
+    remittancesChart: "% du PIB",
+    marketCapChart: "% du PIB",
+    co2TotalChart: "kt",
+    energyUseChart: "kg éq. pétrole/hab.",
+    fossilFuelChart: "% de l’énergie",
+    elecRenewableChart: "%",
+    pm25Chart: "μg/m³",
+    industryGdpChart: "% du PIB",
+    manufacturingGdpChart: "% du PIB",
+    hiTechExportsChart: "% export. manuf.",
+    protectedAreasChart: "% du territoire",
+    odaReceivedChart: "% du RNB",
+    netMigrationChart: "Personnes",
+    militaryPersonnelChart: "% main-d’œuvre",
+    eduPrimaryChart: "% brut",
+    eduTertiaryChart: "% brut",
+    eduSpendingChart: "% du PIB",
+    under5MortalityChart: "Pour 1 000 naissances",
+    maternalMortalityChart: "Pour 100 000 naissances",
+    gdpGrowthChart: "% annuel",
+    currentAccountChart: "% du PIB",
+    taxRevenueChart: "% du PIB",
+    tradeGdpChart: "% du PIB",
+    incomeBottom20Chart: "%",
+    incomeTop10Chart: "%",
+    poverty365Chart: "%",
+    controlCorruptionChart: "Indice WGI",
+    politicalStabilityChart: "Indice WGI",
+    hivPrevalenceChart: "%",
+    tuberculosisChart: "Pour 100 000",
+    suicideRateChart: "Pour 100 000",
+    alcoholConsumptionChart: "Litres/hab.",
+    co2IntensityChart: "kg/$ PIB PPA",
+    arableLandChart: "% du territoire",
+    freshwaterWithdrawalChart: "Milliards m³",
+    electricityAccessChart: "%",
+    cleanFuelAccessChart: "%",
+    populationGrowthChart: "% annuel",
+    urbanPopulationChart: "%",
+    ageDependencyChart: "%",
+    schoolLifeExpectancyChart: "Ans",
+    domesticCreditChart: "% du PIB",
+    youthUnemploymentChart: "%",
+    vulnerableEmploymentChart: "%",
+    femaleLaborForceChart: "%",
+    maleLaborForceChart: "%",
+    researchersChart: "Par million",
+    patentsChart: "Demandes",
+    serviceExportsChart: "Milliards USD",
+    militarySpendWdiChart: "% du PIB",
+    populationTotalChart: "Millions",
+    healthSpendGdpChart: "% du PIB",
   };
 
   chartIds.forEach(function (id) {
@@ -838,6 +1235,14 @@
         el.textContent = val;
       }
     });
+    document.querySelectorAll("[data-i18n-title]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n-title");
+      if (key) el.setAttribute("title", t(key));
+    });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n-aria");
+      if (key) el.setAttribute("aria-label", t(key));
+    });
   }
 
   function applyChartTitlesFromLocale() {
@@ -865,9 +1270,15 @@
       Estimated: "badge.estimated",
       "Low Accuracy": "badge.lowAccuracy",
       Modelled: "badge.modelled",
+      YoY: "badge.yoy",
       "High (WDI)": "badge.highWdi",
       "Partial WDI": "badge.partialWdi",
       "Mixed (WDI pop)": "badge.mixedWdiPop",
+      "Partial (Edelman)": "badge.partialEdelman",
+      "Low Accuracy — Modelled": "badge.lowModelled",
+      "Low Accuracy — WHR data begins 2012": "badge.lowWhr2012",
+      "Low Accuracy — CPI exists since 1995 only": "badge.lowCpi1995",
+      "Low Accuracy — Modelled pre-1990": "badge.lowPre1990",
     };
     var txt = (el.textContent || "").trim();
     if (!el.dataset.i18nBadgeEn) el.dataset.i18nBadgeEn = txt;
@@ -875,8 +1286,16 @@
       el.textContent = el.dataset.i18nBadgeEn;
       return;
     }
-    var key = map[el.dataset.i18nBadgeEn];
-    if (key) el.textContent = t(key);
+    var en = el.dataset.i18nBadgeEn;
+    var key = map[en];
+    if (key) {
+      el.textContent = t(key);
+      return;
+    }
+    var parts = en.split(" — ");
+    if (parts.length === 2 && map[parts[0]] && map[parts[1]]) {
+      el.textContent = t(map[parts[0]]) + " — " + t(map[parts[1]]);
+    }
   }
 
   function applyStaticBadges() {

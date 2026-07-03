@@ -23,16 +23,19 @@
             --shadow: 0 2px 4px rgba(0,0,0,0.1);
             --accent-color: #667eea;
             --accent-hover: #764ba2;
-            /* General page rhythm (headers, container, provenance, footer) */
+            /* General page rhythm — one gap for all section spacing */
             --section-vspace: 1.5rem;
-            /* Tight outer gap: chart/KPI block → event panel */
             --chart-to-events-gap: 0;
-            /* Space after event panel → next chart row (~50% less than previous 6.75rem) */
-            --chart-stack-gap: 3.375rem;
-            /* Vertical gap between two charts in the same row when columns stack (mobile / narrow) */
-            --chart-row-inner-gap: 1.9rem;
-            /* Small positive gap chart/KPI → events (must clear card shadow; no negative margin — avoids overlap) */
-            --chart-to-events-tight-gap: 0.7rem;
+            --chart-stack-gap: var(--section-vspace);
+            --chart-row-inner-gap: var(--section-vspace);
+            --chart-to-events-tight-gap: var(--section-vspace);
+            --content-max-width: 1200px;
+            /* Half-row width for max-two-charts-per-row layout (accounts for flex gap) */
+            --chart-col-half: calc(50% - var(--chart-row-inner-gap) / 2);
+            --section-inset: 0.75rem;
+            --panel-radius: 8px;
+            --panel-pad-x: 20px;
+            --panel-pad-y: 15px;
         }
 
         body.dark-theme {
@@ -54,8 +57,72 @@
         }
 
         .container {
-            padding-top: var(--section-vspace);
-            padding-bottom: var(--section-vspace);
+            display: flex;
+            flex-direction: column;
+            width: min(calc(100% - 2 * var(--section-inset)), var(--content-max-width));
+            max-width: var(--content-max-width);
+            margin-left: auto;
+            margin-right: auto;
+            padding: var(--section-vspace) var(--section-inset);
+            box-sizing: border-box;
+        }
+
+        .container > .country-selector { order: 10; }
+        .container > .indicator-search-wrap { order: 20; }
+        .container > .dashboard-nav-wrap { order: 30; }
+        .container > div[id^="tab-"] { order: 40; }
+        .container > #statisticsSummary { order: 50; }
+        .container > #dataQualityPanel { order: 60; }
+        .container > .data-provenance { order: 70; }
+
+        /* Top-level blocks: full content width, uniform vertical spacing */
+        .container > .country-selector,
+        .container > .indicator-search-wrap,
+        .container > .dashboard-nav-wrap,
+        .container > #statisticsSummary,
+        .container > div[id^="tab-"],
+        .container > #dataQualityPanel,
+        .container > .data-provenance {
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: var(--section-vspace);
+            box-sizing: border-box;
+        }
+
+        .container > :last-child {
+            margin-bottom: 0;
+        }
+
+        .container .row {
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: var(--section-vspace);
+        }
+
+        .container .row:has(+ .historical-context--below-chart) {
+            margin-bottom: 0;
+        }
+
+        /* Shared card surface for panels, charts, headers, and nav */
+        .chart-container,
+        .section-header,
+        .dashboard-nav,
+        .indicator-search-field,
+        .historical-context,
+        .data-provenance,
+        #dataQualityPanel {
+            background: var(--bg-secondary);
+            border-radius: var(--panel-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-container {
+            padding: var(--panel-pad-y) var(--panel-pad-x);
+            margin-bottom: 0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         .navbar-fixed {
@@ -66,6 +133,11 @@
             background-color: var(--bg-secondary) !important;
             box-shadow: var(--shadow) !important;
             transition: background-color 0.3s ease;
+        }
+
+        nav.dashboard-nav {
+            height: auto !important;
+            line-height: normal !important;
         }
 
         nav .brand-logo,
@@ -163,15 +235,6 @@
             margin: 5px 0 0 0;
         }
 
-        .chart-container {
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: var(--section-vspace);
-            box-shadow: var(--shadow);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
         .chart-container:has(> canvas) {
             position: relative;
             min-height: 280px;
@@ -194,7 +257,7 @@
         }
 
         .chart-title {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 500;
             color: var(--text-primary);
             margin-bottom: 15px;
@@ -205,6 +268,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .chart-title .material-icons {
+            color: var(--accent-color);
+            font-size: 1.35rem;
         }
 
         .accuracy-badge {
@@ -260,37 +328,46 @@
         }
 
         .section-header {
-            background: var(--bg-secondary);
-            padding: 15px 20px;
-            margin: var(--section-vspace) 0.75rem;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            padding: var(--panel-pad-y) var(--panel-pad-x);
+            margin: 0 0 var(--section-vspace);
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         .section-header h2 {
             margin: 0;
-            color: var(--accent-color);
+            color: var(--text-primary);
             font-weight: 500;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-color);
         }
 
-        .country-selector {
-            margin: var(--section-vspace) 0.75rem;
+        .section-header h2 .material-icons {
+            color: var(--accent-color);
+            font-size: 1.35rem;
         }
 
-        .country-selector .chart-container {
-            padding: 15px 20px;
-            margin-bottom: var(--section-vspace);
+        #statisticsSummary > .section-header:first-child,
+        div[id^="tab-"] > .section-header:first-child {
+            margin-top: 0;
+        }
+
+        div[id^="tab-"] {
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .country-selector .chart-title {
             margin-bottom: 10px;
-            font-size: 1.1rem;
         }
 
         .country-selector .chart-title i {
-            font-size: 20px;
+            font-size: 1.35rem;
         }
 
         .chip {
@@ -325,11 +402,45 @@
             border-color: var(--accent-color);
         }
 
-        /* KPI / chart columns: at least ~30% width on large screens (l4 = 33.33%) */
-        #statisticsSummary .row > .col,
-        .container .row > .col:has(> .chart-container) {
-            min-width: 30%;
-            box-sizing: border-box;
+        /* Chart columns: at most two per row on large screens */
+        @media only screen and (min-width: 993px) {
+            #statisticsSummary .row,
+            .container .row:has(> .col > .chart-container) {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: flex-start;
+                gap: var(--chart-row-inner-gap);
+            }
+
+            #statisticsSummary .row::after,
+            .container .row:has(> .col > .chart-container)::after {
+                display: none;
+            }
+
+            #statisticsSummary .row > .col,
+            .container .row:has(> .col > .chart-container) > .col {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: auto !important;
+                box-sizing: border-box;
+                flex: 1 1 var(--chart-col-half);
+                max-width: var(--chart-col-half);
+            }
+
+            /* Single visible chart in a row may use the full width */
+            #statisticsSummary .row > .col:only-child,
+            .container .row:has(> .col > .chart-container) > .col:only-child {
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+        }
+
+        @media only screen and (max-width: 992px) {
+            #statisticsSummary .row > .col,
+            .container .row:has(> .col > .chart-container) > .col {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
         }
 
         .stats-card {
@@ -363,20 +474,104 @@
             font-size: 0.72rem;
             color: var(--text-secondary);
             line-height: 1.4;
-            margin: var(--section-vspace) 0.75rem;
-            padding: 12px 20px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
+            margin: var(--section-vspace) 0 0;
+            padding: var(--panel-pad-y) var(--panel-pad-x);
             border-left: 4px solid var(--accent-color);
         }
 
+        /* Data Quality Snapshot — compact layout, same content */
+        #dataQualityPanel {
+            padding: var(--panel-pad-y) var(--panel-pad-x);
+            margin-bottom: 0;
+        }
+
+        #dataQualityPanel .chart-title {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            padding-bottom: 5px;
+        }
+
+        #dataQualityPanel .event-intro {
+            font-size: 0.82rem;
+            line-height: 1.35;
+            margin: 0 0 6px 0;
+            color: var(--text-secondary);
+        }
+
+        #dataQualityPanel .dq-summary {
+            margin-bottom: 8px;
+        }
+
+        #dataQualityPanel .dq-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2px 14px;
+            margin-bottom: 6px;
+        }
+
+        #dataQualityPanel .dq-stats-grid .event-intro {
+            margin-bottom: 2px;
+        }
+
+        #dataQualityPanel .dq-warning-line {
+            margin-bottom: 8px;
+            padding: 6px 8px;
+            background: rgba(102, 126, 234, 0.06);
+            border-radius: 4px;
+        }
+
+        body.dark-theme #dataQualityPanel .dq-warning-line {
+            background: rgba(102, 126, 234, 0.12);
+        }
+
+        #dataQualityPanel .dq-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 18px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            #dataQualityPanel .dq-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #dataQualityPanel .dq-column > .event-intro {
+            margin-bottom: 4px;
+        }
+
+        #dataQualityPanel .dq-compact-list {
+            margin: 0;
+            padding-left: 1.15em;
+            font-size: 0.76rem;
+            line-height: 1.28;
+            columns: 2;
+            column-gap: 14px;
+        }
+
+        #dataQualityPanel .dq-compact-list li {
+            break-inside: avoid;
+            margin-bottom: 1px;
+        }
+
+        @media (max-width: 520px) {
+            #dataQualityPanel .dq-compact-list {
+                columns: 1;
+            }
+        }
+
         .historical-context {
-            margin: 0 0.75rem;
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
+            margin: var(--section-vspace) 0;
+            padding: var(--panel-pad-y) var(--panel-pad-x);
+            width: 100%;
+            box-sizing: border-box;
             border-left: 4px solid var(--accent-color);
+        }
+
+        .historical-context--below-chart {
+            margin-top: var(--section-vspace);
+            margin-bottom: var(--section-vspace);
         }
 
         .historical-context h3 {
@@ -534,19 +729,6 @@
             color: #1565c0;
         }
 
-        .historical-context--below-chart {
-            margin-top: 0;
-            margin-bottom: var(--chart-stack-gap);
-            padding: 12px 16px;
-        }
-
-        /* Tight but non-overlapping: stay below chart card + box-shadow */
-        .container .row.chart-row--above-events + .historical-context--below-chart,
-        .container .chart-container.chart-container--above-events + .historical-context--below-chart,
-        .container .row.chart-row--above-events--kpi + .historical-context--below-chart {
-            margin-top: var(--chart-to-events-tight-gap);
-        }
-
         /* Chart row / card → event panel: classes set in JS (see applyChartEventPairingClasses) */
         /*
          * Float-based .row clears at the tallest column, leaving a large empty band under the shorter
@@ -568,15 +750,20 @@
         /*
          * Materialize sets margin-left:auto on .col.l6/.col.s12. In a flex row with gap, two 50%-width
          * columns wrap; each line then has a single item and margin-left:auto shoves charts to the right.
-         * Reset margins and let flex share width (pairs or triples). KPI rows keep the float grid — excluded.
+         * Reset margins and cap at two charts per row. KPI rows keep the float grid — excluded.
          */
         .container .row.chart-row--above-events:not(.chart-row--above-events--kpi) > .col {
             margin-left: 0 !important;
             margin-right: 0 !important;
             width: auto !important;
             box-sizing: border-box;
-            flex: 1 1 0;
-            min-width: 0;
+            flex: 1 1 var(--chart-col-half);
+            max-width: var(--chart-col-half);
+        }
+
+        .container .row.chart-row--above-events:not(.chart-row--above-events--kpi) > .col:only-child {
+            flex-basis: 100%;
+            max-width: 100%;
         }
 
         @media only screen and (max-width: 992px) {
@@ -620,21 +807,92 @@
             padding: 50px;
         }
 
+        .dashboard-nav-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            width: 100%;
+        }
+
+        .dashboard-nav {
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            height: auto !important;
+            min-height: 0;
+            line-height: normal;
+        }
+
+        .tab-nav-primary {
+            width: 100%;
+        }
+
+        .tab-nav-secondary {
+            width: 100%;
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tab-group-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-bottom: 0;
+        }
+
+        .tab-group-btn {
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-radius: 999px;
+            padding: 0.5rem 1.05rem;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .tab-group-btn:hover {
+            border-color: var(--accent-color);
+        }
+
+        .tab-group-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #fff;
+        }
+
+        #dashboardSubTabs li.tab[data-tab-group] {
+            display: none !important;
+        }
+
+        #dashboardSubTabs li.tab[data-tab-group].group-visible {
+            display: block !important;
+        }
+
+        #dashboardSubTabs li.tab:not(.group-visible) a {
+            pointer-events: none;
+        }
+
+        .tab-nav-secondary.sub-tabs-single .tabs {
+            gap: 0.45rem;
+        }
+
         .tabs {
             display: flex;
             flex-wrap: wrap;
             justify-content: flex-start;
-            gap: 6px 8px;
-            background: var(--bg-primary);
-            margin: 0 0.75rem 12px;
+            gap: 0.45rem;
+            background: transparent;
+            margin: 0;
             min-height: auto;
             height: auto;
-            padding: 8px 0 8px 0;
+            padding: 0;
             overflow: visible;
-            position: sticky;
-            top: 0;
-            z-index: 99;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            position: static;
+            box-shadow: none;
         }
 
         .tabs .tab {
@@ -652,54 +910,51 @@
             gap: 5px;
             height: auto;
             line-height: normal;
-            padding: 7px 14px;
+            padding: 0.5rem 1.05rem;
             margin: 0;
-            border-radius: 20px;
-            font-size: 0.82rem;
+            border-radius: 999px;
+            font-size: 0.92rem;
             font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
+            letter-spacing: normal;
+            text-transform: none;
             white-space: nowrap;
             text-align: center;
             color: var(--text-secondary) !important;
-            background: var(--bg-secondary);
-            border: 1.5px solid var(--border-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            transition: all 0.18s ease;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
             text-decoration: none;
         }
 
-        /* Hover — greyscale lift */
         .tabs .tab a:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.09) !important;
-            color: #ffffff !important;
-            border-color: rgba(255, 255, 255, 0.50) !important;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.30);
+            transform: none;
+            border-color: var(--accent-color);
+            color: var(--text-primary) !important;
+            background: var(--bg-secondary) !important;
+            box-shadow: none;
         }
 
-        /* Active — inverted pill: white bg + dark text for maximum contrast */
         .tabs .tab a.active {
-            font-weight: 700 !important;
-            background: #ffffff !important;
-            color: #111111 !important;
-            border-color: #ffffff !important;
-            border-width: 2px !important;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18) !important;
+            font-weight: 600 !important;
+            background: var(--accent-color) !important;
+            color: #ffffff !important;
+            border-color: var(--accent-color) !important;
+            box-shadow: none !important;
         }
 
-        /* Light theme overrides */
         body:not(.dark-theme) .tabs .tab a:hover {
-            background: rgba(0, 0, 0, 0.08) !important;
-            color: #111111 !important;
-            border-color: rgba(0, 0, 0, 0.40) !important;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+            border-color: var(--accent-color);
+            color: var(--text-primary) !important;
+            background: var(--bg-secondary) !important;
+            box-shadow: none;
         }
+
         body:not(.dark-theme) .tabs .tab a.active {
-            background: #1a1a1a !important;
+            background: var(--accent-color) !important;
             color: #ffffff !important;
-            border-color: #1a1a1a !important;
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15) !important;
+            border-color: var(--accent-color) !important;
+            box-shadow: none !important;
         }
 
         .tabs .indicator {
@@ -709,8 +964,8 @@
         /* Responsive tabs for small screens */
         @media (max-width: 768px) {
             .tabs .tab a {
-                padding: 10px 6px;
-                font-size: 0.8rem;
+                padding: 0.45rem 0.8rem;
+                font-size: 0.85rem;
                 white-space: normal;
                 text-align: center;
             }
@@ -784,9 +1039,140 @@
             font-size: 1.8rem;
         }
 
-        /* Statistics summary and text interpretation panels are not chart content — hide them */
-        #statisticsSummary {
-            display: none !important;
+        /* KPI summary — visible above chart tabs */
+        #statisticsSummary .chart-container {
+            min-height: 280px;
+        }
+
+        #statisticsSummary .summary-yoy-chart .chart-container {
+            min-height: 240px;
+        }
+
+        .indicator-search-wrap {
+            position: relative;
+        }
+
+        .indicator-search-field {
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+
+        .indicator-search-wrap input[type="search"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.75rem var(--panel-pad-x) 0.75rem 2.75rem;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.4;
+            box-shadow: none;
+            transition: color 0.2s ease;
+        }
+
+        .indicator-search-wrap input[type="search"]::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.4;
+        }
+
+        .indicator-search-wrap input[type="search"]:focus {
+            outline: none;
+        }
+
+        .indicator-search-field:focus-within {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25), var(--shadow);
+        }
+
+        .indicator-search-icon {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.35rem;
+            color: var(--text-secondary);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .indicator-search-results {
+            display: none;
+            position: absolute;
+            z-index: 1002;
+            left: 0;
+            right: 0;
+            top: calc(100% + 4px);
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            max-height: 320px;
+            overflow-y: auto;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        .indicator-search-results.open {
+            display: block;
+        }
+
+        .indicator-search-result {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            text-align: left;
+            padding: 0.65rem 0.85rem;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .indicator-search-result:last-child {
+            border-bottom: none;
+        }
+
+        .indicator-search-result:hover,
+        .indicator-search-result:focus {
+            background: rgba(102, 126, 234, 0.12);
+            outline: none;
+        }
+
+        .indicator-search-result__title {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .indicator-search-result__meta {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 0.15rem;
+        }
+
+        .chart-container.chart-highlight {
+            box-shadow: 0 0 0 3px var(--accent-color), var(--shadow);
+            transition: box-shadow 0.3s ease;
+        }
+
+        @media (max-width: 600px) {
+            .tab-group-bar {
+                gap: 0.35rem;
+            }
+            .tab-group-btn,
+            .tabs .tab a {
+                font-size: 0.82rem;
+                padding: 0.4rem 0.75rem;
+            }
+            .tab-nav-secondary {
+                margin-top: 0.65rem;
+                padding-top: 0.65rem;
+            }
         }
 
     </style>
@@ -794,7 +1180,7 @@
 <body class="dark-theme">
     <!-- Theme Toggle -->
     <div class="theme-header">
-        <a href="#" id="lang-toggle" class="header-action-btn" onclick="if(window.DashboardI18n)DashboardI18n.toggleLocale(); return false;" title="Switch language">
+        <a href="#" id="lang-toggle" class="header-action-btn" onclick="if(window.DashboardI18n)DashboardI18n.toggleLocale(); return false;" data-i18n-title="lang.toggleTitle" title="Switch language">
             <span id="lang-toggle-label">EN</span>
         </a>
         <a href="#" id="theme-toggle-btn" class="header-action-btn" onclick="toggleTheme(); return false;" title="Toggle light/dark theme" aria-label="Toggle theme">
@@ -812,55 +1198,91 @@
                     <i class="material-icons left">public</i>
                     <span data-i18n="country.selectTitle">Select Countries to Compare</span>
                 </div>
-                <p class="event-intro" data-i18n="country.europeAggregateNote">Europe is a derived aggregate of the European countries included in this dashboard, not a sovereign-country series.</p>
                 <div id="countryChips"></div>
             </div>
+        </div>
+
+        <!-- Indicator search -->
+        <div class="indicator-search-wrap">
+            <div class="indicator-search-field">
+                <i class="material-icons indicator-search-icon" aria-hidden="true">search</i>
+                <input type="search" id="indicatorSearch" autocomplete="off" spellcheck="false" data-i18n-aria="nav.searchAria" aria-label="Search dashboard indicators">
+            </div>
+            <ul id="indicatorSearchResults" class="indicator-search-results" role="listbox" aria-label="Search results"></ul>
+        </div>
+
+        <!-- Dashboard navigation -->
+        <div class="dashboard-nav-wrap">
+        <nav class="dashboard-nav" aria-label="Dashboard navigation">
+            <div class="tab-nav-primary">
+                <div class="tab-group-bar" id="tabGroupBar" role="tablist" aria-label="Dashboard sections">
+                    <button type="button" class="tab-group-btn active" data-group="macro" data-i18n="nav.group.macro" aria-selected="true">Macro</button>
+                    <button type="button" class="tab-group-btn" data-group="people" data-i18n="nav.group.people" aria-selected="false">People</button>
+                    <button type="button" class="tab-group-btn" data-group="society" data-i18n="nav.group.society" aria-selected="false">Society</button>
+                    <button type="button" class="tab-group-btn" data-group="planet" data-i18n="nav.group.planet" aria-selected="false">Planet</button>
+                    <button type="button" class="tab-group-btn" data-group="tech" data-i18n="nav.group.tech" aria-selected="false">Tech</button>
+                </div>
+            </div>
+            <div class="tab-nav-secondary" id="tabNavSecondary">
+                <ul class="tabs" id="dashboardSubTabs">
+                <li class="tab group-visible" data-tab-group="macro"><a class="active" href="#tab-economic" data-i18n="tab.economic">Economic</a></li>
+                <li class="tab group-visible" data-tab-group="macro"><a href="#tab-employment" data-i18n="tab.employment">Jobs</a></li>
+                <li class="tab group-visible" data-tab-group="macro"><a href="#tab-costs" data-i18n="tab.costs">Costs</a></li>
+                <li class="tab group-visible" data-tab-group="macro"><a href="#tab-trade" data-i18n="tab.trade">Trade</a></li>
+                <li class="tab group-visible" data-tab-group="macro"><a href="#tab-investment" data-i18n="tab.investment">Investment</a></li>
+                <li class="tab group-visible" data-tab-group="macro"><a href="#tab-labor" data-i18n="tab.labor">Labor</a></li>
+                <li class="tab" data-tab-group="people"><a href="#tab-demographics" data-i18n="tab.demographics">Population</a></li>
+                <li class="tab" data-tab-group="people"><a href="#tab-health" data-i18n="tab.health">Health</a></li>
+                <li class="tab" data-tab-group="people"><a href="#tab-immigration" data-i18n="tab.immigration">Migration</a></li>
+                <li class="tab" data-tab-group="society"><a href="#tab-social" data-i18n="tab.social">Social</a></li>
+                <li class="tab" data-tab-group="society"><a href="#tab-wellbeing" data-i18n="tab.wellbeing">Quality of Life</a></li>
+                <li class="tab" data-tab-group="society"><a href="#tab-governance" data-i18n="tab.governance">Governance</a></li>
+                <li class="tab" data-tab-group="society"><a href="#tab-inequality" data-i18n="tab.inequality">Inequality</a></li>
+                <li class="tab" data-tab-group="society"><a href="#tab-humanitarian" data-i18n="tab.humanitarian">Humanitarian</a></li>
+                <li class="tab" data-tab-group="planet"><a href="#tab-environment" data-i18n="tab.environment">Environment</a></li>
+                <li class="tab" data-tab-group="planet"><a href="#tab-energy" data-i18n="tab.energy">Energy &amp; Industry</a></li>
+                <li class="tab" data-tab-group="tech"><a href="#tab-technology" data-i18n="tab.technology">Tech</a></li>
+                </ul>
+            </div>
+        </nav>
         </div>
 
         <!-- Statistics Summary Section -->
         <div id="statisticsSummary">
             <div class="section-header">
-                <h2><i class="material-icons left">assessment</i><span data-i18n="sec.statsSummary">Key Statistics Summary (Latest Year 2026)</span></h2>
+                <h2><i class="material-icons left">assessment</i><span data-i18n="sec.statsSummary">Key Indicators Overview</span></h2>
             </div>
 
             <div class="row">
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">attach_money</i>
-                        <h3 id="stat-gdp-avg">-</h3>
-                        <p data-i18n="stats.avgGdp">Average GDP (Trillion USD)</p>
-                        <small id="stat-gdp-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.gdpChart">GDP (Trillion USD)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryGdpChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">payments</i>
-                        <h3 id="stat-gdppc-avg">-</h3>
-                        <p data-i18n="stats.avgGdppc">Average GDP Per Capita (USD)</p>
-                        <small id="stat-gdppc-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.gdpPerCapitaChart">GDP Per Capita (USD)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryGdppcChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">work</i>
-                        <h3 id="stat-employment-avg">-</h3>
-                        <p data-i18n="stats.empl">Employment to population 15+ (%)</p>
-                        <small id="stat-employment-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.employmentChart">Employment Rate (%)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryEmploymentChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">trending_up</i>
-                        <h3 id="stat-salary-avg">-</h3>
-                        <p data-i18n="stats.gni">Average GNI per capita (USD, WDI)</p>
-                        <small id="stat-salary-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.salaryChart">GNI per capita (Atlas, USD, WDI)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryGniChart"></canvas>
                     </div>
                 </div>
             </div>
 
             <div class="historical-context historical-context--below-chart">
                 <h3><i class="material-icons tiny" style="vertical-align: middle;">history</i> Context for economic &amp; labour KPIs above</h3>
-                <p class="event-intro">These tiles mirror GDP, GDP per capita, GNI per capita (WDI), employment-to-population (15+), and modelled wage-style baselines where noted. Big synchronized moves often reflect global business cycles and commodity shocks.</p>
+                <p class="event-intro">These charts mirror GDP, GDP per capita, GNI per capita (WDI), employment-to-population (15+), and modelled wage-style baselines where noted. Big synchronized moves often reflect global business cycles and commodity shocks.</p>
                 <div class="event-columns">
                     <div>
                         <h4 class="event-good-h">Supportive phases</h4>
@@ -881,36 +1303,28 @@
             </div>
 
             <div class="row">
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">favorite</i>
-                        <h3 id="stat-life-avg">-</h3>
-                        <p data-i18n="stats.life">Average Life Expectancy (years)</p>
-                        <small id="stat-life-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.lifeExpectancyChart">Life Expectancy (years)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryLifeChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">child_care</i>
-                        <h3 id="stat-birth-avg">-</h3>
-                        <p data-i18n="stats.birth">Average Birth Rate (per 1000)</p>
-                        <small id="stat-birth-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.birthRateChart">Birth Rate (per 1000)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryBirthChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">home</i>
-                        <h3 id="stat-rent-avg">-</h3>
-                        <p data-i18n="stats.rent">Average Monthly Rent (USD)</p>
-                        <small id="stat-rent-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.rentChart">Monthly Rent (USD)</span><span class="accuracy-badge accuracy-medium">Estimated</span></div>
+                        <canvas id="summaryRentChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">local_gas_station</i>
-                        <h3 id="stat-gas-avg">-</h3>
-                        <p data-i18n="stats.gas">Average Gas Price (USD/L)</p>
-                        <small id="stat-gas-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.gasChart">Gas Price (USD/L)</span><span class="accuracy-badge accuracy-medium">Estimated</span></div>
+                        <canvas id="summaryGasChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -937,36 +1351,28 @@
             </div>
 
             <div class="row">
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">nature</i>
-                        <h3 id="stat-co2-avg">-</h3>
-                        <p data-i18n="stats.co2">Average CO2 Emissions (tons/capita)</p>
-                        <small id="stat-co2-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.co2EmissionsChart">CO₂ Emissions (tons/capita)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryCo2Chart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">school</i>
-                        <h3 id="stat-edu-avg">-</h3>
-                        <p data-i18n="stats.edu">Average Education Level (%)</p>
-                        <small id="stat-edu-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.educationChart">Secondary Enrollment (%)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryEduChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">local_shipping</i>
-                        <h3 id="stat-trade-avg">-</h3>
-                        <p data-i18n="stats.tradeB">Average Trade Balance (B USD)</p>
-                        <small id="stat-trade-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.tradeBalanceChart">Trade Balance (B USD)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryTradeChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">wifi</i>
-                        <h3 id="stat-internet-avg">-</h3>
-                        <p data-i18n="stats.internet">Average Internet Users (%)</p>
-                        <small id="stat-internet-range" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="ct.internetUsersChart">Internet Users (%)</span><span class="accuracy-badge accuracy-high">High Accuracy</span></div>
+                        <canvas id="summaryInternetChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -998,33 +1404,29 @@
                 <h2><i class="material-icons left">show_chart</i><span data-i18n="sec.yoy">Year-over-Year Changes (2025 → 2026)</span></h2>
             </div>
 
-            <div class="row">
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <h3 id="growth-gdp" style="font-size: 2rem;">-</h3>
-                        <p data-i18n="stats.cardGdpGrowth">GDP Growth</p>
-                        <small style="color: var(--text-secondary);" data-i18n="stats.cardAvgAcross">Average across selected countries</small>
+            <div class="row summary-yoy-chart">
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="stats.cardGdpGrowth">GDP Growth</span><span class="accuracy-badge accuracy-medium">YoY</span></div>
+                        <canvas id="summaryYoyGdpChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <h3 id="growth-employment" style="font-size: 2rem;">-</h3>
-                        <p data-i18n="stats.cardEmpChange">Employment Rate Change</p>
-                        <small style="color: var(--text-secondary);" data-i18n="stats.cardAvgAcross">Average across selected countries</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="stats.cardEmpChange">Employment Rate Change</span><span class="accuracy-badge accuracy-medium">YoY</span></div>
+                        <canvas id="summaryYoyEmpChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <h3 id="growth-salary" style="font-size: 2rem;">-</h3>
-                        <p data-i18n="stats.cardGniGrowth">GNI per capita growth</p>
-                        <small style="color: var(--text-secondary);" data-i18n="stats.cardAvgAcross">Average across selected countries</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="stats.cardGniGrowth">GNI per capita growth</span><span class="accuracy-badge accuracy-medium">YoY</span></div>
+                        <canvas id="summaryYoyGniChart"></canvas>
                     </div>
                 </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <h3 id="growth-co2" style="font-size: 2rem;">-</h3>
-                        <p data-i18n="stats.cardCo2Change">CO2 Emissions Change</p>
-                        <small style="color: var(--text-secondary);" data-i18n="stats.cardAvgAcross">Average across selected countries</small>
+                <div class="col s12 m6 l6">
+                    <div class="chart-container">
+                        <div class="chart-title"><span data-i18n="stats.cardCo2Change">CO₂ Emissions Change</span><span class="accuracy-badge accuracy-medium">YoY</span></div>
+                        <canvas id="summaryYoyCo2Chart"></canvas>
                     </div>
                 </div>
             </div>
@@ -1097,76 +1499,7 @@
                 </div>
             </div>
 
-            <!-- Historical Trends Summary -->
-            <div class="section-header">
-                <h2><i class="material-icons left">timeline</i><span data-i18n="sec.trends">Long-term Trends (1970 → 2026)</span></h2>
-            </div>
-
-            <div class="row">
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">trending_up</i>
-                        <h3 id="trend-gdp-change" style="font-size: 1.8rem;">-</h3>
-                        <p data-i18n="stats.trendGdp">Total GDP Growth Since 1970</p>
-                        <small id="trend-gdp-details" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
-                    </div>
-                </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">groups</i>
-                        <h3 id="trend-life-change" style="font-size: 1.8rem;">-</h3>
-                        <p data-i18n="stats.trendLifeIncrease">Life Expectancy Increase</p>
-                        <small id="trend-life-details" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
-                    </div>
-                </div>
-                <div class="col s12 m6 l4">
-                    <div class="stats-card">
-                        <i class="material-icons" style="font-size: 2rem; color: var(--accent-color);">nature_people</i>
-                        <h3 id="trend-co2-change" style="font-size: 1.8rem;">-</h3>
-                        <p data-i18n="stats.trendCo2">CO2 Emissions Change</p>
-                        <small id="trend-co2-details" style="color: var(--text-secondary); font-size: 0.85rem;">-</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="historical-context historical-context--below-chart">
-                <h3><i class="material-icons tiny" style="vertical-align: middle;">history</i> Context for long-horizon trend tiles</h3>
-                <p class="event-intro">These summarize change from the first to the last year in the dashboard series. They mix WDI (GDP, life expectancy, CO₂ per capita when merged) with the same global history of shocks as the tab charts.</p>
-                <div class="event-columns">
-                    <div>
-                        <h4 class="event-good-h">Long-run improvements (uneven)</h4>
-                        <ul>
-                            <li><strong>Post-WWII reconstruction &amp; Bretton Woods</strong> — income and trade recovery in much of the West.</li>
-                            <li><strong>1990s–2000s globalization</strong> — catch-up growth for several emerging economies.</li>
-                            <li><strong>Medical progress</strong> — rising life expectancy in most countries over decades.</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="event-bad-h">Repeated global setbacks</h4>
-                        <ul>
-                            <li><strong>1970s oil shocks &amp; stagflation</strong> — slower growth and inflation.</li>
-                            <li><strong>1980s debt crises</strong> — lost growth in many developing countries.</li>
-                            <li><strong>2008–2009 GFC &amp; 2020 COVID-19</strong> — synchronized macro shocks.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <!-- Tabs for different categories -->
-        <ul class="tabs">
-            <li class="tab"><a class="active" href="#tab-economic" data-i18n="tab.economic">Economic</a></li>
-            <li class="tab"><a href="#tab-employment" data-i18n="tab.employment">Jobs</a></li>
-            <li class="tab"><a href="#tab-costs" data-i18n="tab.costs">Costs</a></li>
-            <li class="tab"><a href="#tab-social" data-i18n="tab.social">Social</a></li>
-            <li class="tab"><a href="#tab-demographics" data-i18n="tab.demographics">Population</a></li>
-            <li class="tab"><a href="#tab-health" data-i18n="tab.health">Health</a></li>
-            <li class="tab"><a href="#tab-environment" data-i18n="tab.environment">Environment</a></li>
-            <li class="tab"><a href="#tab-technology" data-i18n="tab.technology">Tech</a></li>
-            <li class="tab"><a href="#tab-trade" data-i18n="tab.trade">Trade</a></li>
-            <li class="tab"><a href="#tab-immigration" data-i18n="tab.immigration">Migration</a></li>
-            <li class="tab"><a href="#tab-wellbeing" data-i18n="tab.wellbeing">Quality of Life</a></li>
-        </ul>
 
         <!-- Economic Tab -->
         <div id="tab-economic">
@@ -1353,6 +1686,17 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+
+            <div class="section-header"><h2><i class="material-icons left">insights</i><span data-i18n="sec.macroExt">Macro &amp; Fiscal (extended, WDI)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>GDP Growth (annual %)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="gdpGrowthChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Current Account Balance (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="currentAccountChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Tax Revenue (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="taxRevenueChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Trade (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="tradeGdpChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Military Expenditure (% of GDP, WDI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="militarySpendWdiChart"></canvas></div></div>
             </div>
         </div>
 
@@ -2021,6 +2365,19 @@
                     </div>
                 </div>
             </div>
+
+            <div class="section-header"><h2><i class="material-icons left">groups</i><span data-i18n="sec.demographicsExt">Population Dynamics (WDI)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span data-i18n="ct.populationTotalChart">Total Population (millions, WDI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="populationTotalChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span data-i18n="ct.populationGrowthChart">Population Growth (annual %)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="populationGrowthChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Urban Population (% of total)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="urbanPopulationChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Age Dependency Ratio (% working-age)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="ageDependencyChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>School Life Expectancy (years)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="schoolLifeExpectancyChart"></canvas></div></div>
+            </div>
         </div>
 
         <!-- Health Tab -->
@@ -2111,6 +2468,48 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 l6">
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            <span data-i18n="ct.healthSpendGdpChart">Health Expenditure (% of GDP, WDI)</span>
+                            <span class="accuracy-badge accuracy-medium">Modelled</span>
+                        </div>
+                        <canvas id="healthSpendGdpChart"></canvas>
+                    </div>
+                </div>
+                <div class="col s12 l6">
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            <span>Under-5 Mortality (per 1,000 live births, WDI)</span>
+                            <span class="accuracy-badge accuracy-medium">Modelled</span>
+                        </div>
+                        <canvas id="under5MortalityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6">
+                    <div class="chart-container">
+                        <div class="chart-title">
+                            <span>Maternal Mortality Ratio (per 100,000 live births, WDI)</span>
+                            <span class="accuracy-badge accuracy-medium">Modelled</span>
+                        </div>
+                        <canvas id="maternalMortalityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header"><h2><i class="material-icons left">coronavirus</i><span data-i18n="sec.healthExt2">Disease &amp; Risk Factors (WDI)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>HIV Prevalence (% ages 15–49)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="hivPrevalenceChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Tuberculosis Incidence (per 100k)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="tuberculosisChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Suicide Mortality Rate (per 100k)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="suicideRateChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Alcohol Consumption (litres pure alcohol/capita)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="alcoholConsumptionChart"></canvas></div></div>
             </div>
         </div>
 
@@ -2203,6 +2602,17 @@
                     </div>
                 </div>
             </div>
+
+            <div class="section-header"><h2><i class="material-icons left">eco</i><span data-i18n="sec.environmentExt">Environment &amp; Access (WDI)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>CO₂ Intensity (kg per PPP $ GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="co2IntensityChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Arable Land (% of land area)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="arableLandChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Freshwater Withdrawal (billion m³)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="freshwaterWithdrawalChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Access to Electricity (% of population)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="electricityAccessChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Access to Clean Fuels for Cooking (%)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="cleanFuelAccessChart"></canvas></div></div>
+            </div>
         </div>
 
         <!-- Technology Tab -->
@@ -2294,6 +2704,12 @@
                     </div>
                 </div>
             </div>
+
+            <div class="section-header"><h2><i class="material-icons left">science</i><span data-i18n="sec.techExt">Innovation Output (WDI)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Researchers in R&amp;D (per million people)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="researchersChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Patent Applications (residents)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="patentsChart"></canvas></div></div>
+            </div>
         </div>
 
         <!-- Trade Tab -->
@@ -2378,6 +2794,10 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Service Exports (billion USD)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="serviceExportsChart"></canvas></div></div>
             </div>
         </div>
 
@@ -2656,8 +3076,8 @@
                 <div class="col s12 l4">
                     <div class="chart-container">
                         <div class="chart-title">
-                            <span>Legacy Media Trust Rating (0–10)</span>
-                            <span class="accuracy-badge accuracy-medium">Estimated</span>
+                            <span>Legacy Media Trust Rating (0–10, Edelman 2012+)</span>
+                            <span class="accuracy-badge accuracy-medium">Partial (Edelman)</span>
                         </div>
                         <canvas id="legacyMediaRatingChart"></canvas>
                     </div>
@@ -2665,8 +3085,8 @@
                 <div class="col s12 l4">
                     <div class="chart-container">
                         <div class="chart-title">
-                            <span>New Media Trust Rating (0–10)</span>
-                            <span class="accuracy-badge accuracy-medium">Estimated</span>
+                            <span>New Media Trust Rating (0–10, Edelman 2012+)</span>
+                            <span class="accuracy-badge accuracy-medium">Partial (Edelman)</span>
                         </div>
                         <canvas id="newMediaRatingChart"></canvas>
                     </div>
@@ -2675,7 +3095,7 @@
 
             <div class="historical-context historical-context--below-chart">
                 <h3><i class="material-icons tiny" style="vertical-align: middle;">history</i> Free speech, press culture &amp; media trust (modelled)</h3>
-                <p class="event-intro">This block separates the institutional environment for speech from trust in old and new media. Trust can fall even in free systems when polarization rises; authoritarian systems can show high stated trust without genuine press freedom.</p>
+                <p class="event-intro" data-i18n-html="true" data-i18n="note.mediaTrustSpeech">This block separates the institutional environment for speech from trust in old and new media. From 2012 onward, trust ratings are anchored to the <strong>Edelman Trust Barometer</strong> (traditional media vs. search engines + social media). Pre-2012 values are modelled. Trust can fall even in free systems when polarization rises.</p>
                 <div class="event-columns">
                     <div>
                         <h4 class="event-good-h">Open information environments</h4>
@@ -2909,23 +3329,147 @@
             </div>
         </div>
 
+        <!-- Governance Tab -->
+        <div id="tab-governance">
+            <div class="section-header">
+                <h2><i class="material-icons left">gavel</i><span data-i18n="sec.governance">Governance &amp; Rights</span></h2>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Rule of Law Index (WGI, −2.5 to +2.5)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="ruleOfLawChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Government Effectiveness (WGI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="govEffectivenessChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Regulatory Quality (WGI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="regulatoryQualityChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Voice &amp; Accountability (WGI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="voiceAccountabilityChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Women in Parliament (%)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="womenParliamentChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Control of Corruption (WGI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="controlCorruptionChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Political Stability (WGI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="politicalStabilityChart"></canvas></div></div>
+            </div>
+            <div class="section-header"><h2><i class="material-icons left">newspaper</i><span data-i18n="sec.mediaTrust">Media Trust (Edelman anchors 2012+)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Legacy / Traditional Media Trust (0–10, Edelman)</span><span class="accuracy-badge accuracy-medium">Partial (Edelman)</span></div><canvas id="govLegacyMediaTrustChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>New / Digital Media Trust (0–10, Edelman)</span><span class="accuracy-badge accuracy-medium">Partial (Edelman)</span></div><canvas id="govNewMediaTrustChart"></canvas></div></div>
+            </div>
+            <div class="historical-context historical-context--below-chart">
+                <p class="event-intro" data-i18n-html="true" data-i18n="note.mediaTrustGov"><strong>Media trust sources:</strong> Values from 2012 onward are anchored to the Edelman Trust Barometer (traditional media vs. search engines + social media). Pre-2012 points are backward-modelled. See also the Quality of Life tab for market-share trends.</p>
+            </div>
+            <div class="section-header"><h2><i class="material-icons left">school</i><span data-i18n="sec.educationExt">Education (extended)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Primary Enrollment (% gross)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="eduPrimaryChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Tertiary Enrollment (% gross)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="eduTertiaryChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Education Spending (% GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="eduSpendingChart"></canvas></div></div>
+            </div>
+        </div>
+
+        <!-- Inequality Tab -->
+        <div id="tab-inequality">
+            <div class="section-header"><h2><i class="material-icons left">balance</i><span data-i18n="sec.inequality">Inequality &amp; Fiscal Pressure</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Poverty Headcount ($2.15/day, %)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="povertyHeadcountChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Inflation, CPI (annual %)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="inflationChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Public Debt (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="publicDebtChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Income Share – Bottom 20% (%)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="incomeBottom20Chart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Income Share – Top 10% (%)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="incomeTop10Chart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Poverty Headcount ($3.65/day, %)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="poverty365Chart"></canvas></div></div>
+            </div>
+            <p class="event-intro" data-i18n-html="true" data-i18n="note.giniInQol">Gini coefficient chart is in the <strong>Quality of Life</strong> tab — now WDI-anchored when live data loads.</p>
+        </div>
+
+        <!-- Investment Tab -->
+        <div id="tab-investment">
+            <div class="section-header"><h2><i class="material-icons left">account_balance</i><span data-i18n="sec.investment">Investment &amp; Finance</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>FDI Inflows (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="fdiInflowsChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>FDI Outflows (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="fdiOutflowsChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Gross Capital Formation (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="capitalFormationChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Remittances Received (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="remittancesChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Stock Market Cap (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="marketCapChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Domestic Credit to Private Sector (% of GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="domesticCreditChart"></canvas></div></div>
+            </div>
+        </div>
+
+        <!-- Energy & Industry Tab -->
+        <div id="tab-energy">
+            <div class="section-header"><h2><i class="material-icons left">bolt</i><span data-i18n="sec.energy">Energy &amp; Industry</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>CO₂ Total Emissions (kt)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="co2TotalChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Energy Use (kg oil eq. per capita)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="energyUseChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Fossil Fuel Share (% of energy)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="fossilFuelChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Electricity from Renewables (%)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="elecRenewableChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>PM2.5 Air Pollution (μg/m³)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="pm25Chart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Protected Areas (% of land)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="protectedAreasChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Industry Value Added (% GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="industryGdpChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Manufacturing (% GDP)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="manufacturingGdpChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>High-Tech Exports (% mfg exports)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="hiTechExportsChart"></canvas></div></div>
+            </div>
+        </div>
+
+        <!-- Humanitarian Tab -->
+        <div id="tab-humanitarian">
+            <div class="section-header"><h2><i class="material-icons left">volunteer_activism</i><span data-i18n="sec.humanitarian">Humanitarian &amp; Global Affairs</span></h2></div>
+            <div class="row">
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>ODA Received (% of GNI)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="odaReceivedChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Net Migration (people)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="netMigrationChart"></canvas></div></div>
+                <div class="col s12 l4"><div class="chart-container"><div class="chart-title"><span>Armed Forces (% of labor force)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="militaryPersonnelChart"></canvas></div></div>
+            </div>
+        </div>
+
+        <!-- Labor Tab -->
+        <div id="tab-labor">
+            <div class="section-header"><h2><i class="material-icons left">engineering</i><span data-i18n="sec.labor">Labor Market (WDI)</span></h2></div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Youth Unemployment (% ages 15–24)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="youthUnemploymentChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Vulnerable Employment (% of total employment)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="vulnerableEmploymentChart"></canvas></div></div>
+            </div>
+            <div class="row">
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Female Labor Force Participation (% ages 15+)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="femaleLaborForceChart"></canvas></div></div>
+                <div class="col s12 l6"><div class="chart-container"><div class="chart-title"><span>Male Labor Force Participation (% ages 15+)</span><span class="accuracy-badge accuracy-medium">Modelled</span></div><canvas id="maleLaborForceChart"></canvas></div></div>
+            </div>
+        </div>
+
         <div class="chart-container" id="dataQualityPanel">
             <div class="chart-title">
                 <i class="material-icons left">verified</i>
                 <span data-i18n="dq.title">Data Quality Snapshot</span>
             </div>
-            <p class="event-intro" data-i18n="dq.summary">Quick audit of source coverage and model reliance for the currently rendered dashboard.</p>
-            <p class="event-intro"><strong data-i18n="dq.wdiLoaded">WDI indicators loaded:</strong> <span id="dq-wdi-loaded">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.freshness">Last live data refresh:</strong> <span id="dq-freshness">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.warning">Quality warning:</strong> <span id="dq-warning">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.totalCharts">Total chart surfaces:</strong> <span id="dq-total-charts">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.externalCharts">Charts externally anchored:</strong> <span id="dq-external-charts">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.modelledCharts">Charts still model-first:</strong> <span id="dq-modelled-charts">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.horizon">Time horizon:</strong> <span id="dq-horizon">-</span></p>
-            <p class="event-intro"><strong data-i18n="dq.tabBreakdown">Per-tab external coverage:</strong></p>
-            <ul id="dq-tab-breakdown"></ul>
-            <p class="event-intro"><strong data-i18n="dq.countryCoverage">Selected-country WDI point coverage:</strong></p>
-            <ul id="dq-country-coverage"></ul>
+            <p class="event-intro dq-summary" data-i18n="dq.summary">Quick audit of source coverage and model reliance for the currently rendered dashboard.</p>
+            <div class="dq-stats-grid">
+                <p class="event-intro"><strong data-i18n="dq.wdiLoaded">WDI indicators loaded:</strong> <span id="dq-wdi-loaded">-</span></p>
+                <p class="event-intro"><strong data-i18n="dq.freshness">Last live data refresh:</strong> <span id="dq-freshness">-</span></p>
+                <p class="event-intro"><strong data-i18n="dq.totalCharts">Total chart surfaces:</strong> <span id="dq-total-charts">-</span></p>
+                <p class="event-intro"><strong data-i18n="dq.externalCharts">Charts externally anchored:</strong> <span id="dq-external-charts">-</span></p>
+                <p class="event-intro"><strong data-i18n="dq.modelledCharts">Charts still model-first:</strong> <span id="dq-modelled-charts">-</span></p>
+                <p class="event-intro"><strong data-i18n="dq.horizon">Time horizon:</strong> <span id="dq-horizon">-</span></p>
+            </div>
+            <p class="event-intro dq-warning-line"><strong data-i18n="dq.warning">Quality warning:</strong> <span id="dq-warning">-</span></p>
+            <div class="dq-columns">
+                <div class="dq-column">
+                    <p class="event-intro"><strong data-i18n="dq.tabBreakdown">Per-tab external coverage:</strong></p>
+                    <ul id="dq-tab-breakdown" class="dq-compact-list"></ul>
+                </div>
+                <div class="dq-column">
+                    <p class="event-intro"><strong data-i18n="dq.countryCoverage">Selected-country WDI point coverage:</strong></p>
+                    <ul id="dq-country-coverage" class="dq-compact-list"></ul>
+                </div>
+            </div>
         </div>
 
         <p class="data-provenance" id="dataProvenanceNote">
@@ -3091,7 +3635,7 @@ const COLORS = {
     'Malaysia': '#dbdb8d',
     'New Zealand': '#9edae5',
     'Norway': '#c49c94',
-    'Europe': '#1f77b4',
+    'Europe': '#f59f00',
     'Russia': '#17becf',
     'South Africa': '#c7c7c7',
     'South Korea': '#98df8a',
@@ -4305,7 +4849,7 @@ function generateHealthData() {
     };
 
     const result = {
-        obesity: {}, smoking: {}, diabetes: {}, mentalHealth: {}
+        obesity: {}, smoking: {}, diabetes: {}, mentalHealth: {}, healthSpendGdp: {}
     };
 
     COUNTRIES.forEach(country => {
@@ -4316,6 +4860,15 @@ function generateHealthData() {
         result.smoking[country] = [];
         result.diabetes[country] = [];
         result.mentalHealth[country] = [];
+        result.healthSpendGdp[country] = [];
+
+        var baseHealthSpendGdp = {
+            USA: 12.5, CAN: 10.2, NOR: 9.8, SWE: 10.5, FIN: 9.2, GBR: 8.8, FRA: 9.5, DEU: 10.1,
+            ITA: 8.6, KOR: 7.2, JPN: 8.0, CHN: 4.8, MYS: 4.2, IND: 3.6, ARE: 4.5, RUS: 5.4, ZAF: 8.1,
+            BRA: 9.0, AUS: 9.8, NZL: 9.4, ARG: 9.2, CUB: 10.8, IRN: 5.8, ISR: 7.4, MEX: 5.6, ROU: 5.2,
+            SAU: 5.0, SOM: 4.5, UKR: 7.0, VEN: 4.8
+        };
+        var healthSpendBase = baseHealthSpendGdp[code] || 6.5;
 
         YEARS.forEach((year, idx) => {
             // Obesity - generally increasing, especially in Western countries
@@ -4355,6 +4908,9 @@ function generateHealthData() {
             result.smoking[country].push(parseFloat(smoking.toFixed(1)));
             result.diabetes[country].push(parseFloat(diabetes.toFixed(1)));
             result.mentalHealth[country].push(parseFloat(mentalHealth.toFixed(1)));
+            var spendTrend = code === 'USA' ? 0.08 : 0.04;
+            var healthSpend = healthSpendBase + idx * spendTrend * random(0.92, 1.08);
+            result.healthSpendGdp[country].push(parseFloat(Math.max(2.5, Math.min(18, healthSpend)).toFixed(2)));
         });
     });
 
@@ -5018,7 +5574,11 @@ function buildSyntheticData() {
         healthcare: generateHealthcareData(),
         trade: generateTradeData(),
         social: generateSocialIndicators(),
-        demographics: generateDemographicsData(),
+        demographics: (function () {
+            var d = generateDemographicsData();
+            d.populationTotal = buildEuropePopulationSeries();
+            return d;
+        })(),
         health: generateHealthData(),
         environment: generateEnvironmentData(),
         technology: generateTechnologyData(),
@@ -5194,6 +5754,14 @@ function buildEuropeAggregate(data) {
     });
     data.military.perCapita.Europe = perCapitaFromTotalSeries(europeBudget, europePopulation, 1000, 0);
 
+    if (typeof DashboardPhase1 !== 'undefined') {
+        DashboardPhase1.buildPhase1EuropeAggregate(data, weightedCountrySeries, sumCountrySeries, populationByCountry);
+    }
+
+    if (typeof DashboardPhase2 !== 'undefined') {
+        DashboardPhase2.buildPhase2EuropeAggregate(data, weightedCountrySeries, sumCountrySeries, populationByCountry);
+    }
+
     return data;
 }
 
@@ -5279,8 +5847,15 @@ async function mergeWorldBankIntoData() {
         pop: 'SP.POP.TOTL',
         healthPc: 'SH.XPD.CHEX.PC.CD',
         gniPc: 'NY.GNP.PCAP.CD',
-        eduSec: 'SE.SEC.ENRR'
+        eduSec: 'SE.SEC.ENRR',
+        healthSpendGdp: 'SH.XPD.GHEX.GD.ZS'
     };
+    if (typeof DashboardPhase1 !== 'undefined') {
+        Object.assign(ID, DashboardPhase1.getWdiMap());
+    }
+    if (typeof DashboardPhase2 !== 'undefined') {
+        Object.assign(ID, DashboardPhase2.getWdiMap());
+    }
     const rows = {};
     await Promise.all(Object.keys(ID).map(function (k) {
         return fetchWBIndicator(ID[k]).then(function (data) { rows[k] = data; });
@@ -5318,6 +5893,21 @@ async function mergeWorldBankIntoData() {
         overlaySeries(DATA.healthcare[country], wbFilledSeries(rows.healthPc, iso, null), function (v) { return Math.round(v); });
         overlaySeries(DATA.salary[country], wbFilledSeries(rows.gniPc, iso, null), function (v) { return Math.round(v); });
         overlaySeries(DATA.social.education[country], wbFilledSeries(rows.eduSec, iso, null), function (v) { return parseFloat(Number(v).toFixed(1)); });
+        if (DATA.demographics.populationTotal && DATA.demographics.populationTotal[country]) {
+            overlaySeries(DATA.demographics.populationTotal[country], wbFilledSeries(rows.pop, iso, function (v) { return v / 1e6; }), function (v) { return parseFloat(Number(v).toFixed(2)); });
+        }
+        if (DATA.health.healthSpendGdp && DATA.health.healthSpendGdp[country]) {
+            overlaySeries(DATA.health.healthSpendGdp[country], wbFilledSeries(rows.healthSpendGdp, iso, null), function (v) { return parseFloat(Number(v).toFixed(2)); });
+        }
+    }
+
+    if (typeof DashboardPhase1 !== 'undefined') {
+        DashboardPhase1.mergePhase1WdiIntoData(DATA, rows, overlaySeries, wbFilledSeries);
+        DashboardPhase1.mergeEdelmanMediaTrust(DATA);
+    }
+
+    if (typeof DashboardPhase2 !== 'undefined') {
+        DashboardPhase2.mergePhase2WdiIntoData(DATA, rows, overlaySeries, wbFilledSeries);
     }
 
     for (let c = 0; c < COUNTRIES.length; c++) {
@@ -5396,11 +5986,33 @@ function applyWdiAccuracyBadges(wdiMergeSucceeded) {
         { id: 'militaryPerCapitaChart', keys: [] },
         { id: 'productivityChart', keys: [] },
         { id: 'freeSpeechChart', keys: [] },
-        { id: 'legacyMediaRatingChart', keys: [] },
-        { id: 'newMediaRatingChart', keys: [] },
+        { id: 'legacyMediaRatingChart', mode: 'edelman' },
+        { id: 'newMediaRatingChart', mode: 'edelman' },
+        { id: 'govLegacyMediaTrustChart', mode: 'edelman' },
+        { id: 'govNewMediaTrustChart', mode: 'edelman' },
         { id: 'legacyMediaShareChart', keys: [] },
-        { id: 'newMediaShareChart', keys: [] }
+        { id: 'newMediaShareChart', keys: [] },
+        { id: 'summaryGdpChart', keys: ['gdp'] },
+        { id: 'summaryGdppcChart', keys: ['gdppc'] },
+        { id: 'summaryEmploymentChart', keys: ['emp'] },
+        { id: 'summaryGniChart', keys: ['gniPc'] },
+        { id: 'summaryLifeChart', keys: ['life'] },
+        { id: 'summaryBirthChart', keys: ['birth'] },
+        { id: 'summaryCo2Chart', keys: ['co2'] },
+        { id: 'summaryEduChart', keys: ['eduSec'] },
+        { id: 'summaryTradeChart', keys: ['exp', 'imp'] },
+        { id: 'summaryInternetChart', keys: ['net'] },
+        { id: 'populationTotalChart', keys: ['pop'] },
+        { id: 'healthSpendGdpChart', keys: ['healthSpendGdp'] }
     ];
+    if (typeof DashboardPhase1 !== 'undefined') {
+        specs = specs.concat(DashboardPhase1.PHASE1_WDI_BADGE_SPECS.filter(function (s) {
+            return s.mode !== 'edelman';
+        }));
+    }
+    if (typeof DashboardPhase2 !== 'undefined') {
+        specs = specs.concat(DashboardPhase2.PHASE2_WDI_BADGE_SPECS);
+    }
     var loaded = window.__wdiIndicatorLoaded || {};
 
     specs.forEach(function (entry) {
@@ -5432,6 +6044,16 @@ function applyWdiAccuracyBadges(wdiMergeSucceeded) {
             return;
         }
 
+        if (entry.mode === 'edelman') {
+            badge.className = 'accuracy-badge accuracy-medium';
+            if (window.__edelmanMediaMerged) {
+                wdiBadge('Partial (Edelman)', 'badge.partialEdelman');
+            } else {
+                wdiBadge('Modelled', 'badge.modelled');
+            }
+            return;
+        }
+
         if (!wdiMergeSucceeded || !entry.keys || !entry.keys.length) {
             badge.className = 'accuracy-badge accuracy-medium';
             wdiBadge('Modelled', 'badge.modelled');
@@ -5446,11 +6068,36 @@ function applyWdiAccuracyBadges(wdiMergeSucceeded) {
 }
     </script>
 
+    <script src="dashboard-phase1.js"></script>
+    <script src="dashboard-phase2.js"></script>
     <script src="dashboard-i18n.js"></script>
     <script src="dashboard-i18n-fr-content.js"></script>
+    <script src="dashboard-core.js"></script>
+    <script src="dashboard-nav.js"></script>
 
     <!-- Chart Management Script -->
     <script>
+// Phase 1 data extension (dashboard-phase1.js loads before this script)
+if (typeof DashboardPhase1 !== 'undefined' && !window.__phase1Extended) {
+    try {
+        DashboardPhase1.extendData(DATA);
+        buildEuropeAggregate(DATA);
+        window.__phase1Extended = true;
+    } catch (phase1Err) {
+        console.warn('Phase 1 data extension failed; core charts still load:', phase1Err);
+    }
+}
+
+if (typeof DashboardPhase2 !== 'undefined' && !window.__phase2Extended) {
+    try {
+        DashboardPhase2.extendData(DATA);
+        buildEuropeAggregate(DATA);
+        window.__phase2Extended = true;
+    } catch (phase2Err) {
+        console.warn('Phase 2 data extension failed; core charts still load:', phase2Err);
+    }
+}
+
 // Chart initialization and management
 
 function getDefaultSelectedCountries() {
@@ -5490,6 +6137,53 @@ let selectedCountries = (() => {
     }
 })();
 let charts = {};
+window.charts = charts;
+window.selectedCountries = selectedCountries;
+
+function syncChartData(chartId, dataSource, optionsKey) {
+    if (typeof DashboardCore !== 'undefined') {
+        return DashboardCore.syncChartFromSource(
+            chartId,
+            dataSource,
+            function (id) { return getLocalizedChartOptions(optionsKey || id); },
+            getChartData
+        );
+    }
+    if (!charts[chartId]) return false;
+    charts[chartId].data = getChartData(dataSource);
+    charts[chartId].update('active');
+    return true;
+}
+
+function refreshTabCharts(tabId) {
+    if (!tabId || !window.__chartTabMap) return;
+    var chartIds = Object.keys(window.__chartTabMap).filter(function (chartId) {
+        return window.__chartTabMap[chartId] === tabId;
+    });
+    var needInit = false;
+    chartIds.forEach(function (chartId) {
+        var ctx = document.getElementById(chartId);
+        var chart = charts[chartId];
+        if (chart && ctx && (!ctx.clientWidth || !ctx.clientHeight)) {
+            chart.destroy();
+            delete charts[chartId];
+            needInit = true;
+        } else if (!chart) {
+            needInit = true;
+        }
+    });
+    if (needInit && typeof initializeAllCharts === 'function') {
+        initializeAllCharts(tabId);
+    }
+    chartIds.forEach(function (chartId) {
+        var chart = charts[chartId];
+        if (!chart) return;
+        chart.resize();
+        chart.update();
+        applyChartVisibility(chartId);
+    });
+}
+window.refreshTabCharts = refreshTabCharts;
 
 // Calculate chart dimensions based on selected countries (maintainAspectRatio: false)
 function updateChartDimensions() {
@@ -5764,21 +6458,36 @@ const EXTERNAL_ANCHOR_CHART_IDS = new Set([
     'forestCoverageChart', 'internetUsersChart', 'mobilePhonesChart', 'rndInvestmentChart',
     'qolHealthcareChart', 'legalImmigrationPerCapitaChart', 'illegalImmigrationPerCapitaChart',
     'immigrationNativeRatioChart'
-]);
+].concat(typeof DashboardPhase1 !== 'undefined' ? DashboardPhase1.PHASE1_EXTERNAL_ANCHOR_IDS : [])
+ .concat(typeof DashboardPhase2 !== 'undefined' ? DashboardPhase2.PHASE2_EXTERNAL_ANCHOR_IDS : []));
 
 const TAB_QUALITY_MAP = {
     economic: ['gdpChart', 'gdpPerCapitaChart', 'capitalGainsChart', 'valuationChart', 'militaryBudgetChart', 'militaryShareChart', 'militaryPerCapitaChart', 'productivityChart'],
     employment: ['employmentChart', 'unemploymentChart', 'salaryChart'],
     costs: ['foodCostChart', 'rentChart', 'housingChart', 'electricityChart', 'gasChart', 'carChart', 'phoneContractChart', 'internetContractChart', 'tvContractChart', 'telecomBundleChart'],
     social: ['healthcareChart', 'foodbankChart', 'homeownershipChart', 'ageChart', 'educationChart', 'literacyChart', 'genderEqualityChart', 'deiChart', 'happinessChart', 'politicalFreedomChart', 'violenceChart'],
-    demographics: ['birthRateChart', 'deathRateChart', 'lifeExpectancyChart', 'fertilityRateChart', 'abortionRateChart', 'infantMortalityChart'],
-    health: ['obesityChart', 'smokingChart', 'diabetesChart', 'mentalHealthChart'],
+    demographics: ['birthRateChart', 'deathRateChart', 'lifeExpectancyChart', 'fertilityRateChart', 'abortionRateChart', 'infantMortalityChart', 'populationTotalChart'],
+    health: ['obesityChart', 'smokingChart', 'diabetesChart', 'mentalHealthChart', 'healthSpendGdpChart', 'under5MortalityChart', 'maternalMortalityChart'],
     environment: ['co2EmissionsChart', 'renewableEnergyChart', 'forestCoverageChart', 'waterQualityChart'],
     technology: ['internetUsersChart', 'mobilePhonesChart', 'broadbandSpeedChart', 'rndInvestmentChart'],
     trade: ['exportsChart', 'importsChart', 'tradeBalanceChart'],
     immigration: ['legalImmigrationChart', 'illegalImmigrationChart', 'legalImmigrationPerCapitaChart', 'illegalImmigrationPerCapitaChart', 'immigrationNativeRatioChart', 'expatArrivalsChart', 'expatDeparturesChart'],
     wellbeing: ['qolIndexChart', 'qolHappinessChart', 'hdiChart', 'giniChart', 'corruptionChart', 'qolPoliticalChart', 'freeSpeechChart', 'legacyMediaRatingChart', 'newMediaRatingChart', 'legacyMediaShareChart', 'newMediaShareChart', 'surgeryWaitChart', 'physiciansChart', 'hospitalBedsChart', 'qolHealthcareChart', 'christianChart', 'muslimChart', 'secularChart', 'hinduBuddhistChart']
 };
+
+if (typeof DashboardPhase1 !== 'undefined' && DashboardPhase1.PHASE1_TAB_QUALITY_MAP) {
+    Object.assign(TAB_QUALITY_MAP, DashboardPhase1.PHASE1_TAB_QUALITY_MAP);
+}
+if (typeof DashboardPhase2 !== 'undefined' && DashboardPhase2.PHASE2_TAB_QUALITY_MAP) {
+    Object.keys(DashboardPhase2.PHASE2_TAB_QUALITY_MAP).forEach(function (tabKey) {
+        var extra = DashboardPhase2.PHASE2_TAB_QUALITY_MAP[tabKey];
+        if (TAB_QUALITY_MAP[tabKey]) {
+            TAB_QUALITY_MAP[tabKey] = TAB_QUALITY_MAP[tabKey].concat(extra);
+        } else {
+            TAB_QUALITY_MAP[tabKey] = extra.slice();
+        }
+    });
+}
 
 const TAB_QUALITY_LABEL_KEY = {
     economic: 'tab.economic',
@@ -5791,7 +6500,15 @@ const TAB_QUALITY_LABEL_KEY = {
     technology: 'tab.technology',
     trade: 'tab.trade',
     immigration: 'tab.immigration',
-    wellbeing: 'tab.wellbeing'
+    wellbeing: 'tab.wellbeing',
+    governance: 'tab.governance',
+    inequality: 'tab.inequality',
+    investment: 'tab.investment',
+    energyIndustry: 'tab.energy',
+    humanitarian: 'tab.humanitarian',
+    labor: 'tab.labor',
+    educationExt: 'tab.governance',
+    healthExt: 'tab.health'
 };
 
 function getTabQualityLabel(tabKey) {
@@ -5922,6 +6639,9 @@ function applyDashboardLocale() {
     if (typeof applyWdiAccuracyBadges === 'function') {
         applyWdiAccuracyBadges(typeof window.__wdiMergeOk === 'boolean' ? window.__wdiMergeOk : false);
     }
+    if (typeof DashboardNav !== 'undefined') DashboardNav.refreshLocale();
+    var searchInput = document.getElementById('indicatorSearch');
+    if (searchInput) searchInput.setAttribute('aria-label', DashboardI18n.t('nav.searchAria'));
     DashboardI18n.updateLangToggleUi();
     updateDataQualityPanel();
     var themeBtn = document.getElementById('theme-toggle-btn');
@@ -5940,7 +6660,7 @@ document.addEventListener('DOMContentLoaded', function() {
         __histEnSnapshot[i] = el.innerHTML.trim();
     });
     try { injectEventSpeculationBlocks(); } catch (e) { console.warn('injectEventSpeculationBlocks failed:', e); }
-    var tabsEl = document.querySelector('ul.tabs');
+    var tabsEl = document.getElementById('dashboardSubTabs');
     if (tabsEl && typeof M !== 'undefined' && M.Tabs) {
         try {
             M.Tabs.init(tabsEl, {
@@ -5950,6 +6670,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         tab.setAttribute('aria-selected',
                             tab.getAttribute('aria-controls') === tabContent.id ? 'true' : 'false');
                     });
+                    if (typeof DashboardNav !== 'undefined') {
+                        DashboardNav.onTabShown(tabContent);
+                    }
                     requestAnimationFrame(function () {
                         requestAnimationFrame(function () {
                             if (typeof scheduleChartsReflow === 'function') scheduleChartsReflow();
@@ -5989,12 +6712,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }());
     createCountryChips();
 
-    // Initialize charts immediately with synthetic data so the page is never blank
-    initializeAllCharts();
+    if (typeof DashboardNav !== 'undefined' && DashboardNav.applyUrlCountriesOnly) {
+        DashboardNav.applyUrlCountriesOnly();
+    }
+
+    if (typeof DashboardNav !== 'undefined') DashboardNav.init();
+
+    var initialTab = (typeof DashboardNav !== 'undefined' && DashboardNav.getActiveTabId)
+        ? DashboardNav.getActiveTabId()
+        : ((typeof DashboardNav !== 'undefined' && DashboardNav.getInitialTab)
+            ? DashboardNav.getInitialTab()
+            : 'tab-economic');
+    initializeAllCharts(initialTab);
+    if (typeof initializeSummaryCharts === 'function') initializeSummaryCharts();
+    if (typeof refreshTabCharts === 'function') refreshTabCharts(initialTab);
     updateChartDimensions();
     applyChartEventPairingClasses();
     resizeAllCharts();
     updateDataQualityPanel();
+    if (typeof updateStatisticsSummary === 'function') updateStatisticsSummary();
     applyDashboardLocale();
     if (typeof bindChartResizeObservers === 'function') bindChartResizeObservers();
 
@@ -6019,6 +6755,11 @@ document.addEventListener('DOMContentLoaded', function() {
         applyWdiAccuracyBadges(wdiOk);
         // Refresh charts with merged WDI data (or keep synthetic if merge failed)
         updateAllCharts();
+        if (typeof updateStatisticsSummary === 'function') updateStatisticsSummary();
+        var activeTab = (typeof DashboardNav !== 'undefined' && DashboardNav.getActiveTabId)
+            ? DashboardNav.getActiveTabId()
+            : null;
+        if (activeTab && typeof refreshTabCharts === 'function') refreshTabCharts(activeTab);
         updateChartDimensions();
         resizeAllCharts();
         applyDashboardLocale();
@@ -6110,11 +6851,16 @@ function toggleCountry(country, chipElement) {
     }
 
     selectedCountries.sort(function (a, b) { return a.localeCompare(b, 'en'); });
+    window.selectedCountries = selectedCountries;
 
     // Save selection to localStorage
     localStorage.setItem('selectedCountries', JSON.stringify(selectedCountries));
 
     updateAllCharts();
+    if (typeof updateStatisticsSummary === 'function') updateStatisticsSummary();
+    if (typeof DashboardNav !== 'undefined' && DashboardNav.syncUrl) {
+        DashboardNav.syncUrl({ tab: DashboardNav.getActiveTabId() || 'tab-economic' });
+    }
 }
 
 function getChartData(dataSource, countries = selectedCountries) {
@@ -6225,14 +6971,24 @@ function getLocalizedChartOptions(canvasId, stacked = false) {
 
 function refreshAllChartsLocale() {
     const tr = typeof t === 'function' ? t : (k) => k;
+    const yoyIds = typeof SUMMARY_YOY_CHARTS !== 'undefined'
+        ? SUMMARY_YOY_CHARTS.map(function (cfg) { return cfg.id; })
+        : [];
     Object.keys(charts).forEach(function (id) {
         var c = charts[id];
         if (!c || !c.options || !c.options.scales) return;
-        if (c.options.scales.x && c.options.scales.x.title) {
+        if (c.options.scales.x && c.options.scales.x.title && yoyIds.indexOf(id) === -1) {
             c.options.scales.x.title.text = tr('chart.axis.year');
         }
         if (c.options.scales.y && c.options.scales.y.title) {
-            c.options.scales.y.title.text = tr('cy.' + id);
+            if (yoyIds.indexOf(id) !== -1) {
+                c.options.scales.y.title.text = '%';
+            } else {
+                var cyKey = (typeof SUMMARY_OPT_KEY !== 'undefined' && SUMMARY_OPT_KEY[id])
+                    ? SUMMARY_OPT_KEY[id]
+                    : id;
+                c.options.scales.y.title.text = tr('cy.' + cyKey);
+            }
         }
         c.update();
     });
@@ -6268,108 +7024,160 @@ function applyChartVisibility(canvasId) {
     if (!ctx) return;
     const container = ctx.closest('.chart-container');
     if (!container) return;
+    const col = container.closest('.col');
+
+    function setVisible(visible) {
+        container.style.display = visible ? '' : 'none';
+        if (col) col.style.display = visible ? '' : 'none';
+    }
 
     const ds = chart.data.datasets;
-    // Hide chart if any dataset is missing, empty, or has no valid range
     if (!ds.length || ds.some(d => !d.data || !Array.isArray(d.data) || d.data.length === 0)) {
-        container.style.display = 'none';
+        setVisible(false);
         return;
     }
-    // Only hide when exactly 1 dataset is present with no useful range
-    if (ds.length !== 1) { container.style.display = ''; return; }
+
+    const isYoyBar = typeof SUMMARY_YOY_CHARTS !== 'undefined'
+        && SUMMARY_YOY_CHARTS.some(function (cfg) { return cfg.id === canvasId; });
+    if (isYoyBar || chart.config.type === 'bar') {
+        const hasAny = ds.some(function (d) {
+            return d.data.some(function (v) { return v != null && Number.isFinite(v); });
+        });
+        setVisible(hasAny);
+        return;
+    }
+
+    // Line charts: hide when exactly 1 dataset has no useful range
+    if (ds.length !== 1) {
+        setVisible(true);
+        return;
+    }
     const vals = ds[0].data.filter(function (v) { return v != null && Number.isFinite(v) && v !== 0; });
     const minV = vals.length ? Math.min.apply(null, vals) : 0;
     const maxV = vals.length ? Math.max.apply(null, vals) : 0;
     const hasRange = vals.length > 1 && (maxV - minV) / (Math.abs(maxV) || 1) > 0.001;
-    if (!hasRange) {
-        container.style.display = 'none';
-    } else {
-        container.style.display = '';
-    }
+    setVisible(hasRange);
 }
 
-function initializeAllCharts() {
+function initializeAllCharts(filterTab) {
+    if (!window.__chartTabMap) {
+        window.__chartTabMap = {};
+        document.querySelectorAll('div[id^="tab-"]').forEach(function (tab) {
+            tab.querySelectorAll('canvas[id]').forEach(function (c) {
+                window.__chartTabMap[c.id] = tab.id;
+            });
+        });
+    }
+    function ic(chartId, data, options) {
+        if (charts[chartId]) {
+            var existingCtx = document.getElementById(chartId);
+            var panel = existingCtx && existingCtx.closest('div[id^="tab-"]');
+            var panelHidden = panel && getComputedStyle(panel).display === 'none';
+            var zeroSize = existingCtx && (!existingCtx.clientWidth || !existingCtx.clientHeight);
+            if (panelHidden || zeroSize) {
+                charts[chartId].destroy();
+                delete charts[chartId];
+            } else {
+                charts[chartId].data = data;
+                if (options) {
+                    charts[chartId].options = options;
+                }
+                charts[chartId].resize();
+                charts[chartId].update();
+                applyChartVisibility(chartId);
+                return charts[chartId];
+            }
+        }
+        if (filterTab && window.__chartTabMap[chartId] !== filterTab) return null;
+        var created = createChart(chartId, data, options);
+        if (created) {
+            requestAnimationFrame(function () {
+                if (charts[chartId]) charts[chartId].resize();
+            });
+        }
+        return created;
+    }
     // Economic charts
-    createChart('gdpChart',
+    ic('gdpChart',
         getChartData(DATA.gdp),
         getLocalizedChartOptions('gdpChart'));
 
-    createChart('gdpPerCapitaChart',
+    ic('gdpPerCapitaChart',
         getChartData(DATA.gdpPerCapita),
         getLocalizedChartOptions('gdpPerCapitaChart'));
 
-    createChart('capitalGainsChart',
+    ic('capitalGainsChart',
         getChartData(DATA.additional.capitalGain),
         getLocalizedChartOptions('capitalGainsChart'));
 
-    createChart('valuationChart',
+    ic('valuationChart',
         getChartData(DATA.additional.valuation),
         getLocalizedChartOptions('valuationChart'));
 
-    createChart('militaryBudgetChart',
+    ic('militaryBudgetChart',
         getChartData(DATA.military.budget),
         getLocalizedChartOptions('militaryBudgetChart'));
 
-    createChart('militaryShareChart',
+    ic('militaryShareChart',
         getChartData(DATA.military.share),
         getLocalizedChartOptions('militaryShareChart'));
 
-    createChart('militaryPerCapitaChart',
+    ic('militaryPerCapitaChart',
         getChartData(DATA.military.perCapita),
         getLocalizedChartOptions('militaryPerCapitaChart'));
 
-    createChart('productivityChart',
+    ic('productivityChart',
         getChartData(DATA.additional.productivity),
         getLocalizedChartOptions('productivityChart'));
 
     // Employment charts
-    createChart('employmentChart',
+    ic('employmentChart',
         getChartData(DATA.employment.employment),
         getLocalizedChartOptions('employmentChart'));
 
-    createChart('unemploymentChart',
+    ic('unemploymentChart',
         getChartData(DATA.employment.unemployment),
         getLocalizedChartOptions('unemploymentChart'));
 
-    createChart('salaryChart',
+    ic('salaryChart',
         getChartData(DATA.salary),
         getLocalizedChartOptions('salaryChart'));
 
     // Cost of living charts
-    createChart('foodCostChart',
+    ic('foodCostChart',
         getChartData(DATA.costOfLiving.food),
         getLocalizedChartOptions('foodCostChart'));
 
-    createChart('rentChart',
+    ic('rentChart',
         getChartData(DATA.costOfLiving.rent),
         getLocalizedChartOptions('rentChart'));
 
-    createChart('housingChart',
+    ic('housingChart',
         getChartData(DATA.costOfLiving.housing),
         getLocalizedChartOptions('housingChart'));
 
-    createChart('electricityChart',
+    ic('electricityChart',
         getChartData(DATA.costOfLiving.electricity),
         getLocalizedChartOptions('electricityChart'));
 
-    createChart('gasChart',
+    ic('gasChart',
         getChartData(DATA.costOfLiving.gas),
         getLocalizedChartOptions('gasChart'));
 
-    createChart('carChart',
+    ic('carChart',
         getChartData(DATA.costOfLiving.car),
         getLocalizedChartOptions('carChart'));
 
     // Telecom charts
-    createChart('phoneContractChart',
+    ic('phoneContractChart',
         getChartData(DATA.telecom.phone),
         getLocalizedChartOptions('phoneContractChart'));
 
-    createChart('internetContractChart',
+    ic('internetContractChart',
         getChartData(DATA.telecom.internet),
         getLocalizedChartOptions('internetContractChart'));
 
-    createChart('tvContractChart',
+    ic('tvContractChart',
         getChartData(DATA.telecom.tv),
         getLocalizedChartOptions('tvContractChart'));
 
@@ -6379,61 +7187,61 @@ function initializeAllCharts() {
             p + DATA.telecom.internet[country][i] + DATA.telecom.tv[country][i]
         );
     });
-    createChart('telecomBundleChart',
+    ic('telecomBundleChart',
         getChartData(telecomBundleInitData),
         getLocalizedChartOptions('telecomBundleChart'));
 
     // Social charts
-    createChart('healthcareChart',
+    ic('healthcareChart',
         getChartData(DATA.healthcare),
         getLocalizedChartOptions('healthcareChart'));
 
-    createChart('foodbankChart',
+    ic('foodbankChart',
         getChartData(DATA.additional.foodbank),
         getLocalizedChartOptions('foodbankChart'));
 
-    createChart('homeownershipChart',
+    ic('homeownershipChart',
         getChartData(DATA.social.homeownership),
         getLocalizedChartOptions('homeownershipChart'));
 
-    createChart('ageChart',
+    ic('ageChart',
         getChartData(DATA.social.age),
         getLocalizedChartOptions('ageChart'));
 
-    createChart('educationChart',
+    ic('educationChart',
         getChartData(DATA.social.education),
         getLocalizedChartOptions('educationChart'));
 
-    createChart('literacyChart',
+    ic('literacyChart',
         getChartData(DATA.social.literacy),
         getLocalizedChartOptions('literacyChart'));
 
-    createChart('genderEqualityChart',
+    ic('genderEqualityChart',
         getChartData(DATA.social.genderEquality),
         getLocalizedChartOptions('genderEqualityChart'));
 
-    createChart('deiChart',
+    ic('deiChart',
         getChartData(DATA.social.dei),
         getLocalizedChartOptions('deiChart'));
 
-    createChart('happinessChart',
+    ic('happinessChart',
         getChartData(DATA.social.happiness),
         getLocalizedChartOptions('happinessChart'));
 
-    createChart('politicalFreedomChart',
+    ic('politicalFreedomChart',
         getChartData(DATA.social.politicalFreedom),
         getLocalizedChartOptions('politicalFreedomChart'));
 
-    createChart('violenceChart',
+    ic('violenceChart',
         getChartData(DATA.social.violence),
         getLocalizedChartOptions('violenceChart'));
 
     // Trade charts
-    createChart('exportsChart',
+    ic('exportsChart',
         getChartData(DATA.trade.exports),
         getLocalizedChartOptions('exportsChart'));
 
-    createChart('importsChart',
+    ic('importsChart',
         getChartData(DATA.trade.imports),
         getLocalizedChartOptions('importsChart'));
 
@@ -6444,187 +7252,195 @@ function initializeAllCharts() {
             exp - DATA.trade.imports[country][i]
         );
     });
-    createChart('tradeBalanceChart',
+    ic('tradeBalanceChart',
         getChartData(tradeBalanceData),
         getLocalizedChartOptions('tradeBalanceChart'));
 
     // Demographics charts
-    createChart('birthRateChart',
+    ic('birthRateChart',
         getChartData(DATA.demographics.birthRate),
         getLocalizedChartOptions('birthRateChart'));
 
-    createChart('deathRateChart',
+    ic('deathRateChart',
         getChartData(DATA.demographics.deathRate),
         getLocalizedChartOptions('deathRateChart'));
 
-    createChart('lifeExpectancyChart',
+    ic('lifeExpectancyChart',
         getChartData(DATA.demographics.lifeExpectancy),
         getLocalizedChartOptions('lifeExpectancyChart'));
 
-    createChart('fertilityRateChart',
+    ic('fertilityRateChart',
         getChartData(DATA.demographics.fertilityRate),
         getLocalizedChartOptions('fertilityRateChart'));
 
-    createChart('abortionRateChart',
+    ic('abortionRateChart',
         getChartData(DATA.demographics.abortionRate),
         getLocalizedChartOptions('abortionRateChart'));
 
-    createChart('infantMortalityChart',
+    ic('infantMortalityChart',
         getChartData(DATA.demographics.infantMortality),
         getLocalizedChartOptions('infantMortalityChart'));
 
+    ic('populationTotalChart',
+        getChartData(DATA.demographics.populationTotal),
+        getLocalizedChartOptions('populationTotalChart'));
+
     // Immigration charts
-    createChart('legalImmigrationChart',
+    ic('legalImmigrationChart',
         getChartData(DATA.immigration.legal),
         getLocalizedChartOptions('legalImmigrationChart'));
 
-    createChart('illegalImmigrationChart',
+    ic('illegalImmigrationChart',
         getChartData(DATA.immigration.illegal),
         getLocalizedChartOptions('illegalImmigrationChart'));
 
-    createChart('legalImmigrationPerCapitaChart',
+    ic('legalImmigrationPerCapitaChart',
         getChartData(DATA.immigration.legalPerCapita),
         getLocalizedChartOptions('legalImmigrationPerCapitaChart'));
 
-    createChart('illegalImmigrationPerCapitaChart',
+    ic('illegalImmigrationPerCapitaChart',
         getChartData(DATA.immigration.illegalPerCapita),
         getLocalizedChartOptions('illegalImmigrationPerCapitaChart'));
 
-    createChart('immigrationNativeRatioChart',
+    ic('immigrationNativeRatioChart',
         getChartData(DATA.immigration.nativeRatio),
         getLocalizedChartOptions('immigrationNativeRatioChart'));
 
-    createChart('expatArrivalsChart',
+    ic('expatArrivalsChart',
         getChartData(DATA.immigration.expatArrivals),
         getLocalizedChartOptions('expatArrivalsChart'));
 
-    createChart('expatDeparturesChart',
+    ic('expatDeparturesChart',
         getChartData(DATA.immigration.expatDepartures),
         getLocalizedChartOptions('expatDeparturesChart'));
 
     // Health charts
-    createChart('obesityChart',
+    ic('obesityChart',
         getChartData(DATA.health.obesity),
         getLocalizedChartOptions('obesityChart'));
 
-    createChart('smokingChart',
+    ic('smokingChart',
         getChartData(DATA.health.smoking),
         getLocalizedChartOptions('smokingChart'));
 
-    createChart('diabetesChart',
+    ic('diabetesChart',
         getChartData(DATA.health.diabetes),
         getLocalizedChartOptions('diabetesChart'));
 
-    createChart('mentalHealthChart',
+    ic('mentalHealthChart',
         getChartData(DATA.health.mentalHealth),
         getLocalizedChartOptions('mentalHealthChart'));
 
+    ic('healthSpendGdpChart',
+        getChartData(DATA.health.healthSpendGdp),
+        getLocalizedChartOptions('healthSpendGdpChart'));
+
     // Environment charts
-    createChart('co2EmissionsChart',
+    ic('co2EmissionsChart',
         getChartData(DATA.environment.co2Emissions),
         getLocalizedChartOptions('co2EmissionsChart'));
 
-    createChart('renewableEnergyChart',
+    ic('renewableEnergyChart',
         getChartData(DATA.environment.renewableEnergy),
         getLocalizedChartOptions('renewableEnergyChart'));
 
-    createChart('forestCoverageChart',
+    ic('forestCoverageChart',
         getChartData(DATA.environment.forestCoverage),
         getLocalizedChartOptions('forestCoverageChart'));
 
-    createChart('waterQualityChart',
+    ic('waterQualityChart',
         getChartData(DATA.environment.waterQuality),
         getLocalizedChartOptions('waterQualityChart'));
 
     // Technology charts
-    createChart('internetUsersChart',
+    ic('internetUsersChart',
         getChartData(DATA.technology.internetUsers),
         getLocalizedChartOptions('internetUsersChart'));
 
-    createChart('mobilePhonesChart',
+    ic('mobilePhonesChart',
         getChartData(DATA.technology.mobilePhones),
         getLocalizedChartOptions('mobilePhonesChart'));
 
-    createChart('broadbandSpeedChart',
+    ic('broadbandSpeedChart',
         getChartData(DATA.technology.broadbandSpeed),
         getLocalizedChartOptions('broadbandSpeedChart'));
 
-    createChart('rndInvestmentChart',
+    ic('rndInvestmentChart',
         getChartData(DATA.technology.rndInvestment),
         getLocalizedChartOptions('rndInvestmentChart'));
 
     // Quality of Life charts
-    createChart('qolIndexChart',
+    ic('qolIndexChart',
         getChartData(DATA.qualityOfLife.qol),
         getLocalizedChartOptions('qolIndexChart'));
 
-    createChart('qolHappinessChart',
+    ic('qolHappinessChart',
         getChartData(DATA.social.happiness),
         getLocalizedChartOptions('qolHappinessChart'));
 
-    createChart('hdiChart',
+    ic('hdiChart',
         getChartData(DATA.qualityOfLife.hdi),
         getLocalizedChartOptions('hdiChart'));
 
-    createChart('giniChart',
+    ic('giniChart',
         getChartData(DATA.qualityOfLife.gini),
         getLocalizedChartOptions('giniChart'));
 
-    createChart('corruptionChart',
+    ic('corruptionChart',
         getChartData(DATA.qualityOfLife.corruption),
         getLocalizedChartOptions('corruptionChart'));
 
-    createChart('qolPoliticalChart',
+    ic('qolPoliticalChart',
         getChartData(DATA.social.politicalFreedom),
         getLocalizedChartOptions('qolPoliticalChart'));
 
-    createChart('freeSpeechChart',
+    ic('freeSpeechChart',
         getChartData(DATA.social.freeSpeech),
         getLocalizedChartOptions('freeSpeechChart'));
 
-    createChart('legacyMediaRatingChart',
+    ic('legacyMediaRatingChart',
         getChartData(DATA.social.legacyMediaRating),
         getLocalizedChartOptions('legacyMediaRatingChart'));
 
-    createChart('newMediaRatingChart',
+    ic('newMediaRatingChart',
         getChartData(DATA.social.newMediaRating),
         getLocalizedChartOptions('newMediaRatingChart'));
 
-    createChart('legacyMediaShareChart',
+    ic('legacyMediaShareChart',
         getChartData(DATA.social.legacyMediaShare),
         getLocalizedChartOptions('legacyMediaShareChart'));
 
-    createChart('newMediaShareChart',
+    ic('newMediaShareChart',
         getChartData(DATA.social.newMediaShare),
         getLocalizedChartOptions('newMediaShareChart'));
 
     // Health access charts
-    createChart('surgeryWaitChart',
+    ic('surgeryWaitChart',
         getChartData(DATA.healthAccess.waitTime),
         getLocalizedChartOptions('surgeryWaitChart'));
 
-    createChart('physiciansChart',
+    ic('physiciansChart',
         getChartData(DATA.healthAccess.physicians),
         getLocalizedChartOptions('physiciansChart'));
 
-    createChart('hospitalBedsChart',
+    ic('hospitalBedsChart',
         getChartData(DATA.healthAccess.beds),
         getLocalizedChartOptions('hospitalBedsChart'));
 
-    createChart('qolHealthcareChart',
+    ic('qolHealthcareChart',
         getChartData(DATA.healthcare),
         getLocalizedChartOptions('qolHealthcareChart'));
 
     // Religion charts
-    createChart('christianChart',
+    ic('christianChart',
         getChartData(DATA.religion.christian),
         getLocalizedChartOptions('christianChart'));
 
-    createChart('muslimChart',
+    ic('muslimChart',
         getChartData(DATA.religion.muslim),
         getLocalizedChartOptions('muslimChart'));
 
-    createChart('secularChart',
+    ic('secularChart',
         getChartData(DATA.religion.secular),
         getLocalizedChartOptions('secularChart'));
 
@@ -6635,24 +7451,32 @@ function initializeAllCharts() {
             parseFloat((h + DATA.religion.buddhist[country][i]).toFixed(1))
         );
     });
-    createChart('hinduBuddhistChart',
+    ic('hinduBuddhistChart',
         getChartData(hinduBuddhistData),
         getLocalizedChartOptions('hinduBuddhistChart'));
+
+    if (typeof DashboardPhase1 !== 'undefined') {
+        DashboardPhase1.initPhase1Charts(createChart, getChartData, getLocalizedChartOptions, DATA);
+        ic('govLegacyMediaTrustChart',
+            getChartData(DATA.social.legacyMediaRating),
+            getLocalizedChartOptions('legacyMediaRatingChart'));
+        ic('govNewMediaTrustChart',
+            getChartData(DATA.social.newMediaRating),
+            getLocalizedChartOptions('newMediaRatingChart'));
+    }
+
+    if (typeof DashboardPhase2 !== 'undefined') {
+        DashboardPhase2.initPhase2Charts(createChart, getChartData, getLocalizedChartOptions, DATA);
+    }
 }
 
 function updateAllCharts() {
     updateChartDimensions();
 
-    // Update economic charts
-    if (charts['gdpChart']) {
-        charts['gdpChart'].data = getChartData(DATA.gdp);
-        charts['gdpChart'].update();
-    }
-
-    if (charts['gdpPerCapitaChart']) {
-        charts['gdpPerCapitaChart'].data = getChartData(DATA.gdpPerCapita);
-        charts['gdpPerCapitaChart'].update();
-    }
+    syncChartData('gdpChart', DATA.gdp);
+    syncChartData('gdpPerCapitaChart', DATA.gdpPerCapita);
+    syncChartData('populationTotalChart', DATA.demographics.populationTotal);
+    syncChartData('healthSpendGdpChart', DATA.health.healthSpendGdp);
 
     if (charts['capitalGainsChart']) {
         charts['capitalGainsChart'].data = getChartData(DATA.additional.capitalGain);
@@ -7070,6 +7894,21 @@ function updateAllCharts() {
         charts['hinduBuddhistChart'].update();
     }
 
+    if (typeof DashboardPhase1 !== 'undefined') {
+        DashboardPhase1.updatePhase1Charts(charts, getChartData, DATA);
+        if (charts['govLegacyMediaTrustChart']) {
+            charts['govLegacyMediaTrustChart'].data = getChartData(DATA.social.legacyMediaRating);
+            charts['govLegacyMediaTrustChart'].update();
+        }
+        if (charts['govNewMediaTrustChart']) {
+            charts['govNewMediaTrustChart'].data = getChartData(DATA.social.newMediaRating);
+            charts['govNewMediaTrustChart'].update();
+        }
+    }
+
+    if (typeof DashboardPhase2 !== 'undefined') {
+        DashboardPhase2.updatePhase2Charts(charts, getChartData, DATA);
+    }
 
     // Hide any chart that ended up with only 1 dataset and no meaningful range
     Object.keys(charts).forEach(function (id) { applyChartVisibility(id); });
@@ -7077,9 +7916,203 @@ function updateAllCharts() {
     resizeAllCharts();
 }
 
+function createBarChart(canvasId, data, options) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return null;
+
+    if (charts[canvasId]) {
+        charts[canvasId].destroy();
+    }
+
+    charts[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: options
+    });
+
+    applyChartVisibility(canvasId);
+    return charts[canvasId];
+}
+
+function getTradeBalanceByCountry() {
+    const out = {};
+    selectedCountries.forEach(function (country) {
+        out[country] = DATA.trade.exports[country].map(function (exp, i) {
+            return exp - DATA.trade.imports[country][i];
+        });
+    });
+    return out;
+}
+
+const SUMMARY_OPT_KEY = {
+    summaryGdpChart: 'gdpChart',
+    summaryGdppcChart: 'gdpPerCapitaChart',
+    summaryEmploymentChart: 'employmentChart',
+    summaryGniChart: 'salaryChart',
+    summaryLifeChart: 'lifeExpectancyChart',
+    summaryBirthChart: 'birthRateChart',
+    summaryRentChart: 'rentChart',
+    summaryGasChart: 'gasChart',
+    summaryCo2Chart: 'co2EmissionsChart',
+    summaryEduChart: 'educationChart',
+    summaryTradeChart: 'tradeBalanceChart',
+    summaryInternetChart: 'internetUsersChart'
+};
+
+const SUMMARY_LINE_CHARTS = [
+    { id: 'summaryGdpChart', optKey: 'gdpChart', data: function () { return DATA.gdp; } },
+    { id: 'summaryGdppcChart', optKey: 'gdpPerCapitaChart', data: function () { return DATA.gdpPerCapita; } },
+    { id: 'summaryEmploymentChart', optKey: 'employmentChart', data: function () { return DATA.employment.employment; } },
+    { id: 'summaryGniChart', optKey: 'salaryChart', data: function () { return DATA.salary; } },
+    { id: 'summaryLifeChart', optKey: 'lifeExpectancyChart', data: function () { return DATA.demographics.lifeExpectancy; } },
+    { id: 'summaryBirthChart', optKey: 'birthRateChart', data: function () { return DATA.demographics.birthRate; } },
+    { id: 'summaryRentChart', optKey: 'rentChart', data: function () { return DATA.costOfLiving.rent; } },
+    { id: 'summaryGasChart', optKey: 'gasChart', data: function () { return DATA.costOfLiving.gas; } },
+    { id: 'summaryCo2Chart', optKey: 'co2EmissionsChart', data: function () { return DATA.environment.co2Emissions; } },
+    { id: 'summaryEduChart', optKey: 'educationChart', data: function () { return DATA.social.education; } },
+    { id: 'summaryTradeChart', optKey: 'tradeBalanceChart', data: function () { return getTradeBalanceByCountry(); } },
+    { id: 'summaryInternetChart', optKey: 'internetUsersChart', data: function () { return DATA.technology.internetUsers; } }
+];
+
+const SUMMARY_YOY_CHARTS = [
+    { id: 'summaryYoyGdpChart', data: function () { return DATA.gdp; } },
+    { id: 'summaryYoyEmpChart', data: function () { return DATA.employment.employment; } },
+    { id: 'summaryYoyGniChart', data: function () { return DATA.salary; } },
+    { id: 'summaryYoyCo2Chart', data: function () { return DATA.environment.co2Emissions; } }
+];
+
+function getYoyPercentForCountry(series) {
+    if (!series || !series.length) return null;
+    var i = series.length - 1;
+    while (i >= 0 && (series[i] == null || !Number.isFinite(series[i]))) i--;
+    if (i <= 0) return null;
+    var cur = series[i];
+    var j = i - 1;
+    while (j >= 0) {
+        var prev = series[j];
+        if (prev == null || !Number.isFinite(prev)) {
+            j--;
+            continue;
+        }
+        if (prev === 0) return null;
+        if (prev !== cur) {
+            return parseFloat((((cur - prev) / prev) * 100).toFixed(2));
+        }
+        j--;
+    }
+    return 0;
+}
+
+function getYoyBarData(dataSource) {
+    return {
+        labels: selectedCountries.map(getCountryDisplayName),
+        datasets: [{
+            label: typeof t === 'function' ? t('sec.yoy') : 'YoY %',
+            data: selectedCountries.map(function (c) {
+                const series = dataSource[c];
+                return series ? getYoyPercentForCountry(series) : null;
+            }),
+            minBarLength: 3,
+            backgroundColor: selectedCountries.map(function (c) {
+                return (COLORS[c] || '#888888') + '99';
+            }),
+            borderColor: selectedCountries.map(function (c) {
+                return COLORS[c] || '#888888';
+            }),
+            borderWidth: 1
+        }]
+    };
+}
+
+function getSummaryBarOptions() {
+    const isDark = document.body.classList.contains('dark-theme');
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    const textColor = isDark ? '#e0e0e0' : '#666';
+
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+            padding: { top: 8, bottom: 8 }
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function (ctx) {
+                        var v = ctx.parsed.y;
+                        if (v == null || !Number.isFinite(v)) return '';
+                        return (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                type: 'category',
+                display: true,
+                title: { display: false },
+                grid: { color: gridColor },
+                ticks: {
+                    color: textColor,
+                    autoSkip: false,
+                    maxRotation: 45,
+                    minRotation: 0
+                }
+            },
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: '%',
+                    color: textColor
+                },
+                grid: { color: gridColor },
+                ticks: { color: textColor }
+            }
+        }
+    };
+}
+
+function initializeSummaryCharts() {
+    SUMMARY_LINE_CHARTS.forEach(function (cfg) {
+        if (!document.getElementById(cfg.id)) return;
+        createChart(cfg.id, getChartData(cfg.data()), getLocalizedChartOptions(cfg.optKey));
+    });
+    SUMMARY_YOY_CHARTS.forEach(function (cfg) {
+        if (!document.getElementById(cfg.id)) return;
+        createBarChart(cfg.id, getYoyBarData(cfg.data()), getSummaryBarOptions());
+    });
+}
+
+function updateSummaryCharts() {
+    SUMMARY_LINE_CHARTS.forEach(function (cfg) {
+        if (!document.getElementById(cfg.id)) return;
+        const chartData = getChartData(cfg.data());
+        if (charts[cfg.id]) {
+            charts[cfg.id].data = chartData;
+            charts[cfg.id].update();
+            applyChartVisibility(cfg.id);
+        } else {
+            createChart(cfg.id, chartData, getLocalizedChartOptions(cfg.optKey));
+        }
+    });
+    SUMMARY_YOY_CHARTS.forEach(function (cfg) {
+        if (!document.getElementById(cfg.id)) return;
+        const barData = getYoyBarData(cfg.data());
+        if (charts[cfg.id]) {
+            charts[cfg.id].data = barData;
+            charts[cfg.id].update();
+            applyChartVisibility(cfg.id);
+        } else {
+            createBarChart(cfg.id, barData, getSummaryBarOptions());
+        }
+    });
+}
+
 function updateStatisticsSummary() {
-    // Show/hide statistics section based on selection
     const statsSection = document.getElementById('statisticsSummary');
+    if (!statsSection) return;
     if (selectedCountries.length > 0) {
         statsSection.style.display = 'block';
     } else {
@@ -7087,132 +8120,8 @@ function updateStatisticsSummary() {
         return;
     }
 
-    const latestIdx = YEARS.length - 1;
-    const prevIdx = latestIdx - 1;
-
-    // Helper function to calculate statistics
-    function getStats(dataSource, decimals = 2) {
-        const values = selectedCountries.map(c => dataSource[c][latestIdx]).filter(v => v != null);
-        if (values.length === 0) return { avg: 0, min: 0, max: 0 };
-
-        const avg = values.reduce((a, b) => a + b, 0) / values.length;
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-
-        return {
-            avg: parseFloat(avg.toFixed(decimals)),
-            min: parseFloat(min.toFixed(decimals)),
-            max: parseFloat(max.toFixed(decimals))
-        };
-    }
-
-    // Helper function to calculate growth
-    function getGrowth(dataSource, decimals = 2) {
-        const values = selectedCountries.map(c => {
-            const current = dataSource[c][latestIdx];
-            const previous = dataSource[c][prevIdx];
-            if (current == null || previous == null || previous === 0) return null;
-            return ((current - previous) / previous) * 100;
-        }).filter(v => v != null);
-
-        if (values.length === 0) return 0;
-        const avg = values.reduce((a, b) => a + b, 0) / values.length;
-        return parseFloat(avg.toFixed(decimals));
-    }
-
-    // Update GDP statistics
-    const gdpStats = getStats(DATA.gdp, 2);
-    document.getElementById('stat-gdp-avg').textContent = gdpStats.avg.toFixed(2);
-    document.getElementById('stat-gdp-range').textContent = `${t('stats.range')} ${gdpStats.min.toFixed(2)} - ${gdpStats.max.toFixed(2)}`;
-
-    // Update GDP Per Capita statistics
-    const gdppcStats = getStats(DATA.gdpPerCapita, 0);
-    document.getElementById('stat-gdppc-avg').textContent = '$' + gdppcStats.avg.toLocaleString();
-    document.getElementById('stat-gdppc-range').textContent = `${t('stats.range')} $${gdppcStats.min.toLocaleString()} - $${gdppcStats.max.toLocaleString()}`;
-
-    // Update Employment statistics
-    const empStats = getStats(DATA.employment.employment, 1);
-    document.getElementById('stat-employment-avg').textContent = empStats.avg.toFixed(1) + '%';
-    document.getElementById('stat-employment-range').textContent = `${t('stats.range')} ${empStats.min.toFixed(1)}% - ${empStats.max.toFixed(1)}%`;
-
-    // Update Salary statistics
-    const salaryStats = getStats(DATA.salary, 0);
-    document.getElementById('stat-salary-avg').textContent = '$' + salaryStats.avg.toLocaleString();
-    document.getElementById('stat-salary-range').textContent = `${t('stats.range')} $${salaryStats.min.toLocaleString()} - $${salaryStats.max.toLocaleString()}`;
-
-    // Update Life Expectancy statistics
-    const lifeStats = getStats(DATA.demographics.lifeExpectancy, 1);
-    document.getElementById('stat-life-avg').textContent = lifeStats.avg.toFixed(1);
-    document.getElementById('stat-life-range').textContent = `${t('stats.range')} ${lifeStats.min.toFixed(1)} - ${lifeStats.max.toFixed(1)}`;
-
-    // Update Birth Rate statistics
-    const birthStats = getStats(DATA.demographics.birthRate, 1);
-    document.getElementById('stat-birth-avg').textContent = birthStats.avg.toFixed(1);
-    document.getElementById('stat-birth-range').textContent = `${t('stats.range')} ${birthStats.min.toFixed(1)} - ${birthStats.max.toFixed(1)}`;
-
-    // Update Rent statistics
-    const rentStats = getStats(DATA.costOfLiving.rent, 0);
-    document.getElementById('stat-rent-avg').textContent = '$' + rentStats.avg.toLocaleString();
-    document.getElementById('stat-rent-range').textContent = `${t('stats.range')} $${rentStats.min.toLocaleString()} - $${rentStats.max.toLocaleString()}`;
-
-    // Update Gas Price statistics
-    const gasStats = getStats(DATA.costOfLiving.gas, 2);
-    document.getElementById('stat-gas-avg').textContent = '$' + gasStats.avg.toFixed(2);
-    document.getElementById('stat-gas-range').textContent = `${t('stats.range')} $${gasStats.min.toFixed(2)} - $${gasStats.max.toFixed(2)}`;
-
-    // Update CO2 Emissions statistics
-    const co2Stats = getStats(DATA.environment.co2Emissions, 2);
-    document.getElementById('stat-co2-avg').textContent = co2Stats.avg.toFixed(2);
-    document.getElementById('stat-co2-range').textContent = `${t('stats.range')} ${co2Stats.min.toFixed(2)} - ${co2Stats.max.toFixed(2)}`;
-
-    // Update Education statistics
-    const eduStats = getStats(DATA.social.education, 1);
-    document.getElementById('stat-edu-avg').textContent = eduStats.avg.toFixed(1) + '%';
-    document.getElementById('stat-edu-range').textContent = `${t('stats.range')} ${eduStats.min.toFixed(1)}% - ${eduStats.max.toFixed(1)}%`;
-
-    // Update Trade Balance statistics
-    const tradeBalanceData = {};
-    selectedCountries.forEach(country => {
-        tradeBalanceData[country] = DATA.trade.exports[country].map((exp, i) =>
-            exp - DATA.trade.imports[country][i]
-        );
-    });
-    const tradeStats = getStats(tradeBalanceData, 1);
-    document.getElementById('stat-trade-avg').textContent = tradeStats.avg.toFixed(1);
-    document.getElementById('stat-trade-range').textContent = `${t('stats.range')} ${tradeStats.min.toFixed(1)} - ${tradeStats.max.toFixed(1)}`;
-
-    // Update Internet Users statistics
-    const internetStats = getStats(DATA.technology.internetUsers, 1);
-    document.getElementById('stat-internet-avg').textContent = internetStats.avg.toFixed(1) + '%';
-    document.getElementById('stat-internet-range').textContent = `${t('stats.range')} ${internetStats.min.toFixed(1)}% - ${internetStats.max.toFixed(1)}%`;
-
-    // Calculate and display growth rates
-    const gdpGrowth = getGrowth(DATA.gdp, 2);
-    const gdpGrowthEl = document.getElementById('growth-gdp');
-    gdpGrowthEl.textContent = (gdpGrowth >= 0 ? '+' : '') + gdpGrowth.toFixed(2) + '%';
-    gdpGrowthEl.style.color = gdpGrowth >= 0 ? '#4caf50' : '#f44336';
-
-    const empGrowth = getGrowth(DATA.employment.employment, 2);
-    const empGrowthEl = document.getElementById('growth-employment');
-    empGrowthEl.textContent = (empGrowth >= 0 ? '+' : '') + empGrowth.toFixed(2) + '%';
-    empGrowthEl.style.color = empGrowth >= 0 ? '#4caf50' : '#f44336';
-
-    const salaryGrowth = getGrowth(DATA.salary, 2);
-    const salaryGrowthEl = document.getElementById('growth-salary');
-    salaryGrowthEl.textContent = (salaryGrowth >= 0 ? '+' : '') + salaryGrowth.toFixed(2) + '%';
-    salaryGrowthEl.style.color = salaryGrowth >= 0 ? '#4caf50' : '#f44336';
-
-    const co2Growth = getGrowth(DATA.environment.co2Emissions, 2);
-    const co2GrowthEl = document.getElementById('growth-co2');
-    co2GrowthEl.textContent = (co2Growth >= 0 ? '+' : '') + co2Growth.toFixed(2) + '%';
-    // Negative growth is good for CO2 emissions
-    co2GrowthEl.style.color = co2Growth <= 0 ? '#4caf50' : '#f44336';
-
-    // Update comparison table
+    updateSummaryCharts();
     updateComparisonTable();
-
-    // Update historical trends
-    updateHistoricalTrends();
 }
 
 function updateComparisonTable() {
@@ -7250,55 +8159,6 @@ function updateComparisonTable() {
 
         tbody.appendChild(row);
     });
-}
-
-function updateHistoricalTrends() {
-    const firstIdx = 0;
-    const latestIdx = YEARS.length - 1;
-    const yFirst = YEARS[firstIdx];
-    const yLast = YEARS[latestIdx];
-
-    function calculateTrend(dataSource, isPercentage = false) {
-        const changes = selectedCountries.map(c => {
-            const first = dataSource[c][firstIdx];
-            const last = dataSource[c][latestIdx];
-            if (first == null || last == null) return null;
-            return isPercentage ? (last - first) : ((last - first) / first) * 100;
-        }).filter(v => v != null);
-
-        if (changes.length === 0) return 0;
-        return changes.reduce((a, b) => a + b, 0) / changes.length;
-    }
-
-    const gdpTrend = calculateTrend(DATA.gdp);
-    const gdpTrendEl = document.getElementById('trend-gdp-change');
-    gdpTrendEl.textContent = '+' + gdpTrend.toFixed(1) + '%';
-    gdpTrendEl.style.color = '#4caf50';
-
-    const avgGdpFirst = selectedCountries.reduce((sum, c) => sum + DATA.gdp[c][firstIdx], 0) / selectedCountries.length;
-    const avgGdpLast = selectedCountries.reduce((sum, c) => sum + DATA.gdp[c][latestIdx], 0) / selectedCountries.length;
-    document.getElementById('trend-gdp-details').textContent =
-        `${t('stats.trendAvg')} $${avgGdpFirst.toFixed(2)}T (${yFirst}) → $${avgGdpLast.toFixed(2)}T (${yLast})`;
-
-    const lifeTrend = calculateTrend(DATA.demographics.lifeExpectancy, true);
-    const lifeTrendEl = document.getElementById('trend-life-change');
-    lifeTrendEl.textContent = '+' + lifeTrend.toFixed(1) + ' years';
-    lifeTrendEl.style.color = '#4caf50';
-
-    const avgLifeFirst = selectedCountries.reduce((sum, c) => sum + DATA.demographics.lifeExpectancy[c][firstIdx], 0) / selectedCountries.length;
-    const avgLifeLast = selectedCountries.reduce((sum, c) => sum + DATA.demographics.lifeExpectancy[c][latestIdx], 0) / selectedCountries.length;
-    document.getElementById('trend-life-details').textContent =
-        `${t('stats.trendAvg')} ${avgLifeFirst.toFixed(1)} ${t('stats.trendUnitYears')} (${yFirst}) → ${avgLifeLast.toFixed(1)} ${t('stats.trendUnitYears')} (${yLast})`;
-
-    const co2Trend = calculateTrend(DATA.environment.co2Emissions);
-    const co2TrendEl = document.getElementById('trend-co2-change');
-    co2TrendEl.textContent = (co2Trend >= 0 ? '+' : '') + co2Trend.toFixed(1) + '%';
-    co2TrendEl.style.color = co2Trend <= 0 ? '#4caf50' : '#f44336';
-
-    const avgCo2First = selectedCountries.reduce((sum, c) => sum + DATA.environment.co2Emissions[c][firstIdx], 0) / selectedCountries.length;
-    const avgCo2Last = selectedCountries.reduce((sum, c) => sum + DATA.environment.co2Emissions[c][latestIdx], 0) / selectedCountries.length;
-    document.getElementById('trend-co2-details').textContent =
-        `${t('stats.trendAvg')} ${avgCo2First.toFixed(2)} ${t('stats.trendUnitTons')} (${yFirst}) → ${avgCo2Last.toFixed(2)} ${t('stats.trendUnitTons')} (${yLast})`;
 }
     </script>
 </body>

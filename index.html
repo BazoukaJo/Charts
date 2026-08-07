@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Economic & Social Indicators (1970-2026)</title>
+    <title>Global Economic & Social Indicators (1970–present)</title>
 
     <!-- Material Design CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -12,6 +12,7 @@
 
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="dashboard-overview.css">
 
     <style>
         :root {
@@ -67,6 +68,7 @@
             box-sizing: border-box;
         }
 
+        .container > .charts-overview { order: 5; }
         .container > .country-selector { order: 10; }
         .container > .indicator-search-wrap { order: 20; }
         .container > .dashboard-nav-wrap { order: 30; }
@@ -76,6 +78,7 @@
         .container > .data-provenance { order: 70; }
 
         /* Top-level blocks: full content width, uniform vertical spacing */
+        .container > .charts-overview,
         .container > .country-selector,
         .container > .indicator-search-wrap,
         .container > .dashboard-nav-wrap,
@@ -238,6 +241,263 @@
         .chart-container:has(> canvas) {
             position: relative;
             min-height: 280px;
+        }
+
+        /* Play button: opens the bar-chart-race overlay for that chart's data */
+        .chart-race-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            z-index: 6;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+            background: color-mix(in srgb, var(--accent-color) 14%, var(--bg-secondary));
+            color: var(--accent-color);
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.15s ease;
+        }
+
+        .chart-race-btn:hover {
+            background: color-mix(in srgb, var(--accent-color) 28%, var(--bg-secondary));
+            transform: scale(1.06);
+        }
+
+        .chart-race-btn:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .chart-race-btn svg {
+            width: 14px;
+            height: 14px;
+            margin-left: 1px;
+        }
+
+        .chart-race-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(6, 14, 12, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .chart-race-overlay.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .chart-race-modal {
+            width: min(720px, 100%);
+            max-height: min(640px, 90vh);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+            border-radius: 14px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+            padding: 1.1rem 1.25rem 1.35rem;
+            transform: scale(0.97);
+            transition: transform 0.2s ease;
+        }
+
+        .chart-race-overlay.is-open .chart-race-modal {
+            transform: scale(1);
+        }
+
+        .chart-race-modal__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .chart-race-modal__title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+        }
+
+        .chart-race-modal__close {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .chart-race-modal__close:hover {
+            background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+            color: var(--accent-color);
+        }
+
+        .chart-race-modal__timeline {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+        }
+
+        .chart-race-modal__year {
+            flex-shrink: 0;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .chart-race-modal__slider {
+            flex: 1;
+            appearance: none;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--accent-color) 22%, var(--bg-primary));
+            outline: none;
+            cursor: pointer;
+        }
+
+        .chart-race-modal__slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 2px solid var(--bg-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            cursor: pointer;
+        }
+
+        .chart-race-modal__slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 2px solid var(--bg-secondary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+            cursor: pointer;
+        }
+
+        .chart-race-modal__slider::-moz-range-track {
+            height: 6px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--accent-color) 22%, var(--bg-primary));
+        }
+
+        .chart-race-modal__slider:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 3px;
+        }
+
+        .chart-race-bars {
+            position: relative;
+            flex: 1;
+            min-height: 320px;
+            overflow: hidden;
+        }
+
+        .chart-race-row {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            transition: top 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            opacity: 0;
+        }
+
+        .chart-race-row.is-visible {
+            opacity: 1;
+        }
+
+        .chart-race-row__bar {
+            height: 100%;
+            border-radius: 4px;
+            min-width: 2px;
+            transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            box-sizing: border-box;
+        }
+
+        .chart-race-row__value {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+        }
+
+        .chart-race-row__label {
+            flex-shrink: 0;
+            width: 128px;
+            padding-right: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chart-race-row__track {
+            flex: 1;
+            height: 100%;
+        }
+
+        .chart-race-modal__controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-race-modal__playpause {
+            min-width: 110px;
+            padding: 0.5rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+            background: var(--accent-color);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: filter 0.15s ease;
+        }
+
+        .chart-race-modal__playpause:hover {
+            filter: brightness(1.08);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .chart-race-row,
+            .chart-race-row__bar,
+            .chart-race-modal {
+                transition: none !important;
+            }
         }
 
         /* Paired rows: keep a floor height for real charts so flex never collapses the plot area */
@@ -1180,9 +1440,6 @@
 <body class="dark-theme">
     <!-- Theme Toggle -->
     <div class="theme-header">
-        <a href="#" id="lang-toggle" class="header-action-btn" onclick="if(window.DashboardI18n)DashboardI18n.toggleLocale(); return false;" data-i18n-title="lang.toggleTitle" title="Switch language">
-            <span id="lang-toggle-label">EN</span>
-        </a>
         <a href="#" id="theme-toggle-btn" class="header-action-btn" onclick="toggleTheme(); return false;" title="Toggle light/dark theme" aria-label="Toggle theme">
             <i class="material-icons" id="theme-icon">light_mode</i>
         </a>
@@ -1190,6 +1447,49 @@
 
     <!-- Main Content -->
     <div class="container">
+
+        <!-- Country share overview: treemap + continent filter + world map -->
+        <div class="charts-overview" id="chartsOverview">
+            <div class="chart-container charts-overview__panel">
+                <div class="chart-title">
+                    <i class="material-icons left">donut_small</i>
+                    <span data-i18n="overview.title">Country share overview</span>
+                </div>
+                <p class="charts-overview__metric-note" id="overviewMetricNote" data-i18n="overview.metricNotePop">
+                    Tile size ∝ latest population share (millions) among countries shown.
+                </p>
+                <div class="charts-overview__controls">
+                    <div class="charts-overview__continents" id="overviewContinentTabs" role="tablist" aria-label="Continent filter">
+                        <button type="button" class="overview-cont-btn active" data-continent="All" data-i18n="overview.continent.all" aria-selected="true">All</button>
+                        <button type="button" class="overview-cont-btn" data-continent="Africa" data-i18n="overview.continent.africa" aria-selected="false">Africa</button>
+                        <button type="button" class="overview-cont-btn" data-continent="Asia" data-i18n="overview.continent.asia" aria-selected="false">Asia</button>
+                        <button type="button" class="overview-cont-btn" data-continent="Europe" data-i18n="overview.continent.europe" aria-selected="false">Europe</button>
+                        <button type="button" class="overview-cont-btn" data-continent="North America" data-i18n="overview.continent.north_america" aria-selected="false">North America</button>
+                        <button type="button" class="overview-cont-btn" data-continent="South America" data-i18n="overview.continent.south_america" aria-selected="false">South America</button>
+                        <button type="button" class="overview-cont-btn" data-continent="Oceania" data-i18n="overview.continent.oceania" aria-selected="false">Oceania</button>
+                    </div>
+                    <div class="charts-overview__metric-toggle" id="overviewMetricToggle" role="group" aria-label="Treemap size metric">
+                        <button type="button" class="overview-metric-btn active" data-metric="population" data-i18n="overview.metric.population" aria-pressed="true">Population</button>
+                        <button type="button" class="overview-metric-btn" data-metric="gdp" data-i18n="overview.metric.gdp" aria-pressed="false">GDP</button>
+                    </div>
+                </div>
+                <div id="countryTreemap" class="charts-overview__treemap" aria-live="polite"></div>
+                <div class="charts-overview__map-wrap">
+                    <div id="overviewContinentToggles" aria-label="Continent selection toggles">
+                        <button type="button" class="overview-map-cont-btn" data-continent="Africa" data-i18n="overview.mapToggle.africa" aria-pressed="false">Africa</button>
+                        <button type="button" class="overview-map-cont-btn" data-continent="Asia" data-i18n="overview.mapToggle.asia" aria-pressed="false">Asia</button>
+                        <button type="button" class="overview-map-cont-btn" data-continent="Europe" data-i18n="overview.mapToggle.europe" aria-pressed="false">Europe</button>
+                        <button type="button" class="overview-map-cont-btn" data-continent="North America" data-i18n="overview.mapToggle.north_america" aria-pressed="false">N. America</button>
+                        <button type="button" class="overview-map-cont-btn" data-continent="South America" data-i18n="overview.mapToggle.south_america" aria-pressed="false">S. America</button>
+                        <button type="button" class="overview-map-cont-btn" data-continent="Oceania" data-i18n="overview.mapToggle.oceania" aria-pressed="false">Oceania</button>
+                    </div>
+                    <div class="charts-overview__map-frame">
+                        <svg id="worldMapSvg" viewBox="0 0 960 420" role="img" aria-label="Interactive world map"></svg>
+                    </div>
+                    <p class="charts-overview__hint" data-i18n="overview.mapHint">Click countries on the map or treemap to toggle selection. Continent buttons turn that continent’s countries on or off.</p>
+                </div>
+            </div>
+        </div>
 
         <!-- Country Selector -->
         <div class="country-selector">
@@ -1401,7 +1701,7 @@
 
             <!-- Year-over-Year Growth Comparison -->
             <div class="section-header">
-                <h2><i class="material-icons left">show_chart</i><span data-i18n="sec.yoy">Year-over-Year Changes (2025 → 2026)</span></h2>
+                <h2><i class="material-icons left">show_chart</i><span data-i18n="sec.yoy">Year-over-Year Changes</span></h2>
             </div>
 
             <div class="row summary-yoy-chart">
@@ -1454,7 +1754,7 @@
 
             <!-- Detailed Country Comparison Table -->
             <div class="section-header">
-                <h2><i class="material-icons left">table_chart</i><span data-i18n="sec.comparison">Detailed Country Comparison (2026)</span></h2>
+                <h2><i class="material-icons left">table_chart</i><span data-i18n="sec.comparison">Detailed Country Comparison</span></h2>
             </div>
 
             <div class="chart-container" style="overflow-x: auto;">
@@ -3483,7 +3783,8 @@
     <!-- Theme Toggle Script -->
     <script>
         // Saved preference, or default dark (first visit / cleared storage)
-        const currentTheme = localStorage.getItem('theme') || 'dark';
+        const _qTheme = (new URLSearchParams(location.search)).get('theme');
+        const currentTheme = (_qTheme === 'light' || _qTheme === 'dark') ? _qTheme : (localStorage.getItem('theme') || 'dark');
         if (currentTheme === 'light') {
             document.body.classList.remove('dark-theme');
             document.getElementById('theme-icon').textContent = 'dark_mode';
@@ -3542,13 +3843,13 @@
 
     <!-- Data Generation Script -->
     <script>
-// Data generation for all indicators (1970-2026)
+// Data generation for all indicators (1970 → current year at load time)
 
 /* Alphabetical — avoids implying priority; chips and saved selection order follow this list. */
 const COUNTRIES = [
-    'Argentina', 'Australia', 'Brazil', 'Canada', 'China', 'Cuba',
-    'Finland', 'France', 'Germany', 'India', 'Iran', 'Israel', 'Italy', 'Japan',
-    'Malaysia', 'Mexico', 'New Zealand', 'Norway', 'Romania', 'Russia',
+    'Argentina', 'Australia', 'Bangladesh', 'Brazil', 'Canada', 'China', 'Cuba',
+    'Ethiopia', 'Finland', 'France', 'Germany', 'India', 'Indonesia', 'Iran', 'Israel', 'Italy', 'Japan',
+    'Malaysia', 'Mexico', 'New Zealand', 'Nigeria', 'Norway', 'Pakistan', 'Romania', 'Russia',
     'Saudi Arabia', 'Somalia', 'South Africa', 'South Korea', 'Sweden',
     'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
     'Venezuela'
@@ -3584,7 +3885,12 @@ const COUNTRY_CODES = {
     'Saudi Arabia': 'SAU',
     'Somalia': 'SOM',
     'Ukraine': 'UKR',
-    'Venezuela': 'VEN'
+    'Venezuela': 'VEN',
+    'Bangladesh': 'BGD',
+    'Ethiopia': 'ETH',
+    'Indonesia': 'IDN',
+    'Nigeria': 'NGA',
+    'Pakistan': 'PAK'
 };
 
 const DISPLAY_COUNTRIES = COUNTRIES.slice(0, 6).concat(['Europe'], COUNTRIES.slice(6));
@@ -3652,10 +3958,26 @@ const COLORS = {
     'Saudi Arabia': '#40c057',
     'Somalia': '#a9a9a9',
     'Ukraine': '#ffd43b',
-    'Venezuela': '#cc5de8'
+    'Venezuela': '#cc5de8',
+    'Bangladesh': '#22b8cf',
+    'Ethiopia': '#e8590c',
+    'Indonesia': '#845ef7',
+    'Nigeria': '#51cf66',
+    'Pakistan': '#339af0'
 };
 
-const YEARS = Array.from({length: 57}, (_, i) => 1970 + i);
+const START_YEAR = 1970;
+const END_YEAR = new Date().getFullYear();
+const YEARS = Array.from({ length: END_YEAR - START_YEAR + 1 }, (_, i) => START_YEAR + i);
+
+/* Expose for overview treemap / map module (classic script consts are not on window). */
+window.COUNTRIES = COUNTRIES;
+window.COUNTRY_CODES = COUNTRY_CODES;
+window.DISPLAY_COUNTRIES = DISPLAY_COUNTRIES;
+window.EUROPE_COUNTRIES = EUROPE_COUNTRIES;
+window.COLORS = COLORS;
+window.YEARS = YEARS;
+window.END_YEAR = END_YEAR;
 
 /** Deterministic midpoint (no stochastic noise) so series are reproducible; WDI overlays replace key indicators. */
 function random(min, max) {
@@ -3671,6 +3993,7 @@ function generateGDPData() {
         'ZAF': 0.018, 'MYS': 0.004, 'AUS': 0.043, 'NZL': 0.010,
         'ARG': 0.039, 'CUB': 0.007, 'IRN': 0.011, 'ISR': 0.012,
         'MEX': 0.038, 'ROU': 0.030, 'SAU': 0.004, 'SOM': 0.0007,
+        'BGD': 0.009, 'ETH': 0.003, 'IDN': 0.01, 'NGA': 0.012, 'PAK': 0.01,
         'UKR': 0.040, 'VEN': 0.013
     };
     const baseGDP1990 = {
@@ -3681,6 +4004,7 @@ function generateGDPData() {
         'ZAF': 0.11, 'MYS': 0.04, 'AUS': 0.31, 'NZL': 0.05,
         'ARG': 0.141, 'CUB': 0.019, 'IRN': 0.097, 'ISR': 0.061,
         'MEX': 0.264, 'ROU': 0.038, 'SAU': 0.117, 'SOM': 0.001,
+        'BGD': 0.031, 'ETH': 0.012, 'IDN': 0.114, 'NGA': 0.028, 'PAK': 0.04,
         'UKR': 0.081, 'VEN': 0.048
     };
     const growthRates = {
@@ -3691,6 +4015,7 @@ function generateGDPData() {
         'ZAF': 1.0343, 'MYS': 1.0706, 'AUS': 1.0490, 'NZL': 1.0423,
         'ARG': 1.0420, 'CUB': 1.0180, 'IRN': 1.0370, 'ISR': 1.0520,
         'MEX': 1.0440, 'ROU': 1.0480, 'SAU': 1.0560, 'SOM': 1.0120,
+        'BGD': 1.062, 'ETH': 1.07, 'IDN': 1.055, 'NGA': 1.048, 'PAK': 1.045,
         'UKR': 1.0180, 'VEN': 1.0050
     };
 
@@ -3741,13 +4066,13 @@ function generateMilitarySpendingData(gdpData) {
     const baseShare = {
         USA: 7.8, CAN: 2.4, NOR: 3.0, SWE: 3.2, FIN: 2.8, GBR: 5.1, FRA: 4.0, DEU: 3.0, ITA: 2.4,
         KOR: 2.5, JPN: 1.0, CHN: 2.2, MYS: 1.8, IND: 3.7, ARE: 2.6, RUS: 11.5, ZAF: 2.7, BRA: 1.5, AUS: 2.3, NZL: 1.8,
-        ARG: 1.8, CUB: 6.5, IRN: 6.5, ISR: 23.0, MEX: 0.8, ROU: 3.5, SAU: 12.0, SOM: 2.5, UKR: 5.0, VEN: 2.0
+        ARG: 1.8, CUB: 6.5, IRN: 6.5, ISR: 23.0, MEX: 0.8, ROU: 3.5, SAU: 12.0, SOM: 2.5, BGD: 1.5, ETH: 4.5, IDN: 2.2, NGA: 1.8, PAK: 6.5, UKR: 5.0, VEN: 2.0
     };
 
     const basePopulation = {
         USA: 205, CAN: 22, NOR: 3.9, SWE: 8.1, FIN: 4.6, GBR: 55.7, FRA: 50.8, DEU: 78.1, ITA: 53.8,
         KOR: 32.2, JPN: 104.3, CHN: 818, MYS: 10.8, IND: 555, ARE: 0.24, RUS: 130.8, ZAF: 22.4, BRA: 95.1, AUS: 17.1, NZL: 2.9,
-        ARG: 23.4, CUB: 8.5, IRN: 28.4, ISR: 3.0, MEX: 50.7, ROU: 20.3, SAU: 5.8, SOM: 3.7, UKR: 47.1, VEN: 10.6
+        ARG: 23.4, CUB: 8.5, IRN: 28.4, ISR: 3.0, MEX: 50.7, ROU: 20.3, SAU: 5.8, SOM: 3.7, BGD: 65, ETH: 28.5, IDN: 115, NGA: 56, PAK: 58, UKR: 47.1, VEN: 10.6
     };
 
     const result = {
@@ -3797,7 +4122,7 @@ function generateMilitarySpendingData(gdpData) {
             return 0.05;
         }
 
-        if (['CHN', 'IND', 'MYS', 'BRA', 'ZAF'].includes(code)) {
+        if (['CHN', 'IND', 'MYS', 'BRA', 'ZAF', 'IDN', 'BGD', 'PAK', 'NGA', 'ETH'].includes(code)) {
             if (year < 1990) return -0.01;
             if (year <= 2000) return -0.03;
             if (year <= 2013) return 0.01;
@@ -3815,7 +4140,7 @@ function generateMilitarySpendingData(gdpData) {
             if (year <= 2000) return 0.0;
             return 0.08;
         }
-        if (['VEN','ARG','MEX','CUB','ROU','SOM'].includes(code)) {
+        if (['VEN','ARG','MEX','CUB','ROU','SOM','BGD','ETH','IDN','NGA','PAK'].includes(code)) {
             if (year < 1990) return -0.02;
             if (year <= 2000) return -0.05;
             return -0.02;
@@ -3859,6 +4184,11 @@ function generateMilitarySpendingData(gdpData) {
         if (code === 'ROU') return year < 2000 ? 1.003 : 0.997;
         if (code === 'SAU') return year < 2005 ? 1.040 : 1.025;
         if (code === 'SOM') return year < 2010 ? 1.030 : 1.028;
+        if (code === 'BGD') return year < 2000 ? 1.022 : 1.015;
+        if (code === 'ETH') return year < 2000 ? 1.032 : 1.028;
+        if (code === 'IDN') return year < 2000 ? 1.018 : 1.012;
+        if (code === 'NGA') return year < 2000 ? 1.028 : 1.025;
+        if (code === 'PAK') return year < 2000 ? 1.025 : 1.020;
         if (code === 'UKR') return year < 1991 ? 1.002 : 0.997;
         if (code === 'VEN') return year < 2005 ? 1.025 : 1.018;
         return 1.006;
@@ -3901,6 +4231,7 @@ function generateGDPPerCapita() {
         'ZAF': 963, 'MYS': 394, 'AUS': 3371, 'NZL': 2820,
         'ARG': 1480, 'CUB': 820, 'IRN': 470, 'ISR': 3400,
         'MEX': 700, 'ROU': 1550, 'SAU': 560, 'SOM': 170,
+        'BGD': 130, 'ETH': 70, 'IDN': 80, 'NGA': 220, 'PAK': 170,
         'UKR': 870, 'VEN': 1240
     };
     const baseGDPPC1990 = {
@@ -3911,6 +4242,7 @@ function generateGDPPerCapita() {
         'ZAF': 2940, 'MYS': 2340, 'AUS': 18100, 'NZL': 13600,
         'ARG': 4610, 'CUB': 1860, 'IRN': 1650, 'ISR': 12800,
         'MEX': 3020, 'ROU': 1648, 'SAU': 7200, 'SOM': 126,
+        'BGD': 300, 'ETH': 250, 'IDN': 620, 'NGA': 570, 'PAK': 450,
         'UKR': 1570, 'VEN': 2660
     };
     const growthRates = {
@@ -3921,6 +4253,7 @@ function generateGDPPerCapita() {
         'ZAF': 1.0207, 'MYS': 1.0499, 'AUS': 1.0378, 'NZL': 1.0343,
         'ARG': 1.0220, 'CUB': 1.0120, 'IRN': 1.0250, 'ISR': 1.0320,
         'MEX': 1.0195, 'ROU': 1.0480, 'SAU': 1.0120, 'SOM': 1.0050,
+        'BGD': 1.045, 'ETH': 1.055, 'IDN': 1.048, 'NGA': 1.022, 'PAK': 1.028,
         'UKR': 1.0185, 'VEN': 0.9980
     };
 
@@ -3975,7 +4308,7 @@ function generateImmigrationData() {
         'NOR': 15000, 'SWE': 40000, 'FIN': 8000, 'KOR': 5000,
         'MYS': 20000, 'ZAF': 8000, 'AUS': 120000, 'NZL': 45000, 'ARE': 12000,
         'ARG': 15000, 'CUB': 2000, 'IRN': 8000, 'ISR': 85000, 'MEX': 35000,
-        'ROU': 8000, 'SAU': 20000, 'SOM': 1000, 'UKR': 12000, 'VEN': 8000
+        'ROU': 8000, 'SAU': 20000, 'SOM': 1000, 'BGD': 800, 'ETH': 1500, 'IDN': 2000, 'NGA': 3000, 'PAK': 1500, 'UKR': 12000, 'VEN': 8000
     };
 
     const baseIllegal = {
@@ -3985,7 +4318,7 @@ function generateImmigrationData() {
         'NOR': 2000, 'SWE': 5000, 'FIN': 2000, 'KOR': 2000,
         'MYS': 8000, 'ZAF': 15000, 'AUS': 8000, 'NZL': 4000, 'ARE': 3000,
         'ARG': 8000, 'CUB': 1000, 'IRN': 3000, 'ISR': 5000, 'MEX': 5000,
-        'ROU': 4000, 'SAU': 6000, 'SOM': 3000, 'UKR': 5000, 'VEN': 4000
+        'ROU': 4000, 'SAU': 6000, 'SOM': 3000, 'BGD': 1500, 'ETH': 2000, 'IDN': 3000, 'NGA': 5000, 'PAK': 2500, 'UKR': 5000, 'VEN': 4000
     };
 
     const basePopulation = {
@@ -3995,7 +4328,7 @@ function generateImmigrationData() {
         'NOR': 4.24, 'SWE': 8.6, 'FIN': 5.0, 'KOR': 43.2,
         'MYS': 17.5, 'ZAF': 35.2, 'AUS': 17.1, 'NZL': 3.4,
         'ARG': 32.5, 'CUB': 10.6, 'IRN': 56.8, 'ISR': 4.7, 'MEX': 86.2,
-        'ROU': 23.2, 'SAU': 16.4, 'SOM': 7.0, 'UKR': 51.9, 'VEN': 19.7
+        'ROU': 23.2, 'SAU': 16.4, 'SOM': 7.0, 'BGD': 105, 'ETH': 48, 'IDN': 181, 'NGA': 95, 'PAK': 108, 'UKR': 51.9, 'VEN': 19.7
     };
 
     const popGrowthRates = {
@@ -4005,7 +4338,7 @@ function generateImmigrationData() {
         'NOR': 1.006, 'SWE': 1.0045, 'FIN': 1.0035, 'KOR': 1.008,
         'MYS': 1.022, 'ZAF': 1.02, 'AUS': 1.012, 'NZL': 1.01,
         'ARG': 1.013, 'CUB': 1.005, 'IRN': 1.020, 'ISR': 1.022, 'MEX': 1.018,
-        'ROU': 0.998, 'SAU': 1.035, 'SOM': 1.028, 'UKR': 0.995, 'VEN': 1.020
+        'ROU': 0.998, 'SAU': 1.035, 'SOM': 1.028, 'BGD': 1.02, 'ETH': 1.03, 'IDN': 1.015, 'NGA': 1.026, 'PAK': 1.022, 'UKR': 0.995, 'VEN': 1.020
     };
 
     const expatProfile = {
@@ -4037,6 +4370,11 @@ function generateImmigrationData() {
         'ROU': {inboundBase: 8000, outboundBase: 30000, inboundTrend: 0.010, outboundTrend: 0.030},
         'SAU': {inboundBase: 25000, outboundBase: 8000, inboundTrend: 0.022, outboundTrend: 0.010},
         'SOM': {inboundBase: 1000, outboundBase: 15000, inboundTrend: 0.005, outboundTrend: 0.035},
+        'BGD': {inboundBase: 2000, outboundBase: 450000, inboundTrend: 0.01, outboundTrend: 0.028},
+        'ETH': {inboundBase: 3000, outboundBase: 80000, inboundTrend: 0.012, outboundTrend: 0.03},
+        'IDN': {inboundBase: 15000, outboundBase: 120000, inboundTrend: 0.015, outboundTrend: 0.02},
+        'NGA': {inboundBase: 8000, outboundBase: 95000, inboundTrend: 0.012, outboundTrend: 0.025},
+        'PAK': {inboundBase: 5000, outboundBase: 220000, inboundTrend: 0.01, outboundTrend: 0.026},
         'UKR': {inboundBase: 10000, outboundBase: 40000, inboundTrend: 0.008, outboundTrend: 0.025},
         'VEN': {inboundBase: 12000, outboundBase: 30000, inboundTrend: 0.008, outboundTrend: 0.030}
     };
@@ -4127,7 +4465,7 @@ function generateEmploymentData() {
         'JPN': 70.8, 'CHN': 73.2, 'MYS': 58.5, 'IND': 55.7, 'ARE': 63.2,
         'RUS': 67.9, 'ZAF': 43.2, 'BRA': 55.8, 'AUS': 59.1, 'NZL': 58.9,
         'ARG': 52.5, 'CUB': 61.8, 'IRN': 48.2, 'ISR': 52.8, 'MEX': 55.2,
-        'ROU': 68.2, 'SAU': 52.4, 'SOM': 62.0, 'UKR': 66.5, 'VEN': 57.8
+        'ROU': 68.2, 'SAU': 52.4, 'SOM': 62.0, 'BGD': 68, 'ETH': 72, 'IDN': 62, 'NGA': 58, 'PAK': 52, 'UKR': 66.5, 'VEN': 57.8
     };
     const empBase1990 = {
         'USA': 62.8, 'CAN': 61.5, 'NOR': 64.2, 'SWE': 63.1, 'FIN': 62.5,
@@ -4135,7 +4473,7 @@ function generateEmploymentData() {
         'JPN': 63.3, 'CHN': 67.5, 'MYS': 58.9, 'IND': 55.2, 'ARE': 65.0,
         'RUS': 58.9, 'ZAF': 45.2, 'BRA': 60.1, 'AUS': 59.9, 'NZL': 59.5,
         'ARG': 51.8, 'CUB': 58.2, 'IRN': 46.5, 'ISR': 51.8, 'MEX': 56.8,
-        'ROU': 60.2, 'SAU': 55.2, 'SOM': 58.4, 'UKR': 57.8, 'VEN': 58.5
+        'ROU': 60.2, 'SAU': 55.2, 'SOM': 58.4, 'BGD': 66.5, 'ETH': 70.5, 'IDN': 61.5, 'NGA': 56.5, 'PAK': 50.5, 'UKR': 57.8, 'VEN': 58.5
     };
     const unempBase1970 = {
         'USA': 4.9, 'CAN': 5.8, 'NOR': 0.8, 'SWE': 1.5, 'FIN': 1.9,
@@ -4143,7 +4481,7 @@ function generateEmploymentData() {
         'JPN': 1.1, 'CHN': 2.6, 'MYS': 3.0, 'IND': 2.5, 'ARE': 1.5,
         'RUS': 1.5, 'ZAF': 12.0, 'BRA': 3.5, 'AUS': 1.6, 'NZL': 0.3,
         'ARG': 4.5, 'CUB': 1.5, 'IRN': 5.2, 'ISR': 3.8, 'MEX': 4.2,
-        'ROU': 1.2, 'SAU': 3.8, 'SOM': 6.5, 'UKR': 1.8, 'VEN': 5.2
+        'ROU': 1.2, 'SAU': 3.8, 'SOM': 6.5, 'BGD': 3.5, 'ETH': 4, 'IDN': 2.8, 'NGA': 5.5, 'PAK': 3.8, 'UKR': 1.8, 'VEN': 5.2
     };
     const unempBase1990 = {
         'USA': 5.6, 'CAN': 8.1, 'NOR': 3.2, 'SWE': 1.9, 'FIN': 3.1,
@@ -4151,7 +4489,7 @@ function generateEmploymentData() {
         'JPN': 2.1, 'CHN': 2.5, 'MYS': 4.5, 'IND': 2.3, 'ARE': 2.0,
         'RUS': 5.2, 'ZAF': 16.5, 'BRA': 4.3, 'AUS': 6.9, 'NZL': 6.2,
         'ARG': 7.5, 'CUB': 6.0, 'IRN': 10.5, 'ISR': 9.6, 'MEX': 2.7,
-        'ROU': 3.0, 'SAU': 6.5, 'SOM': 14.0, 'UKR': 0.5, 'VEN': 10.4
+        'ROU': 3.0, 'SAU': 6.5, 'SOM': 14.0, 'BGD': 3.2, 'ETH': 5.5, 'IDN': 3.5, 'NGA': 7.5, 'PAK': 4.5, 'UKR': 0.5, 'VEN': 10.4
     };
 
     const employment = {};
@@ -4210,6 +4548,7 @@ function generateSalaryData() {
         'RUS': 1680, 'ZAF': 820, 'BRA': 400, 'AUS': 3050, 'NZL': 2550,
         'ARG': 1380, 'CUB': 750, 'IRN': 430, 'ISR': 3100,
         'MEX': 650, 'ROU': 1400, 'SAU': 520, 'SOM': 150,
+        'BGD': 120, 'ETH': 80, 'IDN': 95, 'NGA': 180, 'PAK': 150,
         'UKR': 800, 'VEN': 1150
     };
     const baseSalary1990 = {
@@ -4219,6 +4558,7 @@ function generateSalaryData() {
         'RUS': 4200, 'ZAF': 4800, 'BRA': 8500, 'AUS': 25500, 'NZL': 25600,
         'ARG': 4200, 'CUB': 1680, 'IRN': 1490, 'ISR': 11800,
         'MEX': 2800, 'ROU': 1490, 'SAU': 6720, 'SOM': 114,
+        'BGD': 280, 'ETH': 220, 'IDN': 580, 'NGA': 520, 'PAK': 420,
         'UKR': 1420, 'VEN': 2430
     };
     const growthRates = {
@@ -4228,6 +4568,7 @@ function generateSalaryData() {
         'RUS': 1.0395, 'ZAF': 1.0207, 'BRA': 1.0336, 'AUS': 1.0378, 'NZL': 1.0343,
         'ARG': 1.0210, 'CUB': 1.0110, 'IRN': 1.0240, 'ISR': 1.0310,
         'MEX': 1.0185, 'ROU': 1.0470, 'SAU': 1.0115, 'SOM': 1.0045,
+        'BGD': 1.048, 'ETH': 1.052, 'IDN': 1.05, 'NGA': 1.02, 'PAK': 1.026,
         'UKR': 1.0175, 'VEN': 0.9970
     };
 
@@ -4300,6 +4641,11 @@ function generateCostOfLivingData() {
         'ROU': {food: 140, rent: 180, house: 38000, electricity: 55, gas: 1.10, car: 8500},
         'SAU': {food: 220, rent: 500, house: 180000, electricity: 20, gas: 0.12, car: 18000},
         'SOM': {food: 50, rent: 60, house: 5000, electricity: 25, gas: 0.95, car: 3000},
+        'BGD': {food: 45, rent: 55, house: 4500, electricity: 12, gas: 0.55, car: 3500},
+        'ETH': {food: 40, rent: 45, house: 4000, electricity: 10, gas: 0.7, car: 2800},
+        'IDN': {food: 70, rent: 100, house: 12000, electricity: 20, gas: 0.35, car: 5500},
+        'NGA': {food: 75, rent: 110, house: 15000, electricity: 25, gas: 0.4, car: 6000},
+        'PAK': {food: 55, rent: 70, house: 7000, electricity: 15, gas: 0.5, car: 4500},
         'UKR': {food: 130, rent: 160, house: 32000, electricity: 40, gas: 0.95, car: 7000},
         'VEN': {food: 140, rent: 160, house: 30000, electricity: 10, gas: 0.01, car: 7500}
     };
@@ -4356,7 +4702,7 @@ function generateHealthcareData() {
         'JPN': 1800, 'CHN': 400, 'MYS': 600, 'IND': 200, 'ARE': 2500,
         'RUS': 600, 'ZAF': 500, 'BRA': 800, 'AUS': 1400, 'NZL': 1700,
         'ARG': 750, 'CUB': 200, 'IRN': 120, 'ISR': 1200, 'MEX': 280,
-        'ROU': 150, 'SAU': 600, 'SOM': 15, 'UKR': 80, 'VEN': 250
+        'ROU': 150, 'SAU': 600, 'SOM': 15, 'BGD': 25, 'ETH': 12, 'IDN': 45, 'NGA': 35, 'PAK': 30, 'UKR': 80, 'VEN': 250
     };
 
     const data = {};
@@ -4380,7 +4726,7 @@ function generateTradeData() {
         'JPN': 19, 'CHN': 2.2, 'MYS': 1.7, 'IND': 2.0, 'ARE': 0.9,
         'RUS': 13, 'ZAF': 3.0, 'BRA': 2.7, 'AUS': 4.8, 'NZL': 1.3,
         'ARG': 1.8, 'CUB': 1.1, 'IRN': 2.4, 'ISR': 0.8, 'MEX': 1.3,
-        'ROU': 1.9, 'SAU': 2.4, 'SOM': 0.05, 'UKR': 1.5, 'VEN': 2.4
+        'ROU': 1.9, 'SAU': 2.4, 'SOM': 0.05, 'BGD': 0.3, 'ETH': 0.2, 'IDN': 1.2, 'NGA': 1.5, 'PAK': 0.7, 'UKR': 1.5, 'VEN': 2.4
     };
     const baseImports1970 = {
         'USA': 42, 'CAN': 14, 'NOR': 4.0, 'SWE': 7.2, 'FIN': 2.4,
@@ -4388,7 +4734,7 @@ function generateTradeData() {
         'JPN': 16, 'CHN': 2.3, 'MYS': 1.4, 'IND': 2.5, 'ARE': 0.3,
         'RUS': 12, 'ZAF': 2.8, 'BRA': 2.5, 'AUS': 4.4, 'NZL': 1.3,
         'ARG': 1.7, 'CUB': 1.3, 'IRN': 1.8, 'ISR': 1.4, 'MEX': 2.5,
-        'ROU': 1.7, 'SAU': 0.8, 'SOM': 0.08, 'UKR': 1.4, 'VEN': 1.7
+        'ROU': 1.7, 'SAU': 0.8, 'SOM': 0.08, 'BGD': 0.5, 'ETH': 0.3, 'IDN': 1.5, 'NGA': 1.2, 'PAK': 1, 'UKR': 1.4, 'VEN': 1.7
     };
     const baseExports1990 = {
         'USA': 393, 'CAN': 128, 'NOR': 45, 'SWE': 68, 'FIN': 32,
@@ -4396,7 +4742,7 @@ function generateTradeData() {
         'JPN': 287, 'CHN': 62, 'MYS': 29, 'IND': 18, 'ARE': 25,
         'RUS': 68, 'ZAF': 23, 'BRA': 31, 'AUS': 42, 'NZL': 12,
         'ARG': 12.3, 'CUB': 5.4, 'IRN': 19.3, 'ISR': 11.6, 'MEX': 40.7,
-        'ROU': 5.8, 'SAU': 44.4, 'SOM': 0.16, 'UKR': 8.0, 'VEN': 17.5
+        'ROU': 5.8, 'SAU': 44.4, 'SOM': 0.16, 'BGD': 1.7, 'ETH': 0.5, 'IDN': 25.7, 'NGA': 13, 'PAK': 5.5, 'UKR': 8.0, 'VEN': 17.5
     };
     const baseImports1990 = {
         'USA': 517, 'CAN': 116, 'NOR': 38, 'SWE': 62, 'FIN': 28,
@@ -4404,7 +4750,7 @@ function generateTradeData() {
         'JPN': 235, 'CHN': 53, 'MYS': 35, 'IND': 24, 'ARE': 18,
         'RUS': 58, 'ZAF': 19, 'BRA': 22, 'AUS': 44, 'NZL': 11,
         'ARG': 4.1, 'CUB': 7.4, 'IRN': 15.1, 'ISR': 15.2, 'MEX': 29.8,
-        'ROU': 9.7, 'SAU': 24.1, 'SOM': 0.35, 'UKR': 7.5, 'VEN': 6.6
+        'ROU': 9.7, 'SAU': 24.1, 'SOM': 0.35, 'BGD': 3.6, 'ETH': 1.2, 'IDN': 21.8, 'NGA': 5.5, 'PAK': 7.4, 'UKR': 7.5, 'VEN': 6.6
     };
     const expGrowthRates = {
         'USA': 1.048, 'CAN': 1.041, 'NOR': 1.038, 'SWE': 1.042, 'FIN': 1.035,
@@ -4412,7 +4758,7 @@ function generateTradeData() {
         'JPN': 1.034, 'CHN': 1.135, 'MYS': 1.082, 'IND': 1.095, 'ARE': 1.075,
         'RUS': 1.048, 'ZAF': 1.042, 'BRA': 1.055, 'AUS': 1.048, 'NZL': 1.041,
         'ARG': 1.050, 'CUB': 1.018, 'IRN': 1.038, 'ISR': 1.070, 'MEX': 1.080,
-        'ROU': 1.065, 'SAU': 1.058, 'SOM': 1.015, 'UKR': 1.042, 'VEN': 1.025
+        'ROU': 1.065, 'SAU': 1.058, 'SOM': 1.015, 'BGD': 1.085, 'ETH': 1.055, 'IDN': 1.078, 'NGA': 1.048, 'PAK': 1.055, 'UKR': 1.042, 'VEN': 1.025
     };
     const impGrowthRates = {
         'USA': 1.052, 'CAN': 1.043, 'NOR': 1.042, 'SWE': 1.044, 'FIN': 1.038,
@@ -4420,7 +4766,7 @@ function generateTradeData() {
         'JPN': 1.036, 'CHN': 1.140, 'MYS': 1.085, 'IND': 1.100, 'ARE': 1.085,
         'RUS': 1.045, 'ZAF': 1.038, 'BRA': 1.052, 'AUS': 1.050, 'NZL': 1.042,
         'ARG': 1.052, 'CUB': 1.020, 'IRN': 1.040, 'ISR': 1.072, 'MEX': 1.082,
-        'ROU': 1.068, 'SAU': 1.062, 'SOM': 1.016, 'UKR': 1.044, 'VEN': 1.022
+        'ROU': 1.068, 'SAU': 1.062, 'SOM': 1.016, 'BGD': 1.08, 'ETH': 1.06, 'IDN': 1.082, 'NGA': 1.055, 'PAK': 1.058, 'UKR': 1.044, 'VEN': 1.022
     };
 
     const exports = {};
@@ -4489,6 +4835,11 @@ function generateSocialIndicators() {
         'ROU': {homeOwn: 96.0, age: 33.8, edu: 78.0, violence: 3.5, literacy: 97.0, genderEq: 0.70, dei: 42, happiness: 5.5, politicalFree: 5.5, freeSpeech: 6.5, legacyMediaRating: 5.8, newMediaRating: 2.0, newMediaShare: 2},
         'SAU': {homeOwn: 60.0, age: 19.5, edu: 55.0, violence: 1.5, literacy: 78.0, genderEq: 0.45, dei: 22, happiness: 5.5, politicalFree: 1.5, freeSpeech: 1.2, legacyMediaRating: 4.8, newMediaRating: 2.0, newMediaShare: 1},
         'SOM': {homeOwn: 45.0, age: 16.5, edu: 18.0, violence: 52.0, literacy: 20.0, genderEq: 0.38, dei: 18, happiness: 3.2, politicalFree: 1.5, freeSpeech: 1.8, legacyMediaRating: 3.5, newMediaRating: 1.8, newMediaShare: 1},
+        'BGD': {homeOwn: 85, age: 18.5, edu: 32, violence: 4.5, literacy: 35, genderEq: 0.48, dei: 32, happiness: 4.5, politicalFree: 5.5, freeSpeech: 5.2, legacyMediaRating: 5, newMediaRating: 1.8, newMediaShare: 1},
+        'ETH': {homeOwn: 70, age: 17, edu: 22, violence: 8.5, literacy: 28, genderEq: 0.42, dei: 28, happiness: 3.8, politicalFree: 2.5, freeSpeech: 2.2, legacyMediaRating: 4, newMediaRating: 1.6, newMediaShare: 1},
+        'IDN': {homeOwn: 78, age: 22.5, edu: 55, violence: 2.8, literacy: 82, genderEq: 0.58, dei: 42, happiness: 5.5, politicalFree: 5.8, freeSpeech: 5.5, legacyMediaRating: 5.5, newMediaRating: 2, newMediaShare: 2},
+        'NGA': {homeOwn: 65, age: 17.5, edu: 38, violence: 18, literacy: 55, genderEq: 0.5, dei: 35, happiness: 4.8, politicalFree: 5, freeSpeech: 5.2, legacyMediaRating: 5, newMediaRating: 1.9, newMediaShare: 1},
+        'PAK': {homeOwn: 80, age: 19, edu: 35, violence: 6.5, literacy: 38, genderEq: 0.45, dei: 30, happiness: 4.6, politicalFree: 4.2, freeSpeech: 4, legacyMediaRating: 4.8, newMediaRating: 1.9, newMediaShare: 1},
         'UKR': {homeOwn: 92.0, age: 34.5, edu: 90.0, violence: 6.5, literacy: 99.0, genderEq: 0.72, dei: 42, happiness: 5.5, politicalFree: 5.8, freeSpeech: 6.0, legacyMediaRating: 5.8, newMediaRating: 2.0, newMediaShare: 2},
         'VEN': {homeOwn: 70.0, age: 24.5, edu: 68.0, violence: 22.0, literacy: 90.0, genderEq: 0.65, dei: 44, happiness: 6.2, politicalFree: 6.0, freeSpeech: 5.5, legacyMediaRating: 5.5, newMediaRating: 2.1, newMediaShare: 2}
     };
@@ -4540,7 +4891,7 @@ function generateSocialIndicators() {
 
             // Education - steadily improving
             let eduTrend = 0.15;
-            if (code === 'CHN' || code === 'IND') eduTrend = 0.25; // Faster improvement
+            if (code === 'CHN' || code === 'IND' || code === 'BGD' || code === 'PAK' || code === 'IDN' || code === 'ETH' || code === 'NGA') eduTrend = 0.25;
             let edu = values.edu + idx * eduTrend;
             edu = Math.min(98, edu);
 
@@ -4554,7 +4905,7 @@ function generateSocialIndicators() {
             // Literacy - rapidly improving, especially in developing countries
             let literacyTrend = 0.3; // 0.3% per year improvement
             if (code === 'CHN') literacyTrend = 1.0; // Rapid improvement in China
-            else if (code === 'IND') literacyTrend = 0.8; // Fast improvement in India
+            else if (code === 'IND' || code === 'BGD' || code === 'PAK' || code === 'IDN' || code === 'NGA' || code === 'ETH') literacyTrend = 0.8;
             else if (code === 'JPN' || code === 'NOR') literacyTrend = 0.05; // Already high
 
             let literacy = values.literacy + idx * literacyTrend * random(0.95, 1.05);
@@ -4572,7 +4923,7 @@ function generateSocialIndicators() {
             let deiTrend = 0.35;
             if (code === 'NOR' || code === 'SWE' || code === 'FIN' || code === 'CAN' || code === 'AUS' || code === 'NZL') deiTrend = 0.45;
             else if (code === 'CHN' || code === 'ARE' || code === 'RUS') deiTrend = 0.15;
-            else if (code === 'IND' || code === 'MYS' || code === 'BRA' || code === 'ZAF') deiTrend = 0.28;
+            else if (code === 'IND' || code === 'MYS' || code === 'BRA' || code === 'ZAF' || code === 'IDN' || code === 'BGD' || code === 'PAK' || code === 'NGA' || code === 'ETH') deiTrend = 0.28;
             if (year >= 2015 && (code === 'USA' || code === 'GBR' || code === 'FRA' || code === 'ITA')) deiTrend *= 0.80;
             if (year >= 2020 && (code === 'USA' || code === 'CAN' || code === 'GBR' || code === 'AUS' || code === 'NZL')) deiTrend += 0.08;
             let dei = values.dei + idx * deiTrend * random(0.97, 1.03);
@@ -4667,7 +5018,7 @@ function generateSocialIndicators() {
             } else {
                 newMediaShare += (1995 - 1970) * 0.2 + (2005 - 1995) * 2.0 + (2015 - 2005) * 2.8 + (year - 2015) * 1.4;
             }
-            if (code === 'IND' || code === 'CHN' || code === 'MYS') newMediaShare += 5;
+            if (code === 'IND' || code === 'CHN' || code === 'MYS' || code === 'IDN' || code === 'BGD' || code === 'PAK' || code === 'NGA') newMediaShare += 5;
             else if (code === 'NOR' || code === 'FIN') newMediaShare -= 4;
             newMediaShare = Math.max(1, Math.min(88, newMediaShare * random(0.97, 1.03)));
             const legacyMediaShare = Math.max(12, Math.min(99, 100 - newMediaShare));
@@ -4723,6 +5074,11 @@ function generateDemographicsData() {
         'ROU': {birthRate: 13.6, deathRate: 10.6, lifeExpectancy: 69.8, fertilityRate: 1.84, abortionRate: 170.0, infantMortality: 26.9},
         'SAU': {birthRate: 38.2, deathRate: 4.8, lifeExpectancy: 69.6, fertilityRate: 5.98, abortionRate: 1.0, infantMortality: 28.0},
         'SOM': {birthRate: 48.5, deathRate: 18.2, lifeExpectancy: 45.2, fertilityRate: 7.52, abortionRate: 3.0, infantMortality: 120.0},
+        'BGD': {birthRate: 35.5, deathRate: 11.5, lifeExpectancy: 56, fertilityRate: 4.85, abortionRate: 5, infantMortality: 95},
+        'ETH': {birthRate: 48, deathRate: 16.5, lifeExpectancy: 47.5, fertilityRate: 7.2, abortionRate: 4, infantMortality: 115},
+        'IDN': {birthRate: 26.5, deathRate: 8.2, lifeExpectancy: 62.5, fertilityRate: 3.12, abortionRate: 8, infantMortality: 55},
+        'NGA': {birthRate: 44, deathRate: 15.5, lifeExpectancy: 46.5, fertilityRate: 6.5, abortionRate: 6, infantMortality: 110},
+        'PAK': {birthRate: 40.5, deathRate: 10.5, lifeExpectancy: 60, fertilityRate: 6, abortionRate: 5, infantMortality: 90},
         'UKR': {birthRate: 12.6, deathRate: 12.1, lifeExpectancy: 70.5, fertilityRate: 1.89, abortionRate: 88.0, infantMortality: 13.0},
         'VEN': {birthRate: 28.5, deathRate: 4.9, lifeExpectancy: 71.2, fertilityRate: 3.56, abortionRate: 15.0, infantMortality: 25.0}
     };
@@ -4747,7 +5103,7 @@ function generateDemographicsData() {
             // Birth rate trends - generally declining, with some stabilization
             let birthTrend = -0.08; // 0.08 per year decline
             if (code === 'CHN' && year >= 1979) birthTrend = -0.25; // One-child policy effect
-            else if (code === 'IND') birthTrend = -0.12; // Slower decline
+            else if (code === 'IND' || code === 'PAK' || code === 'NGA' || code === 'ETH' || code === 'BGD') birthTrend = -0.12;
             else if (year >= 2010) birthTrend = -0.03; // Stabilization in recent years
 
             let birthRate = values.birthRate + idx * birthTrend * random(0.9, 1.1);
@@ -4773,7 +5129,7 @@ function generateDemographicsData() {
             // Fertility rate - declining but stabilizing
             let fertTrend = -0.02;
             if (code === 'CHN' && year >= 1979) fertTrend = -0.08; // One-child policy
-            else if (code === 'IND') fertTrend = -0.04; // Slower decline
+            else if (code === 'IND' || code === 'PAK' || code === 'NGA' || code === 'ETH' || code === 'BGD') fertTrend = -0.04;
             else if (year >= 2010) fertTrend = -0.005; // Near stabilization
 
             let fertRate = values.fertilityRate + idx * fertTrend * random(0.95, 1.05);
@@ -4785,7 +5141,7 @@ function generateDemographicsData() {
             else if (code === 'USA') abortionTrend = -0.16;
             else if (code === 'KOR') abortionTrend = -0.25;
             else if (code === 'ZAF') abortionTrend = year < 2000 ? 0.15 : -0.08;
-            else if (code === 'ARE' || code === 'MYS' || code === 'IND') abortionTrend = -0.03;
+            else if (code === 'ARE' || code === 'MYS' || code === 'IND' || code === 'IDN' || code === 'PAK' || code === 'BGD' || code === 'NGA' || code === 'ETH') abortionTrend = -0.03;
             else if (code === 'ROU') abortionTrend = -3.0;
 
             let abortionRate = values.abortionRate + idx * abortionTrend * random(0.94, 1.06);
@@ -4795,7 +5151,7 @@ function generateDemographicsData() {
             // Infant mortality - rapidly declining
             let infantTrend = -0.35; // 0.35 per year decline
             if (code === 'CHN') infantTrend = -0.8; // Rapid improvement
-            else if (code === 'IND') infantTrend = -0.6; // Fast improvement
+            else if (code === 'IND' || code === 'BGD' || code === 'IDN' || code === 'PAK' || code === 'NGA' || code === 'ETH') infantTrend = -0.6;
             else if (code === 'JPN') infantTrend = -0.15; // Already low
 
             let infantMort = values.infantMortality + idx * infantTrend * random(0.9, 1.1);
@@ -4844,6 +5200,11 @@ function generateHealthData() {
         'ROU': {obesity: 8.5, smoking: 35.0, diabetes: 3.2, mentalHealth: 15.5},
         'SAU': {obesity: 19.5, smoking: 16.0, diabetes: 10.2, mentalHealth: 14.0},
         'SOM': {obesity: 2.5, smoking: 12.0, diabetes: 2.1, mentalHealth: 18.5},
+        'BGD': {obesity: 1.5, smoking: 22, diabetes: 2.5, mentalHealth: 10.5},
+        'ETH': {obesity: 1.8, smoking: 8.5, diabetes: 1.8, mentalHealth: 12},
+        'IDN': {obesity: 2.5, smoking: 28, diabetes: 2.8, mentalHealth: 9.5},
+        'NGA': {obesity: 3.5, smoking: 10.5, diabetes: 2.2, mentalHealth: 11.5},
+        'PAK': {obesity: 2.8, smoking: 18.5, diabetes: 3.5, mentalHealth: 10},
         'UKR': {obesity: 16.5, smoking: 40.0, diabetes: 3.5, mentalHealth: 20.0},
         'VEN': {obesity: 13.5, smoking: 30.0, diabetes: 4.2, mentalHealth: 14.5}
     };
@@ -4866,7 +5227,7 @@ function generateHealthData() {
             USA: 12.5, CAN: 10.2, NOR: 9.8, SWE: 10.5, FIN: 9.2, GBR: 8.8, FRA: 9.5, DEU: 10.1,
             ITA: 8.6, KOR: 7.2, JPN: 8.0, CHN: 4.8, MYS: 4.2, IND: 3.6, ARE: 4.5, RUS: 5.4, ZAF: 8.1,
             BRA: 9.0, AUS: 9.8, NZL: 9.4, ARG: 9.2, CUB: 10.8, IRN: 5.8, ISR: 7.4, MEX: 5.6, ROU: 5.2,
-            SAU: 5.0, SOM: 4.5, UKR: 7.0, VEN: 4.8
+            SAU: 5.0, SOM: 4.5, BGD: 2.8, ETH: 3.2, IDN: 2.5, NGA: 3.5, PAK: 2.6, UKR: 7.0, VEN: 4.8
         };
         var healthSpendBase = baseHealthSpendGdp[code] || 6.5;
 
@@ -4891,7 +5252,7 @@ function generateHealthData() {
             // Diabetes - increasing due to obesity and lifestyle
             let diabetesTrend = 0.15;
             if (code === 'USA') diabetesTrend = 0.25; // Higher in USA
-            else if (code === 'IND') diabetesTrend = 0.2; // High in India
+            else if (code === 'IND' || code === 'PAK' || code === 'BGD') diabetesTrend = 0.2;
 
             let diabetes = values.diabetes + idx * diabetesTrend * random(0.9, 1.1);
             diabetes = Math.max(1, Math.min(15, diabetes));
@@ -4948,6 +5309,11 @@ function generateEnvironmentData() {
         'ROU': {co2Emissions: 8.2, renewableEnergy: 18.5, forestCoverage: 28.0, waterQuality: 65.0},
         'SAU': {co2Emissions: 12.5, renewableEnergy: 0.0, forestCoverage: 1.0, waterQuality: 55.0},
         'SOM': {co2Emissions: 0.1, renewableEnergy: 0.3, forestCoverage: 11.4, waterQuality: 28.0},
+        'BGD': {co2Emissions: 0.15, renewableEnergy: 0.5, forestCoverage: 12, waterQuality: 42},
+        'ETH': {co2Emissions: 0.08, renewableEnergy: 1.5, forestCoverage: 14, waterQuality: 35},
+        'IDN': {co2Emissions: 0.9, renewableEnergy: 5.5, forestCoverage: 62, waterQuality: 58},
+        'NGA': {co2Emissions: 0.6, renewableEnergy: 0.8, forestCoverage: 18, waterQuality: 45},
+        'PAK': {co2Emissions: 0.6, renewableEnergy: 1, forestCoverage: 3.5, waterQuality: 48},
         'UKR': {co2Emissions: 14.5, renewableEnergy: 6.8, forestCoverage: 15.9, waterQuality: 62.0},
         'VEN': {co2Emissions: 5.8, renewableEnergy: 68.0, forestCoverage: 54.5, waterQuality: 60.0}
     };
@@ -4996,7 +5362,7 @@ function generateEnvironmentData() {
             // Water quality - generally improving
             let waterTrend = 0.15; // 0.15 points per year improvement
             if (code === 'CHN') waterTrend = 0.25; // Rapid improvement in China
-            else if (code === 'IND') waterTrend = 0.2; // India improving
+            else if (code === 'IND' || code === 'BGD' || code === 'PAK' || code === 'IDN' || code === 'NGA' || code === 'ETH') waterTrend = 0.2;
 
             let water = values.waterQuality + idx * waterTrend * random(0.95, 1.05);
             water = Math.max(40, Math.min(95, water));
@@ -5042,6 +5408,11 @@ function generateTechnologyData() {
         'ROU': {internetUsers: 0.0, mobilePhones: 0.1, broadbandSpeed: 0.008, rndInvestment: 0.5},
         'SAU': {internetUsers: 0.0, mobilePhones: 1.0, broadbandSpeed: 0.015, rndInvestment: 0.3},
         'SOM': {internetUsers: 0.0, mobilePhones: 0.0, broadbandSpeed: 0.002, rndInvestment: 0.1},
+        'BGD': {internetUsers: 0, mobilePhones: 0, broadbandSpeed: 0.003, rndInvestment: 0.2},
+        'ETH': {internetUsers: 0, mobilePhones: 0, broadbandSpeed: 0.002, rndInvestment: 0.15},
+        'IDN': {internetUsers: 0, mobilePhones: 0.05, broadbandSpeed: 0.006, rndInvestment: 0.3},
+        'NGA': {internetUsers: 0, mobilePhones: 0, broadbandSpeed: 0.004, rndInvestment: 0.2},
+        'PAK': {internetUsers: 0, mobilePhones: 0, broadbandSpeed: 0.004, rndInvestment: 0.25},
         'UKR': {internetUsers: 0.0, mobilePhones: 0.1, broadbandSpeed: 0.008, rndInvestment: 0.8},
         'VEN': {internetUsers: 0.0, mobilePhones: 0.2, broadbandSpeed: 0.010, rndInvestment: 0.4}
     };
@@ -5138,6 +5509,11 @@ function generateAdditionalIndicators() {
         'ROU': {foodbank: 190, capitalGain: 2000, valuation: 18, productivity: 100},
         'SAU': {foodbank: 80, capitalGain: 8000, valuation: 55, productivity: 100},
         'SOM': {foodbank: 350, capitalGain: 200, valuation: 5, productivity: 100},
+        'BGD': {foodbank: 280, capitalGain: 400, valuation: 8, productivity: 100},
+        'ETH': {foodbank: 320, capitalGain: 250, valuation: 6, productivity: 100},
+        'IDN': {foodbank: 120, capitalGain: 1500, valuation: 18, productivity: 100},
+        'NGA': {foodbank: 250, capitalGain: 800, valuation: 12, productivity: 100},
+        'PAK': {foodbank: 260, capitalGain: 600, valuation: 10, productivity: 100},
         'UKR': {foodbank: 230, capitalGain: 1800, valuation: 15, productivity: 100},
         'VEN': {foodbank: 280, capitalGain: 1200, valuation: 12, productivity: 100}
     };
@@ -5167,7 +5543,8 @@ function generateAdditionalIndicators() {
             let productivityGrowth = 1.018;
             if (code === 'CHN') productivityGrowth = year < 2010 ? 1.050 : 1.028;
             else if (code === 'KOR') productivityGrowth = year < 2005 ? 1.036 : 1.020;
-            else if (code === 'IND') productivityGrowth = year < 2012 ? 1.032 : 1.022;
+            else if (code === 'IND' || code === 'BGD' || code === 'IDN') productivityGrowth = year < 2012 ? 1.032 : 1.022;
+            else if (code === 'PAK' || code === 'NGA' || code === 'ETH') productivityGrowth = year < 2012 ? 1.025 : 1.018;
             else if (code === 'JPN') productivityGrowth = year < 1995 ? 1.022 : 1.008;
             else if (code === 'ITA') productivityGrowth = year < 2000 ? 1.016 : 1.005;
             if (year === 2009) productivityGrowth *= 0.97;
@@ -5211,6 +5588,11 @@ function generateQualityOfLifeData() {
         'Romania':      {qol: 45, hdi: 0.705, gini: 28.5, corruption: 25},
         'Saudi Arabia': {qol: 55, hdi: 0.690, gini: 39.0, corruption: 45},
         'Somalia':      {qol: 18, hdi: 0.250, gini: 45.0, corruption: 8},
+        'Bangladesh':  {qol: 30, hdi: 0.39, gini: 28.5, corruption: 22},
+        'Ethiopia':    {qol: 22, hdi: 0.28, gini: 40, corruption: 18},
+        'Indonesia':   {qol: 42, hdi: 0.525, gini: 32, corruption: 28},
+        'Nigeria':     {qol: 28, hdi: 0.4, gini: 45, corruption: 20},
+        'Pakistan':    {qol: 32, hdi: 0.4, gini: 33, corruption: 22},
         'Ukraine':      {qol: 48, hdi: 0.714, gini: 25.5, corruption: 20},
         'Venezuela':    {qol: 50, hdi: 0.672, gini: 44.0, corruption: 30}
     };
@@ -5238,6 +5620,7 @@ function generateQualityOfLifeData() {
             else if (code === 'MEX') qolTrend = 0.18;
             else if (code === 'SAU') qolTrend = 0.35;
             else if (code === 'SOM') qolTrend = 0.05;
+            else if (code === 'BGD' || code === 'ETH' || code === 'IDN' || code === 'NGA' || code === 'PAK') qolTrend = 0.28;
             // Crisis shocks (additive, year-specific)
             let qolShock = (year === 2020) ? -2 : 0;
             if (code === 'VEN' && year >= 2014) qolShock -= Math.min(22, (year - 2013) * 3.0);
@@ -5261,6 +5644,7 @@ function generateQualityOfLifeData() {
             else if (code === 'ROU') hdiTrend = 0.004;
             else if (code === 'SAU') hdiTrend = 0.005;
             else if (code === 'SOM') hdiTrend = 0.003;
+            else if (code === 'BGD' || code === 'ETH' || code === 'IDN' || code === 'NGA' || code === 'PAK') hdiTrend = 0.006;
             let hdi = base.hdi + (idx - 20) * hdiTrend * random(0.95, 1.05);
             hdi = Math.max(0.2, Math.min(0.98, hdi));
 
@@ -5336,6 +5720,11 @@ function generateHealthAccessData() {
         'Romania':      {waitTime: 8,  physicians: 2.2, beds: 8.5},
         'Saudi Arabia': {waitTime: 4,  physicians: 1.7, beds: 2.2},
         'Somalia':      {waitTime: 30, physicians: 0.03, beds: 0.1},
+        'Bangladesh':  {waitTime: 8, physicians: 0.2, beds: 0.3},
+        'Ethiopia':    {waitTime: 20, physicians: 0.05, beds: 0.2},
+        'Indonesia':   {waitTime: 6, physicians: 0.2, beds: 0.6},
+        'Nigeria':     {waitTime: 12, physicians: 0.2, beds: 0.9},
+        'Pakistan':    {waitTime: 8, physicians: 0.5, beds: 0.6},
         'Ukraine':      {waitTime: 6,  physicians: 3.5, beds: 9.0},
         'Venezuela':    {waitTime: 5,  physicians: 1.8, beds: 0.9}
     };
@@ -5366,7 +5755,7 @@ function generateHealthAccessData() {
             let physTrend = 0.020;
             if (code === 'KOR') physTrend = 0.040;
             else if (code === 'CHN') physTrend = 0.030;
-            else if (code === 'IND') physTrend = 0.012;
+            else if (code === 'IND' || code === 'BGD' || code === 'PAK' || code === 'IDN' || code === 'NGA' || code === 'ETH') physTrend = 0.012;
             else if (code === 'RUS') physTrend = -0.018;
             else if (code === 'ARE') physTrend = 0.035;
             let physicians = base.physicians + idx * physTrend * random(0.95, 1.05);
@@ -5420,6 +5809,11 @@ function generateReligionData() {
         'Romania':      {christian: 94.0, muslim: 1.0,  hindu: 0.1,  buddhist: 0.1,  secular: 4.5},
         'Saudi Arabia': {christian: 4.0,  muslim: 95.0, hindu: 0.5,  buddhist: 0.2,  secular: 0.3},
         'Somalia':      {christian: 0.1,  muslim: 99.5, hindu: 0.1,  buddhist: 0.0,  secular: 0.3},
+        'Bangladesh':  {christian: 0.3, muslim: 88, hindu: 10.5, buddhist: 0.6, secular: 0.6},
+        'Ethiopia':    {christian: 62, muslim: 33, hindu: 0.1, buddhist: 0.1, secular: 4},
+        'Indonesia':   {christian: 9.5, muslim: 87, hindu: 1.8, buddhist: 0.8, secular: 0.9},
+        'Nigeria':     {christian: 48, muslim: 48, hindu: 0.1, buddhist: 0.1, secular: 3.5},
+        'Pakistan':    {christian: 1.5, muslim: 96.5, hindu: 1.2, buddhist: 0.1, secular: 0.7},
         'Ukraine':      {christian: 88.0, muslim: 1.5,  hindu: 0.2,  buddhist: 0.2,  secular: 10.0},
         'Venezuela':    {christian: 92.0, muslim: 0.2,  hindu: 0.1,  buddhist: 0.1,  secular: 7.5}
     };
@@ -5454,6 +5848,11 @@ function generateReligionData() {
         'Romania':      {christian: -0.20, muslim: 0,     hindu: 0,     buddhist: 0,     secular: +0.20},
         'Saudi Arabia': {christian: -0.02, muslim: 0,     hindu: +0.01, buddhist: 0,     secular: +0.01},
         'Somalia':      {christian: 0,     muslim: 0,     hindu: 0,     buddhist: 0,     secular: 0},
+        'Bangladesh':  {christian: 0,     muslim: +0.02, hindu: -0.02, buddhist: 0,     secular: 0},
+        'Ethiopia':    {christian: -0.05, muslim: +0.04, hindu: 0,     buddhist: 0,     secular: +0.01},
+        'Indonesia':   {christian: 0,     muslim: +0.01, hindu: -0.01, buddhist: 0,     secular: 0},
+        'Nigeria':     {christian: -0.02, muslim: +0.02, hindu: 0,     buddhist: 0,     secular: 0},
+        'Pakistan':    {christian: -0.01, muslim: +0.01, hindu: 0,     buddhist: 0,     secular: 0},
         'Ukraine':      {christian: -0.15, muslim: +0.01, hindu: 0,     buddhist: 0,     secular: +0.14},
         'Venezuela':    {christian: -0.20, muslim: 0,     hindu: 0,     buddhist: 0,     secular: +0.20}
     };
@@ -5496,17 +5895,20 @@ function generateTelecomData() {
     // Monthly phone contract (USD, 1970 baseline — landline era; transitions to mobile)
     const phoneBase = {
         USA: 12, CAN: 10, NOR: 14, SWE:  8, FIN:  7, GBR: 10, FRA:  6, DEU: 11, ITA:  9,
-        KOR:  5, JPN: 14, CHN:  1, MYS:  3, IND: 0.5, ARE:  7, RUS: 1.5, ZAF:  4, BRA:  3, AUS: 10, NZL: 10
+        KOR:  5, JPN: 14, CHN:  1, MYS:  3, IND: 0.5, ARE:  7, RUS: 1.5, ZAF:  4, BRA:  3, AUS: 10, NZL: 10,
+        BGD: 0.4, ETH: 0.3, IDN: 0.8, NGA: 0.5, PAK: 0.5
     };
     // Monthly internet contract at 1993 launch (dial-up era, USD)
     const internetStart = {
         USA: 18, CAN: 16, NOR: 18, SWE: 17, FIN: 17, GBR: 15, FRA: 14, DEU: 15, ITA: 12,
-        KOR: 14, JPN: 16, CHN:  5, MYS:  8, IND:  3, ARE: 12, RUS:  7, ZAF:  9, BRA: 10, AUS: 16, NZL: 15
+        KOR: 14, JPN: 16, CHN:  5, MYS:  8, IND:  3, ARE: 12, RUS:  7, ZAF:  9, BRA: 10, AUS: 16, NZL: 15,
+        BGD: 2, ETH: 2, IDN: 4, NGA: 3, PAK: 3
     };
     // Monthly TV / cable subscription (USD, 1970 baseline)
     const tvBase = {
         USA:  4.0, CAN:  3.5, NOR:  1.8, SWE:  1.8, FIN:  1.5, GBR:  2.0, FRA:  1.5, DEU:  1.2, ITA:  1.2,
-        KOR:  0.8, JPN:  3.0, CHN:  0.4, MYS:  0.8, IND:  0.3, ARE:  2.0, RUS:  0.5, ZAF:  1.0, BRA:  1.5, AUS:  2.0, NZL:  1.8
+        KOR:  0.8, JPN:  3.0, CHN:  0.4, MYS:  0.8, IND:  0.3, ARE:  2.0, RUS:  0.5, ZAF:  1.0, BRA:  1.5, AUS:  2.0, NZL:  1.8,
+        BGD: 0.2, ETH: 0.15, IDN: 0.4, NGA: 0.3, PAK: 0.25
     };
 
     const result = { phone: {}, internet: {}, tv: {} };
@@ -5766,6 +6168,7 @@ function buildEuropeAggregate(data) {
 }
 
 let DATA = buildEuropeAggregate(buildSyntheticData());
+window.DATA = DATA;
 
 function wbIsoList() {
     return [...new Set(Object.values(COUNTRY_CODES))].sort().join(';');
@@ -6072,8 +6475,10 @@ function applyWdiAccuracyBadges(wdiMergeSucceeded) {
     <script src="dashboard-phase2.js"></script>
     <script src="dashboard-i18n.js"></script>
     <script src="dashboard-i18n-fr-content.js"></script>
+    <script src="dashboard-i18n-es.js"></script>
     <script src="dashboard-core.js"></script>
     <script src="dashboard-nav.js"></script>
+    <script src="dashboard-overview.js"></script>
 
     <!-- Chart Management Script -->
     <script>
@@ -6189,7 +6594,10 @@ window.refreshTabCharts = refreshTabCharts;
 function updateChartDimensions() {
     const baseHeight = 350;
     const heightPerCountry = 21;
-    const maxHeight = Math.min(560, baseHeight + (selectedCountries.length * heightPerCountry));
+    // No low ceiling here on purpose — with every country selected the plot area needs to
+    // actually grow so 30+ overlapping lines stay visually separable instead of compressing
+    // into the same fixed 560px band. 1500 is just a sanity backstop, not a normal target.
+    const maxHeight = Math.min(1500, baseHeight + (selectedCountries.length * heightPerCountry));
 
     document.querySelectorAll('canvas').forEach(canvas => {
         canvas.style.maxHeight = maxHeight + 'px';
@@ -6649,6 +7057,10 @@ function applyDashboardLocale() {
         themeBtn.setAttribute('title', DashboardI18n.t('theme.toggleTitle'));
         themeBtn.setAttribute('aria-label', DashboardI18n.t('theme.toggleAria'));
     }
+    if (typeof ChartsOverview !== 'undefined') {
+        if (ChartsOverview.setMetric) ChartsOverview.setMetric(ChartsOverview.getState().metric);
+        else if (ChartsOverview.refresh) ChartsOverview.refresh();
+    }
 }
 
 window.applyDashboardLocale = applyDashboardLocale;
@@ -6711,6 +7123,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }());
     createCountryChips();
+    if (typeof ChartsOverview !== 'undefined' && ChartsOverview.init) {
+        ChartsOverview.init();
+    }
 
     if (typeof DashboardNav !== 'undefined' && DashboardNav.applyUrlCountriesOnly) {
         DashboardNav.applyUrlCountriesOnly();
@@ -6732,6 +7147,9 @@ document.addEventListener('DOMContentLoaded', function() {
     updateDataQualityPanel();
     if (typeof updateStatisticsSummary === 'function') updateStatisticsSummary();
     applyDashboardLocale();
+    if (typeof ChartsOverview !== 'undefined' && ChartsOverview.refresh) {
+        ChartsOverview.refresh();
+    }
     if (typeof bindChartResizeObservers === 'function') bindChartResizeObservers();
 
     (async function () {
@@ -6763,6 +7181,9 @@ document.addEventListener('DOMContentLoaded', function() {
         updateChartDimensions();
         resizeAllCharts();
         applyDashboardLocale();
+        if (typeof ChartsOverview !== 'undefined' && ChartsOverview.refresh) {
+            ChartsOverview.refresh();
+        }
         requestAnimationFrame(function () {
             requestAnimationFrame(function () {
                 if (typeof onLayoutResize === 'function') onLayoutResize();
@@ -6779,6 +7200,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function createCountryChips() {
     const container = document.getElementById('countryChips');
+    if (!container) return;
+    container.innerHTML = '';
 
     DISPLAY_COUNTRIES.forEach(country => {
         const chip = document.createElement('div');
@@ -6788,6 +7211,7 @@ function createCountryChips() {
         container.appendChild(chip);
     });
 }
+window.createCountryChips = createCountryChips;
 
 function getCountryDisplayName(country) {
     const locale = (typeof getLocale === 'function') ? getLocale() : 'en';
@@ -6828,11 +7252,17 @@ function getCountryDisplayName(country) {
         'Argentina': 'Argentine',
         'Ukraine': 'Ukraine',
         'Somalia': 'Somalie',
-        'Venezuela': 'Venezuela'
+        'Venezuela': 'Venezuela',
+        'Bangladesh': 'Bangladesh',
+        'Ethiopia': 'Éthiopie',
+        'Indonesia': 'Indonésie',
+        'Nigeria': 'Nigeria',
+        'Pakistan': 'Pakistan'
     };
 
     return countryFr[country] || country;
 }
+window.getCountryDisplayName = getCountryDisplayName;
 
 function toggleCountry(country, chipElement) {
     const index = selectedCountries.indexOf(country);
@@ -6858,6 +7288,9 @@ function toggleCountry(country, chipElement) {
 
     updateAllCharts();
     if (typeof updateStatisticsSummary === 'function') updateStatisticsSummary();
+    if (typeof ChartsOverview !== 'undefined' && ChartsOverview.refresh) {
+        ChartsOverview.refresh();
+    }
     if (typeof DashboardNav !== 'undefined' && DashboardNav.syncUrl) {
         DashboardNav.syncUrl({ tab: DashboardNav.getActiveTabId() || 'tab-economic' });
     }
@@ -6881,6 +7314,41 @@ function getChartData(dataSource, countries = selectedCountries) {
     };
 }
 
+/**
+ * Highlight one dataset's line (bold, full color) and dim the rest (thin, faded)
+ * so the country under the cursor — or under the hovered legend swatch — pops out
+ * against the other lines. Pass null to restore every line to its normal look.
+ */
+function setChartHoverHighlight(chart, hoverIndex) {
+    if (!chart || !chart.data || !chart.data.datasets) return;
+    var changed = false;
+    chart.data.datasets.forEach(function (ds, i) {
+        if (!ds._baseColor) ds._baseColor = ds.borderColor;
+        var wantColor, wantWidth, wantOrder;
+        if (hoverIndex == null) {
+            wantColor = ds._baseColor;
+            wantWidth = 2;
+            wantOrder = 0;
+        } else if (i === hoverIndex) {
+            wantColor = ds._baseColor;
+            wantWidth = 4;
+            // Datasets draw in ascending `order`, last-drawn on top — push the
+            // hovered line's order above every other dataset so it renders
+            // above the rest of the stack instead of getting buried under them.
+            wantOrder = 1;
+        } else {
+            wantColor = ds._baseColor + '26'; // ~15% opacity
+            wantWidth = 1.5;
+            wantOrder = 0;
+        }
+        if (ds.borderColor !== wantColor || ds.borderWidth !== wantWidth || ds.order !== wantOrder) changed = true;
+        ds.borderColor = wantColor;
+        ds.borderWidth = wantWidth;
+        ds.order = wantOrder;
+    });
+    if (changed) chart.update('none');
+}
+
 function getChartOptions(yAxisLabel, stacked = false) {
     const isDark = document.body.classList.contains('dark-theme');
     const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
@@ -6898,13 +7366,48 @@ function getChartOptions(yAxisLabel, stacked = false) {
                 display: true,
                 position: 'top',
                 labels: {
-                    color: textColor
+                    color: textColor,
+                    // Keep the legend's color chip + label static at all times — only the
+                    // canvas lines should visually react to hover, per dataset._baseColor
+                    // (the hover-highlight logic dims dataset.borderColor, which this would
+                    // otherwise inherit since Chart.js reads swatch color from that same field).
+                    generateLabels: function (chart) {
+                        var items = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                        items.forEach(function (item) {
+                            var ds = chart.data.datasets[item.datasetIndex];
+                            var base = ds && ds._baseColor;
+                            if (base) {
+                                item.fillStyle = base;
+                                item.strokeStyle = base;
+                            }
+                        });
+                        return items;
+                    }
+                },
+                onHover: function (event, legendItem, legend) {
+                    window.__hoveredDatasetIndex = legendItem.datasetIndex;
+                    setChartHoverHighlight(legend.chart, legendItem.datasetIndex);
+                },
+                onLeave: function (event, legendItem, legend) {
+                    window.__hoveredDatasetIndex = null;
+                    setChartHoverHighlight(legend.chart, null);
                 }
             },
             tooltip: {
                 mode: 'index',
                 intersect: false,
             }
+        },
+        // Highlight one dataset's line (bold, full color, drawn above the rest) on hover so
+        // the country under the cursor pops out against 30+ overlapping series.
+        onHover: function (event, active, chart) {
+            var idx = null;
+            try {
+                var els = chart.getElementsAtEventForMode(event, 'nearest', { intersect: false }, false);
+                if (els && els.length) idx = els[0].datasetIndex;
+            } catch (_) { /* no-op */ }
+            window.__hoveredDatasetIndex = idx;
+            setChartHoverHighlight(chart, idx);
         },
         scales: {
             x: {
@@ -7008,8 +7511,287 @@ function createChart(canvasId, data, options) {
         options: options
     });
 
+    ctx.addEventListener('mouseleave', function () {
+        window.__hoveredDatasetIndex = null;
+        setChartHoverHighlight(charts[canvasId], null);
+    });
+
     applyChartVisibility(canvasId);
+    injectRaceButton(canvasId);
     return charts[canvasId];
+}
+
+/**
+ * Bar-chart-race overlay: click the play button on any line chart to watch the
+ * countries race as ranked, animated horizontal bars — one year at a time, the
+ * highest value always at the top — instead of reading overlapping line series.
+ */
+var ChartRace = (function () {
+    var ROW_HEIGHT = 30;
+    var ROW_GAP = 6;
+    var MAX_ROWS = 12;
+    var STEP_MS = 900;
+
+    var state = {
+        chartId: null,
+        rows: {},       // label -> row element
+        timer: null,
+        yearIdx: 0,
+        startIdx: 0,
+        endIdx: 0,
+        playing: false
+    };
+
+    function tr(key) {
+        return typeof t === 'function' ? t(key) : key;
+    }
+
+    function els() {
+        return {
+            overlay: document.getElementById('chartRaceOverlay'),
+            modal: document.getElementById('chartRaceModal'),
+            title: document.getElementById('chartRaceTitle'),
+            year: document.getElementById('chartRaceYear'),
+            slider: document.getElementById('chartRaceSlider'),
+            bars: document.getElementById('chartRaceBars'),
+            close: document.getElementById('chartRaceClose'),
+            playPause: document.getElementById('chartRacePlayPause')
+        };
+    }
+
+    function ensureOverlay() {
+        if (document.getElementById('chartRaceOverlay')) return;
+        var overlay = document.createElement('div');
+        overlay.className = 'chart-race-overlay';
+        overlay.id = 'chartRaceOverlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.innerHTML =
+            '<div class="chart-race-modal" id="chartRaceModal" role="document">' +
+                '<div class="chart-race-modal__header">' +
+                    '<div class="chart-race-modal__title" id="chartRaceTitle"></div>' +
+                    '<button type="button" class="chart-race-modal__close" id="chartRaceClose">&times;</button>' +
+                '</div>' +
+                '<div class="chart-race-modal__timeline">' +
+                    '<div class="chart-race-modal__year" id="chartRaceYear"></div>' +
+                    '<input type="range" class="chart-race-modal__slider" id="chartRaceSlider" min="0" max="0" step="1" value="0">' +
+                '</div>' +
+                '<div class="chart-race-bars" id="chartRaceBars"></div>' +
+                '<div class="chart-race-modal__controls">' +
+                    '<button type="button" class="chart-race-modal__playpause" id="chartRacePlayPause"></button>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) close();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
+        });
+        els().close.addEventListener('click', close);
+        els().playPause.addEventListener('click', function () {
+            if (state.playing) {
+                pause();
+            } else if (state.yearIdx >= state.endIdx) {
+                restart();
+            } else {
+                resume();
+            }
+        });
+        els().slider.addEventListener('input', function (e) {
+            if (state.playing) pause();
+            state.yearIdx = Number(e.target.value);
+            renderFrame(state.series, state.yearIdx, YEARS);
+            if (state.yearIdx >= state.endIdx) {
+                els().playPause.textContent = tr('chart.race.replay');
+            } else {
+                els().playPause.textContent = tr('chart.race.resume');
+            }
+        });
+    }
+
+    function rankAtIndex(series, idx) {
+        var frame = series
+            .map(function (s) {
+                return { label: s.label, color: s.color, value: s.values[idx] };
+            })
+            .filter(function (r) { return r.value != null && Number.isFinite(r.value); })
+            .sort(function (a, b) { return b.value - a.value; })
+            .slice(0, MAX_ROWS);
+        return frame;
+    }
+
+    function renderFrame(series, idx, years) {
+        var e = els();
+        var frame = rankAtIndex(series, idx);
+        e.year.textContent = String(years[idx]);
+        var maxVal = frame.length ? frame[0].value : 0;
+        var trackWidth = e.bars.clientWidth - 128 - 18; // minus label column + padding
+        if (trackWidth < 40) trackWidth = 40;
+
+        var seen = {};
+        frame.forEach(function (item, rank) {
+            seen[item.label] = true;
+            var row = state.rows[item.label];
+            if (!row) {
+                row = document.createElement('div');
+                row.className = 'chart-race-row';
+                row.innerHTML =
+                    '<div class="chart-race-row__label"></div>' +
+                    '<div class="chart-race-row__track"><div class="chart-race-row__bar"><span class="chart-race-row__value"></span></div></div>';
+                e.bars.appendChild(row);
+                state.rows[item.label] = row;
+            }
+            row.querySelector('.chart-race-row__label').textContent = item.label;
+            var bar = row.querySelector('.chart-race-row__bar');
+            bar.style.backgroundColor = item.color;
+            var widthPx = maxVal > 0 ? Math.max(2, (item.value / maxVal) * trackWidth) : 2;
+            bar.style.width = widthPx + 'px';
+            row.querySelector('.chart-race-row__value').textContent = formatRaceValue(item.value);
+            row.style.top = rank * (ROW_HEIGHT + ROW_GAP) + 'px';
+            row.classList.add('is-visible');
+        });
+
+        Object.keys(state.rows).forEach(function (label) {
+            if (!seen[label]) state.rows[label].classList.remove('is-visible');
+        });
+
+        e.bars.style.minHeight = (frame.length * (ROW_HEIGHT + ROW_GAP)) + 'px';
+    }
+
+    function formatRaceValue(v) {
+        var abs = Math.abs(v);
+        if (abs >= 1e9) return (v / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+        if (abs >= 1e6) return (v / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (abs >= 1e3) return (v / 1e3).toFixed(1).replace(/\.0$/, '') + 'k';
+        return Math.round(v * 100) / 100;
+    }
+
+    function step() {
+        var chart = charts[state.chartId];
+        if (!chart) { pause(); return; }
+        renderFrame(state.series, state.yearIdx, YEARS);
+        var slider = els().slider;
+        if (slider) slider.value = state.yearIdx;
+        if (state.yearIdx >= state.endIdx) {
+            pause();
+            els().playPause.textContent = tr('chart.race.replay');
+            return;
+        }
+        state.timer = window.setTimeout(function () {
+            state.yearIdx += 1;
+            step();
+        }, STEP_MS);
+    }
+
+    function play() {
+        state.playing = true;
+        els().playPause.textContent = tr('chart.race.pause');
+        step();
+    }
+
+    function pause() {
+        state.playing = false;
+        if (state.timer) { window.clearTimeout(state.timer); state.timer = null; }
+        var e = els();
+        if (e.playPause) e.playPause.textContent = tr('chart.race.resume');
+    }
+
+    function resume() {
+        play();
+    }
+
+    function restart() {
+        state.yearIdx = state.startIdx;
+        Object.keys(state.rows).forEach(function (label) {
+            state.rows[label].classList.remove('is-visible');
+        });
+        play();
+    }
+
+    function close() {
+        pause();
+        var overlay = document.getElementById('chartRaceOverlay');
+        if (overlay) {
+            overlay.classList.remove('is-open');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+        var bars = document.getElementById('chartRaceBars');
+        if (bars) bars.innerHTML = '';
+        state.rows = {};
+        state.chartId = null;
+    }
+
+    function open(chartId) {
+        var chart = charts[chartId];
+        if (!chart || !chart.data || !chart.data.datasets.length) return;
+        ensureOverlay();
+
+        var series = chart.data.datasets.map(function (ds) {
+            return { label: ds.label, color: ds._baseColor || ds.borderColor, values: ds.data };
+        });
+
+        var startIdx = -1, endIdx = 0;
+        series.forEach(function (s) {
+            s.values.forEach(function (v, i) {
+                if (v != null && Number.isFinite(v)) {
+                    if (startIdx === -1 || i < startIdx) startIdx = i;
+                    if (i > endIdx) endIdx = i;
+                }
+            });
+        });
+        if (startIdx === -1) return;
+
+        state.chartId = chartId;
+        state.series = series;
+        state.rows = {};
+        state.startIdx = startIdx;
+        state.endIdx = endIdx;
+        state.yearIdx = startIdx;
+
+        var e = els();
+        var container = document.getElementById(chartId).closest('.chart-container');
+        var titleEl = container && container.querySelector('.chart-title');
+        e.title.textContent = titleEl ? titleEl.textContent : '';
+        e.bars.innerHTML = '';
+        e.slider.min = String(startIdx);
+        e.slider.max = String(endIdx);
+        e.slider.value = String(startIdx);
+
+        var overlay = document.getElementById('chartRaceOverlay');
+        overlay.classList.add('is-open');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        requestAnimationFrame(function () {
+            play();
+        });
+    }
+
+    return { open: open, close: close };
+})();
+
+function injectRaceButton(chartId) {
+    var chart = charts[chartId];
+    if (!chart || chart.config.type !== 'line') return;
+    var canvas = document.getElementById(chartId);
+    if (!canvas) return;
+    var container = canvas.closest('.chart-container');
+    if (!container || container.querySelector('.chart-race-btn')) return;
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chart-race-btn';
+    var label = typeof t === 'function' ? t('chart.race.play') : 'Play ranking animation';
+    btn.setAttribute('aria-label', label);
+    btn.title = label;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        ChartRace.open(chartId);
+    });
+    container.appendChild(btn);
 }
 
 /**
@@ -7472,6 +8254,9 @@ function initializeAllCharts(filterTab) {
 
 function updateAllCharts() {
     updateChartDimensions();
+    if (typeof ChartsOverview !== 'undefined' && ChartsOverview.refresh) {
+        ChartsOverview.refresh();
+    }
 
     syncChartData('gdpChart', DATA.gdp);
     syncChartData('gdpPerCapitaChart', DATA.gdpPerCapita);

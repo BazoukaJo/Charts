@@ -1,1 +1,8 @@
-{"name":"charts-verify","private":true,"type":"module"}
+﻿{
+  "name": "charts-verify",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:overview": "node scripts/overview-smoke-test.mjs"
+  }
+}

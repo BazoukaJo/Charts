@@ -22,6 +22,7 @@ Default selection is typically **United States, Canada, United Kingdom, China** 
 
 ## Features
 
+- **Country share overview** (top of page): WinDirStat-style **treemap** (tile size ∝ latest **population** share by default, or **GDP**), **continent filter** tabs, and an **interactive world map** to toggle countries/continents (drives chart series). Asset: `world-map.geojson` + `dashboard-overview.js`.
 - **17 topic tabs** grouped under **Macro**, **People**, **Society**, **Planet**, and **Tech** for easier navigation.
 - **Indicator search** — type e.g. *Gini*, *CO₂*, *Edelman*, *unemployment* to jump to a chart (with highlight).
 - **Shareable URLs** — `?tab=tab-governance&chart=giniChart&countries=USA,CHN` restores tab, chart focus, and country selection.
@@ -31,8 +32,14 @@ Default selection is typically **United States, Canada, United Kingdom, China** 
 - **Historical context** under charts (dated episodes) plus a **“Reading the trend (logic)”** block: speculative, logic-only readings from how series move together—not news verification.
 - **Data Quality Snapshot** at the bottom — per-tab WDI coverage and model reliance.
 - **Dark / light** theme toggle; **dark is the default** (preference stored in `localStorage`).
-- **English / French** UI (`EN` toggle); historical panels and speculation lists translate via `dashboard-i18n-fr-content.js`.
+- **English / French / Spanish** UI via `?lang=` (and host postMessage when embedded); historical panels translate via `dashboard-i18n-fr-content.js`.
 - **Responsive** layout; chart sizing adjusts with country count and viewport.
+
+### Overview smoke tests
+
+```bash
+npm run test:overview
+```
 
 ## How to run
 
@@ -52,16 +59,20 @@ Default selection is typically **United States, Canada, United Kingdom, China** 
 ```
 Charts/
 ├── index.html                    # Main dashboard (inline styles & app script)
+├── dashboard-overview.js         # Treemap, continent filter, world map
+├── dashboard-overview.css        # Overview styles (teal/coral)
+├── world-map.geojson             # Compact Natural Earth 110m countries
 ├── dashboard-phase1.js           # Phase 1 charts, WDI map, Edelman media trust
 ├── dashboard-phase2.js           # Phase 2 charts and WDI extensions
-├── dashboard-i18n.js             # EN/FR UI strings and chart titles
+├── dashboard-i18n.js             # EN/FR/ES UI strings and chart titles
 ├── dashboard-i18n-fr-content.js  # FR historical panels & speculation lists
+├── dashboard-i18n-es.js          # ES content helpers
 ├── dashboard-nav.js              # Grouped tabs, search, URL state, lazy tab init
 ├── dashboard-core.js             # Shared chart update utilities
 ├── shortcuts.html                # Optional: developer keyboard shortcuts reference
 ├── dashboard-screenshot.png      # README preview
 ├── README.md                     # This file
-└── scripts/                      # Extraction/validation helpers (optional)
+└── scripts/                      # overview-smoke-test.mjs + helpers
 ```
 
 ## License / use

@@ -8,67 +8,138 @@
   var MSGS = {
     en: {},
     fr: {},
+    es: {},
   };
 
-  function add(key, en, fr) {
+  function add(key, en, fr, es) {
     MSGS.en[key] = en;
     MSGS.fr[key] = fr;
+    MSGS.es[key] = es != null ? es : en;
   }
 
   add(
     "meta.title",
-    "Global Economic & Social Indicators (1970–2026)",
-    "Indicateurs économiques et sociaux mondiaux (1970–2026)",
+    "Global Economic & Social Indicators ({start}–{end})",
+    "Indicateurs économiques et sociaux mondiaux ({start}–{end})",
+    "Indicadores económicos y sociales mundiales ({start}–{end})",
   );
-  add("lang.toggleTitle", "Switch language", "Changer de langue");
-  add("lang.labelEn", "EN", "EN");
-  add("lang.labelFr", "FR", "FR");
+  add("lang.toggleTitle", "Switch language", "Changer de langue", "Cambiar idioma");
+  add("lang.labelEn", "EN", "EN", "EN");
+  add("lang.labelFr", "FR", "FR", "FR");
+  add("lang.labelEs", "ES", "ES", "ES");
   add(
     "theme.toggleTitle",
     "Toggle light/dark theme",
     "Basculer thème clair/sombre",
+    "Cambiar tema claro/oscuro",
   );
-  add("theme.toggleAria", "Toggle theme", "Basculer le thème");
+  add("theme.toggleAria", "Toggle theme", "Basculer le thème", "Cambiar tema");
 
   add(
     "country.selectTitle",
     "Select Countries to Compare",
     "Sélectionner les pays à comparer",
+    "Seleccionar países para comparar",
   );
-  add("country.europeAggregateLabel", "Europe (Aggregate)", "Europe (Agrégat)");
+  add(
+    "country.europeAggregateLabel",
+    "Europe (Aggregate)",
+    "Europe (Agrégat)",
+    "Europa (agregado)",
+  );
 
-  add("tab.economic", "Economic", "Économie");
-  add("tab.employment", "Jobs", "Emploi");
-  add("tab.costs", "Costs", "Coûts");
-  add("tab.social", "Social", "Social");
-  add("tab.demographics", "Population", "Population");
-  add("tab.health", "Health", "Santé");
-  add("tab.environment", "Environment", "Environnement");
-  add("tab.technology", "Tech", "Technologie");
-  add("tab.trade", "Trade", "Commerce");
-  add("tab.immigration", "Migration", "Migration");
-  add("tab.wellbeing", "Quality of Life", "Qualité de vie");
-  add("tab.governance", "Governance", "Gouvernance");
-  add("tab.inequality", "Inequality", "Inégalités");
-  add("tab.investment", "Investment", "Investissement");
-  add("tab.energy", "Energy & Industry", "Énergie & industrie");
-  add("tab.humanitarian", "Humanitarian", "Humanitaire");
-  add("tab.labor", "Labor", "Travail");
+  add(
+    "overview.title",
+    "Country share overview",
+    "Vue d’ensemble des parts par pays",
+    "Resumen de participación por país",
+  );
+  add(
+    "overview.metricNotePop",
+    "Tile size ∝ latest population share (millions) among countries shown.",
+    "Taille des tuiles ∝ part de population (millions) parmi les pays affichés.",
+    "Tamaño de baldosa ∝ participación poblacional (millones) entre los países mostrados.",
+  );
+  add(
+    "overview.metricNoteGdp",
+    "Tile size ∝ latest GDP share (trillion USD) among countries shown.",
+    "Taille des tuiles ∝ part du PIB (billions USD) parmi les pays affichés.",
+    "Tamaño de baldosa ∝ participación del PIB (billones USD) entre los países mostrados.",
+  );
+  add("overview.metric.population", "Population", "Population", "Población");
+  add("overview.metric.gdp", "GDP", "PIB", "PIB");
+  add("overview.continent.all", "All", "Tous", "Todos");
+  add("overview.continent.africa", "Africa", "Afrique", "África");
+  add("overview.continent.asia", "Asia", "Asie", "Asia");
+  add("overview.continent.europe", "Europe", "Europe", "Europa");
+  add("overview.continent.north_america", "North America", "Amérique du Nord", "Norteamérica");
+  add("overview.continent.south_america", "South America", "Amérique du Sud", "Sudamérica");
+  add("overview.continent.oceania", "Oceania", "Océanie", "Oceanía");
+  add("overview.mapToggle.africa", "Africa", "Afrique", "África");
+  add("overview.mapToggle.asia", "Asia", "Asie", "Asia");
+  add("overview.mapToggle.europe", "Europe", "Europe", "Europa");
+  add("overview.mapToggle.north_america", "N. America", "Am. du Nord", "N. América");
+  add("overview.mapToggle.south_america", "S. America", "Am. du Sud", "S. América");
+  add("overview.mapToggle.oceania", "Oceania", "Océanie", "Oceanía");
+  add(
+    "overview.mapHint",
+    "Click countries on the map or treemap to toggle selection. Continent buttons turn that continent’s countries on or off.",
+    "Cliquez sur les pays de la carte ou du treemap pour basculer la sélection. Les boutons de continent activent ou désactivent les pays de ce continent.",
+    "Haz clic en países del mapa o del treemap para alternar la selección. Los botones de continente activan o desactivan esos países.",
+  );
+  add(
+    "overview.emptyTreemap",
+    "No selected countries in this continent.",
+    "Aucun pays sélectionné dans ce continent.",
+    "No hay países seleccionados en este continente.",
+  );
+  add(
+    "overview.treemapAria",
+    "Country share treemap",
+    "Treemap des parts par pays",
+    "Treemap de participación por país",
+  );
+  add(
+    "overview.mapLoadFail",
+    "World map could not be loaded.",
+    "La carte du monde n’a pas pu être chargée.",
+    "No se pudo cargar el mapa mundial.",
+  );
 
-  add("nav.group.macro", "Macro", "Macro");
-  add("nav.group.people", "People", "Population");
-  add("nav.group.society", "Society", "Société");
-  add("nav.group.planet", "Planet", "Planète");
-  add("nav.group.tech", "Tech", "Technologie");
+  add("tab.economic", "Economic", "Économie", "Economía");
+  add("tab.employment", "Jobs", "Emploi", "Empleo");
+  add("tab.costs", "Costs", "Coûts", "Costos");
+  add("tab.social", "Social", "Social", "Social");
+  add("tab.demographics", "Population", "Population", "Población");
+  add("tab.health", "Health", "Santé", "Salud");
+  add("tab.environment", "Environment", "Environnement", "Medio ambiente");
+  add("tab.technology", "Tech", "Technologie", "Tecnología");
+  add("tab.trade", "Trade", "Commerce", "Comercio");
+  add("tab.immigration", "Migration", "Migration", "Migración");
+  add("tab.wellbeing", "Quality of Life", "Qualité de vie", "Calidad de vida");
+  add("tab.governance", "Governance", "Gouvernance", "Gobernanza");
+  add("tab.inequality", "Inequality", "Inégalités", "Desigualdad");
+  add("tab.investment", "Investment", "Investissement", "Inversión");
+  add("tab.energy", "Energy & Industry", "Énergie & industrie", "Energía e industria");
+  add("tab.humanitarian", "Humanitarian", "Humanitaire", "Humanitario");
+  add("tab.labor", "Labor", "Travail", "Trabajo");
+
+  add("nav.group.macro", "Macro", "Macro", "Macro");
+  add("nav.group.people", "People", "Population", "Personas");
+  add("nav.group.society", "Society", "Société", "Sociedad");
+  add("nav.group.planet", "Planet", "Planète", "Planeta");
+  add("nav.group.tech", "Tech", "Technologie", "Tecnología");
   add(
     "nav.searchPlaceholder",
     "Search indicators (e.g. Gini, CO₂, Edelman, unemployment…)",
     "Rechercher un indicateur (ex. Gini, CO₂, Edelman, chômage…)",
+    "Buscar indicadores (p. ej. Gini, CO₂, Edelman, desempleo…)",
   );
   add(
     "nav.searchAria",
     "Search dashboard indicators",
     "Rechercher un indicateur du tableau de bord",
+    "Buscar indicadores del panel",
   );
 
   add(
@@ -78,18 +149,18 @@
   );
   add(
     "sec.yoy",
-    "Year-over-Year Changes (2025 → 2026)",
-    "Variations d’une année sur l’autre (2025 → 2026)",
+    "Year-over-Year Changes ({prev} → {end})",
+    "Variations d’une année sur l’autre ({prev} → {end})",
   );
   add(
     "sec.comparison",
-    "Detailed Country Comparison (2026)",
-    "Comparaison détaillée des pays (2026)",
+    "Detailed Country Comparison ({end})",
+    "Comparaison détaillée des pays ({end})",
   );
   add(
     "sec.trends",
-    "Long-term Trends (1970 → 2026)",
-    "Tendances de long terme (1970 → 2026)",
+    "Long-term Trends ({start} → {end})",
+    "Tendances de long terme ({start} → {end})",
   );
   add("sec.economic", "Economic Indicators", "Indicateurs économiques");
   add("sec.military", "Military Spending", "Dépenses militaires");
@@ -373,6 +444,11 @@
   );
 
   add("chart.axis.year", "Year", "Année");
+  add("chart.race.play", "Play ranking animation", "Lancer l'animation du classement");
+  add("chart.race.close", "Close", "Fermer");
+  add("chart.race.pause", "Pause", "Pause");
+  add("chart.race.resume", "Resume", "Reprendre");
+  add("chart.race.replay", "Replay", "Relire");
 
   add("spec.tag.logic", "Logic", "Logique");
   add("spec.tag.better", "If true, better", "Si vrai, plutôt bon");
@@ -1187,18 +1263,30 @@
   };
 
   chartIds.forEach(function (id) {
-    add("ct." + id, TITLES_EN[id], TITLES_FR[id]);
-    add("cy." + id, Y_EN[id], Y_FR[id]);
+    add(
+      "ct." + id,
+      TITLES_EN[id],
+      TITLES_FR[id],
+      typeof TITLES_ES !== "undefined" && TITLES_ES[id] ? TITLES_ES[id] : TITLES_EN[id],
+    );
+    add(
+      "cy." + id,
+      Y_EN[id],
+      Y_FR[id],
+      typeof Y_ES !== "undefined" && Y_ES[id] ? Y_ES[id] : Y_EN[id],
+    );
   });
 
   function getLocale() {
-    return localStorage.getItem("locale") || "en";
+    var lang = localStorage.getItem("locale") || "en";
+    if (lang !== "en" && lang !== "fr" && lang !== "es") lang = "en";
+    return lang;
   }
 
   function setLocale(lang) {
-    if (lang !== "en" && lang !== "fr") lang = "en";
+    if (lang !== "en" && lang !== "fr" && lang !== "es") lang = "en";
     localStorage.setItem("locale", lang);
-    document.documentElement.lang = lang === "fr" ? "fr" : "en";
+    document.documentElement.lang = lang;
     if (typeof window.applyDashboardLocale === "function") {
       window.applyDashboardLocale();
     }
@@ -1206,20 +1294,51 @@
   }
 
   function toggleLocale() {
-    setLocale(getLocale() === "fr" ? "en" : "fr");
+    var order = ["en", "fr", "es"];
+    var i = order.indexOf(getLocale());
+    setLocale(order[(i + 1) % order.length]);
+  }
+
+  function yearTokens() {
+    var start =
+      typeof YEARS !== "undefined" && YEARS.length ? YEARS[0] : 1970;
+    var end =
+      typeof YEARS !== "undefined" && YEARS.length
+        ? YEARS[YEARS.length - 1]
+        : new Date().getFullYear();
+    return {
+      start: String(start),
+      end: String(end),
+      prev: String(end - 1),
+    };
+  }
+
+  function applyYearTokens(str) {
+    if (typeof str !== "string" || str.indexOf("{") === -1) return str;
+    var tok = yearTokens();
+    return str
+      .replace(/\{start\}/g, tok.start)
+      .replace(/\{end\}/g, tok.end)
+      .replace(/\{prev\}/g, tok.prev);
   }
 
   function t(key) {
     var loc = getLocale();
-    if (loc === "fr" && MSGS.fr[key]) return MSGS.fr[key];
-    return MSGS.en[key] || key;
+    var pack = MSGS[loc] || MSGS.en;
+    var raw = (pack && pack[key]) || MSGS.en[key] || key;
+    return applyYearTokens(raw);
   }
 
   function updateLangToggleUi() {
     var el = document.getElementById("lang-toggle-label");
     if (!el) return;
+    var loc = getLocale();
     el.textContent =
-      getLocale() === "fr" ? t("lang.labelFr") : t("lang.labelEn");
+      loc === "fr"
+        ? t("lang.labelFr")
+        : loc === "es"
+          ? t("lang.labelEs")
+          : t("lang.labelEn");
     var btn = document.getElementById("lang-toggle");
     if (btn) btn.setAttribute("title", t("lang.toggleTitle"));
   }

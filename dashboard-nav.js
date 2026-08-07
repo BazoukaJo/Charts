@@ -365,7 +365,15 @@
       return global.COUNTRIES.indexOf(c) !== -1;
     });
     if (!valid.length) return;
-    global.selectedCountries = valid.slice();
+    // Mutate in place so the page's `let selectedCountries` (same array ref) stays in sync.
+    if (Array.isArray(global.selectedCountries)) {
+      global.selectedCountries.length = 0;
+      valid.forEach(function (c) {
+        global.selectedCountries.push(c);
+      });
+    } else {
+      global.selectedCountries = valid.slice();
+    }
     try {
       localStorage.setItem(
         "selectedCountries",
@@ -374,6 +382,9 @@
     } catch (_) {}
     if (typeof global.createCountryChips === "function") {
       global.createCountryChips();
+    }
+    if (typeof global.ChartsOverview !== "undefined" && global.ChartsOverview.refresh) {
+      global.ChartsOverview.refresh();
     }
   }
 

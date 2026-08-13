@@ -9,11 +9,10 @@ Agents: pick the top **in progress** or first **pending** item unless the human 
 ## Pending
 
 - [ ] _
-- [ ] _
 
 ## Done (recent)
 
-- [x] _ — _(date / note)_
+- [x] Add Deep Time timeline page (`deep-time/`) with README screenshot and dashboard header link — _(2026-08-13, overview smoke tests passed)_
 
 ## Blocked
 
@@ -23,4 +22,4 @@ Agents: pick the top **in progress** or first **pending** item unless the human 
 
 ## Notes for next session
 
-_
+Deep Time is a sibling page to the WDI dashboard, not a tab inside it.

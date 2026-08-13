@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Time — Big Bang to Today</title>
+<script>
+(function () {
+  try {
+    var t = new URLSearchParams(location.search).get('theme');
+    document.documentElement.dataset.theme = t === 'light' ? 'light' : 'dark';
+  } catch (e) {
+    document.documentElement.dataset.theme = 'dark';
+  }
+})();
+</script>
+<link rel="stylesheet" href="tobelogic-theme.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow"><a href="../index.html">← World Charts</a> · 13,800,000,000 years · one chart</p>
+    <h1>Deep Time <span>— from the Big Bang to this morning</span></h1>
+    <p class="standfirst">The problem with a timeline of everything is that everything interesting to us happens at the very end. On a normal ruler, <b>all of recorded human history is thinner than a hair.</b> So this chart starts on a logarithmic scale — each step left is ten times older — then lets you drop into real, linear time at any depth to feel how uneven the pacing really is. Every date carries its published uncertainty as a bar and a confidence grade, because on this chart the error on a single event can exceed the entire history of animal life.</p>
+  </header>
+
+  <div class="controls">
+    <div class="ctl-group">
+      <span class="ctl-label" id="lbl-scale">Scale</span>
+      <div class="btnrow" role="group" aria-labelledby="lbl-scale" id="presets"></div>
+    </div>
+    <div class="ctl-group">
+      <span class="ctl-label" id="lbl-cat">Show</span>
+      <div class="legend" role="group" aria-labelledby="lbl-cat" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="chartbox">
+    <div class="scalenote" id="scalenote"></div>
+    <svg id="chart" viewBox="0 0 1300 700" role="img" aria-label="Timeline of major events from the Big Bang to the present"></svg>
+    <div class="confkey">
+        <i><b></b> firm — directly dated, tight bounds</i>
+        <i><b></b> bracketed — constrained but wide</i>
+        <i><b class="d"></b> contested — the date or the event itself is disputed</i>
+        <i>bar length = published uncertainty range</i>
+      </div>
+      <div class="tip" id="tip" aria-hidden="true">
+      <div class="t-name"></div>
+      <div class="t-time"></div>
+    </div>
+  </div>
+
+  <div class="readout">
+    <div class="pane">
+      <p class="r-eyebrow">Selected event</p>
+      <p id="selName"></p>
+      <p id="selWhen"></p>
+      <p id="selDesc"></p>
+    </div>
+    <div class="pane">
+      <p class="r-eyebrow">Where it sits in deep time</p>
+      <div class="statgrid">
+        <div class="stat"><div class="k">Gap since previous event</div><div class="v" id="statGap"></div></div>
+        <div class="stat"><div class="k">Share of all time since the Big Bang</div><div class="v" id="statPct"></div></div>
+        <div class="stat"><div class="k">Cosmic calendar</div><div class="v" id="statCal"><small>If 13.8 billion years were squeezed into one calendar year.</small></div></div>
+        <div class="stat"><div class="k">Dating confidence</div><div class="v" id="statConf"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="ratio">
+    <h2>The ratio, stacked</h2>
+    <p class="tnote">Each bar below is the highlighted sliver of the bar above it, blown back up to full width. Seven magnifications is what it takes to get from the age of the universe down to something a person can picture.</p>
+
+    <div class="ladderbox">
+      <svg id="ladder" viewBox="0 0 1300 600" role="img" aria-label="Seven nested bars, each magnifying the final sliver of the one above it"></svg>
+    </div>
+    <div class="punch">
+      <span class="big" id="punchNum"></span>
+      <span id="punchText"></span>
+    </div>
+
+    <div class="translator">
+      <h2>Or shrink the whole thing</h2>
+      <p class="tnote">Pick something you can hold in your head. Every event keeps its true proportion inside it.</p>
+      <div class="btnrow" role="group" aria-label="Choose an analogy" id="units"></div>
+      <table>
+        <thead><tr>
+          <th>Event</th><th>Arrives at</th><th>Still to come after it</th><th class="meterhead meter">Position</th>
+        </tr></thead>
+        <tbody id="unitBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="skin">
+    <h2>How many times has Earth changed its skin?</h2>
+    <p class="tnote">Two different answers, depending on which skin you mean. The ocean floor — 70% of the surface — is destroyed and rebuilt on a loop. The continents are not: they float too high to be pulled under, so they get folded, stretched and stitched, but never erased. That is why a 4-billion-year-old rock still exists on land and not one square metre of ocean floor older than 200 million years survives anywhere.</p>
+
+    <div class="cards" id="skinCards"></div>
+
+    <div class="skinbox">
+      <svg id="skinChart" viewBox="0 0 1300 400" role="img" aria-label="Supercontinent cycles, ocean floor renewal, and continental crust survival compared across 4.3 billion years"></svg>
+    </div>
+    <div class="punch">
+      <span class="big">≈ 25 coats</span>
+      <span>At today's spreading rates Earth has worn roughly that many complete ocean floors since it formed — and probably more, because the young, hotter planet cycled its plates faster. <b>Pangaea was only the most recent full assembly</b>, the fifth or sixth in the sequence; the next is due in 200–250 million years. Every one of those cycles is longer than the entire age of our species.</span>
+    </div>
+    <p class="tnote" style="margin-top:14px">Kenorland and Pannotia are the contested ones — their extent, and in Pannotia's case whether it ever fully closed, are still argued. The future supercontinent is a projection with four competing models (Amasia, Pangaea Ultima, Novopangaea, Aurica) that disagree on where it forms, not on whether.</p>
+  </section>
+
+  <section class="derive">
+    <h2>What follows from the data</h2>
+    <p class="tnote">Every statement below is derived only from the dates already on this page — no outside evidence added. They are sorted by how much weight each one can carry, because that varies enormously and mixing the classes is how a timeline turns into a bad argument.</p>
+
+    <div class="keybar">
+      <div><div class="kt" style="color:#3FA98C">Entailed</div><div class="kd">Arithmetic. If the dates are right, these cannot be false.</div></div>
+      <div><div class="kt" style="color:#8B7FD6">Ordering</div><div class="kd">Follows from sequence alone — from what came before what.</div></div>
+      <div><div class="kt" style="color:#E5B93C">Inductive</div><div class="kd">Pattern extrapolation. Needs an added assumption and may be wrong.</div></div>
+      <div><div class="kt" style="color:#D9543F">Limits</div><div class="kd">What the data can't support, and where its shape misleads.</div></div>
+    </div>
+
+    <div class="btnrow" role="group" aria-label="Filter statements by inference class" id="stFilter"></div>
+    <div class="stmts" id="stmts"></div>
+    <p class="count" id="stCount"></p>
+  </section>
+
+  <section class="tablewrap">
+    <h2>Every event, and the silence between them</h2>
+    <p class="tnote">Sorted oldest first. The gap column is the wait between one event and the next — the bars show that wait at true relative length, which is the whole point: life spent a billion years doing almost nothing, then rebuilt itself four times in the last 500 million.</p>
+    <table>
+      <thead><tr>
+        <th>Event</th><th>When</th><th>Uncertainty</th><th>Wait since previous</th><th class="barhead barcell">Relative wait</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <b>Sources and validation.</b> Stratigraphic ages follow the ICS International Chronostratigraphic Chart (v2023/09). Cosmology follows Planck 2018 (13.787 ± 0.020 Gyr). The earliest-galaxy figure is MoM-z14, spectroscopically confirmed at z = 14.44 — 280 Myr after the Big Bang — published in the Open Journal of Astrophysics, January 2026. Mean ocean-crust age of 64.2 Myr is Seton et al. 2020 (<i>G-cubed</i>). Oldest ordinary ocean floor 180–200 Myr (western Pacific); the disputed 315–365 Myr Herodotus Basin crust is Granot 2016 (<i>Nature Geoscience</i>). Eukaryote origin revised to ~1.75 Ga following the retraction of the 2.7 Ga biomarker evidence as sample contamination.<br><br>
+    Every event carries a published uncertainty range and a confidence grade. Where sources disagree the midpoint is plotted and the full range drawn as a bar, so a wide bar means genuine scientific disagreement, not sloppiness. Ten events are graded <i>contested</i> — the date, or in some cases whether the event happened at all, is unresolved. Figures for the next supercontinent and the ~25 ocean-floor turnovers are back-of-envelope extrapolations from present-day rates, not measurements.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var T0 = 13.8e9; // age of the universe, years
+
+  var CATS = [
+    {id:"cosmos", name:"Cosmos",              color:"#8B7FD6"},
+    {id:"earth",  name:"Earth & geology",     color:"#C98A3E"},
+    {id:"life",   name:"Life",                color:"#3FA98C"},
+    {id:"boom",   name:"Catastrophes",        color:"#D9543F"},
+    {id:"ice",    name:"Ice ages",            color:"#5AA9D6"},
+    {id:"human",  name:"Humans",              color:"#E5B93C"}
+  ];
+  var CATCOLOR = {}; CATS.forEach(function(c){ CATCOLOR[c.id]=c.color; });
+
+  // t = years before present
+  var EVENTS = [
+    {t:13.8e9,      c:"cosmos", key:1, q:1, r:[13.807e9,13.767e9], n:"Big Bang",                       d:"Space, time, matter and energy begin expanding from an extremely hot, dense state. Not an explosion in space — an expansion of space itself."},
+    {t:13799620000, c:"cosmos", key:1, q:1, r:[13.7996e9,13.7996e9], n:"First light (CMB)",              d:"380,000 years in, the universe cools enough for atoms to form and light to travel freely. That first flash is still arriving today as the cosmic microwave background."},
+    {t:13.6e9,      c:"cosmos", key:1, q:2, r:[13.7e9,13.4e9], n:"First stars ignite",             d:"Cosmic dawn. Gravity pulls hydrogen and helium into the first stars, which begin forging heavier elements — the raw material for planets and for you."},
+    {t:13.52e9,     c:"cosmos", key:0, q:2, r:[13.6e9,13.4e9], n:"First galaxies",                 d:"The earliest confirmed galaxy, MoM-z14, shone 280 million years after the Big Bang — and it is far brighter than early-universe models predicted. This date is an observational floor, not a discovery: it has moved four times since 2022 and will move again."},
+    {t:10.0e9,      c:"cosmos", key:0, q:2, r:[13e9,8e9], n:"Milky Way's disk forms",         d:"Our galaxy assembles its thin rotating disk through a long series of mergers."},
+    {t:4.568e9,     c:"cosmos", key:1, q:1, r:[4.5682e9,4.5664e9], n:"Solar System forms",             d:"A collapsing cloud of gas and dust, seeded by earlier supernovae, flattens into a disk. The Sun ignites at its centre."},
+
+    {t:4.54e9,      c:"earth",  key:1, q:1, r:[4.57e9,4.5e9], n:"Earth forms",                    d:"Dust grains stick, then clump, then collide into planetesimals. Within about 30 million years Earth is essentially full size — and molten."},
+    {t:4.51e9,      c:"earth",  key:1, q:3, r:[4.51e9,4.35e9], n:"Moon-forming impact",            d:"A Mars-sized body called Theia strikes Earth. The debris ring coalesces into the Moon, which stabilises our axial tilt and drives the tides."},
+    {t:4.4e9,       c:"earth",  key:1, q:2, r:[4.4e9,4.3e9], n:"First oceans",                   d:"Earth's surface cools enough for liquid water. Zircon crystals from Western Australia carry the chemical fingerprint of that early water."},
+    {t:4.0e9,       c:"earth",  key:0, q:3, r:[4.1e9,3.8e9], n:"Heavy bombardment",              d:"A prolonged era of large impacts scars the inner planets. Whether it was a discrete 'late' spike or a long tail-off is still argued."},
+    {t:3.8e9,       c:"earth",  key:0, q:2, r:[4e9,3.6e9], n:"First continental crust",        d:"Buoyant granitic rock accumulates into the oldest cratons — the ancient cores still buried inside today's continents."},
+    {t:4.03e9,      c:"earth",  key:0, q:2, r:[4.28e9,4.03e9], n:"Oldest surviving rock",          d:"The Acasta Gneiss in Canada's Northwest Territories. Continental crust floats too high to be subducted, so scraps this old are still at the surface — while every scrap of ocean floor from the same era is long gone."},
+    {t:2.72e9,      c:"earth",  key:0, q:3, r:[2.8e9,2.5e9], n:"Kenorland (contested)",          d:"The earliest supercontinent most geologists accept, though its shape and even its existence are argued. Its breakup began around 2.45 billion years ago."},
+    {t:1.6e9,       c:"earth",  key:0, q:2, r:[1.8e9,1.5e9], n:"Nuna / Columbia",                d:"A well-supported supercontinent that held together for roughly 400 million years before rifting apart."},
+    {t:600e6,       c:"earth",  key:0, q:3, r:[633e6,573e6], n:"Pannotia (contested)",           d:"A short-lived assembly just before the Cambrian. Some researchers argue it never fully closed."},
+    {t:200e6,       c:"earth",  key:1, q:2, r:[340e6,180e6], n:"Oldest surviving ocean floor",   d:"Nothing on the ordinary seabed is older: everything formed before this has been subducted back into the mantle. One disputed exception — a patch in the Herodotus Basin of the eastern Mediterranean, dated magnetically to 315–365 Ma and thought to be trapped Tethys crust. It lies under 8 km of sediment and has never been drilled."},
+    {t:2.4e9,       c:"earth",  key:1, q:1, r:[2.45e9,2.32e9], n:"Great Oxidation Event",          d:"Oxygen from photosynthesis saturates the oceans and floods the atmosphere. It poisons most existing life — the first mass extinction, caused by life itself."},
+    {t:1.1e9,       c:"earth",  key:0, q:2, r:[1.3e9,900e6], n:"Supercontinent Rodinia",         d:"Most landmass gathers into a single continent, one of several such cycles."},
+    {t:335e6,       c:"earth",  key:1, q:1, r:[350e6,320e6], n:"Pangaea assembles",              d:"Nearly all land merges into one supercontinent surrounded by one ocean, drying continental interiors and reshaping climate."},
+    {t:175e6,       c:"earth",  key:1, q:1, r:[200e6,175e6], n:"Pangaea breaks apart",           d:"Rifting opens the Atlantic. Continents begin drifting toward their present arrangement, splitting animal populations and driving divergence."},
+    {t:50e6,        c:"earth",  key:0, q:2, r:[59e6,34e6], n:"India hits Asia — Himalayas",    d:"The collision raises the highest mountains on Earth and alters monsoon circulation to this day."},
+    {t:5.33e6,      c:"earth",  key:0, q:1, r:[5.34e6,5.31e6], n:"Zanclean flood",                 d:"The Mediterranean, dried to salt flats for ~600,000 years, refills through Gibraltar in perhaps a few years."},
+
+    {t:3.7e9,       c:"life",   key:1, q:3, r:[4.28e9,3.7e9], n:"Life begins",                    d:"Earliest chemical traces of biology in Greenland's rocks. Somewhere between 4.3 and 3.7 billion years ago, chemistry started copying itself."},
+    {t:3.48e9,      c:"life",   key:1, q:3, r:[3.5e9,2.5e9], n:"Photosynthesis",                 d:"Cyanobacteria build stromatolite mounds and start splitting water for energy, releasing oxygen as waste."},
+    {t:1.75e9,      c:"life",   key:1, q:2, r:[2.1e9,1.6e9], n:"Complex cells (eukaryotes)",     d:"One cell swallows another and keeps it. That captive becomes the mitochondrion — the power supply behind every plant, animal and fungus. The oldest unambiguous fossils are ~1.75 Ga; a 2.1 Ga claim from Gabon is disputed, and biomarker evidence once put it at 2.7 Ga before the samples turned out to be contaminated."},
+    {t:1.2e9,       c:"life",   key:0, q:2, r:[1.6e9,1e9], n:"Sex and red algae",              d:"Sexual reproduction and the first clearly multicellular organisms appear, accelerating the pace of variation."},
+    {t:600e6,       c:"life",   key:1, q:2, r:[800e6,570e6], n:"First animals",                  d:"Soft, strange Ediacaran organisms — fronds, discs and quilted mats — spread across the seafloor."},
+    {t:538.8e6,     c:"life",   key:1, q:1, r:[539e6,538.6e6], n:"Cambrian explosion",             d:"In roughly 20 million years, almost every animal body plan alive today appears: eyes, shells, guts, predators. The arms race starts here."},
+    {t:470e6,       c:"life",   key:1, q:2, r:[500e6,450e6], n:"Plants colonise land",           d:"Green life crawls out of the water, builds soil, and begins drawing down atmospheric carbon dioxide."},
+    {t:425e6,       c:"life",   key:0, q:2, r:[440e6,410e6], n:"Arthropods on land",            d:"Millipedes and early arachnids follow the plants ashore — the first land animals."},
+    {t:375e6,       c:"life",   key:1, q:2, r:[395e6,365e6], n:"Vertebrates walk",               d:"Lobe-finned fish like Tiktaalik develop weight-bearing limbs and a neck. Every land vertebrate descends from that lineage."},
+    {t:320e6,       c:"life",   key:0, q:2, r:[340e6,300e6], n:"Amniote egg, coal forests",      d:"The waterproof egg frees reptiles from ponds. Vast swamp forests lock away the carbon we now burn as coal."},
+    {t:233e6,       c:"life",   key:1, q:2, r:[245e6,230e6], n:"First dinosaurs",                d:"Small, fast bipeds appear after the Carnian pluvial event, then spend 30 million years quietly taking over."},
+    {t:225e6,       c:"life",   key:0, q:2, r:[225e6,178e6], n:"First mammals",                  d:"Tiny, nocturnal, insect-eating. They will stay that way for 160 million years."},
+    {t:150e6,       c:"life",   key:1, q:2, r:[165e6,148e6], n:"First birds",                    d:"Archaeopteryx — feathers, wings, teeth and a bony tail. Birds are the dinosaur lineage that survived."},
+    {t:130e6,       c:"life",   key:0, q:2, r:[250e6,125e6], n:"Flowering plants",               d:"Flowers and fruit appear and co-evolve with insects, transforming terrestrial ecosystems."},
+    {t:65e6,        c:"life",   key:1, q:1, r:[66e6,60e6], n:"Mammals take over",              d:"With the dinosaurs gone, mammals radiate within a few million years into everything from bats to whales."},
+    {t:7e6,         c:"life",   key:1, q:2, r:[9.3e6,6.5e6], n:"Hominins split from chimps",     d:"Our lineage separates from the ancestors of chimpanzees and bonobos somewhere in Africa."},
+
+    {t:445e6,       c:"boom",   key:0, q:1, r:[445e6,443e6], n:"Ordovician extinction",          d:"Roughly 85% of species die as glaciation locks up water and sea levels crash."},
+    {t:372e6,       c:"boom",   key:0, q:2, r:[383e6,359e6], n:"Late Devonian extinction",       d:"A drawn-out series of pulses guts reef ecosystems, possibly driven by the new land plants stripping the soil."},
+    {t:251.9e6,     c:"boom",   key:1, q:1, r:[251.93e6,251.88e6], n:"The Great Dying",                d:"The worst extinction ever: about 96% of marine species gone. Siberian volcanism burns through coal beds, acidifying oceans and cooking the climate. Recovery takes 10 million years."},
+    {t:201.4e6,     c:"boom",   key:0, q:1, r:[201.53e6,201.19e6], n:"Triassic–Jurassic extinction",   d:"Volcanism from the opening Atlantic clears out dinosaur competitors, handing them the planet."},
+    {t:66e6,        c:"boom",   key:1, q:1, r:[66.054e6,66.032e6], n:"Chicxulub asteroid",             d:"A 10 km rock hits Yucatán at ~20 km/s. Impact winter and global wildfires end the non-bird dinosaurs and ~75% of species — in months, not epochs."},
+    {t:56e6,        c:"boom",   key:0, q:1, r:[56.1e6,55.9e6], n:"PETM warming spike",             d:"Earth warms 5–8°C in a few thousand years as carbon floods the atmosphere. The closest natural analogue to today."},
+    {t:74000,       c:"boom",   key:0, q:1, r:[74300,73700], n:"Toba supereruption",             d:"The largest eruption in two million years. Its effect on human populations is debated but the ash layer spans Asia."},
+    {t:12900,       c:"boom",   key:0, q:1, r:[12900,11700], n:"Younger Dryas",                  d:"The warming world snaps back into near-glacial cold for 1,200 years, then rebounds within about a decade."},
+    {t:769,         c:"boom",   key:0, q:1, r:[770,768], n:"Samalas eruption",               d:"A colossal Indonesian eruption in 1257 chills the northern hemisphere and helps tip Europe into the Little Ice Age."},
+    {t:211,         c:"boom",   key:0, q:1, r:[212,210], n:"Tambora, 1815",                  d:"Ash and sulphate cause the 'year without a summer' in 1816 — crop failure and famine across the northern hemisphere."},
+
+    {t:2.4e9,       c:"ice",    key:1, q:1, r:[2.45e9,2.22e9], n:"Huronian snowball",              d:"The first great glaciation, likely triggered when new oxygen destroyed the methane greenhouse. Ice may have reached the equator for 300 million years."},
+    {t:715e6,       c:"ice",    key:1, q:1, r:[717e6,660e6], n:"Sturtian snowball",              d:"Ice sheets reach the tropics for around 55 million years — the longest deep freeze in Earth's history."},
+    {t:650e6,       c:"ice",    key:0, q:1, r:[654e6,635e6], n:"Marinoan snowball",              d:"A second global freeze. Its abrupt end is followed closely by the rise of animals."},
+    {t:445e6,       c:"ice",    key:0, q:2, r:[460e6,420e6], n:"Andean–Saharan glaciation",      d:"Ice caps grow over what is now the Sahara, driving the Ordovician extinction."},
+    {t:330e6,       c:"ice",    key:0, q:1, r:[360e6,260e6], n:"Karoo Ice Age",                  d:"The coal forests bury so much carbon that the planet freezes for ~80 million years."},
+    {t:34e6,        c:"ice",    key:1, q:1, r:[34.5e6,33.5e6], n:"Antarctica freezes",             d:"As South America and Australia pull away, a circumpolar current isolates Antarctica and permanent ice sheets form."},
+    {t:2.6e6,       c:"ice",    key:1, q:1, r:[2.7e6,2.5e6], n:"Ice age cycles begin",           d:"The Quaternary starts: glaciers advance and retreat on roughly 41,000-, then 100,000-year orbital rhythms. We are still inside this pattern."},
+    {t:21000,       c:"ice",    key:1, q:1, r:[26500,19000], n:"Last Glacial Maximum",           d:"Ice sheets bury Montreal under two kilometres of ice. Sea level is 125 m lower and Britain is part of the continent."},
+    {t:11700,       c:"ice",    key:1, q:1, r:[11800,11600], n:"Holocene begins",                d:"The current interglacial. A stable, mild climate — the window in which every civilisation has existed."},
+    {t:400,         c:"ice",    key:0, q:2, r:[725,170], n:"Little Ice Age",                 d:"A modest cooling from roughly 1300 to 1850 that freezes rivers, ruins harvests and reshapes European history."},
+
+    {t:3.3e6,       c:"human",  key:0, q:3, r:[3.3e6,2.6e6], n:"First stone tools",              d:"Sharp flakes struck at Lomekwi, Kenya — 700,000 years before our own genus appears."},
+    {t:2.0e6,       c:"human",  key:0, q:1, r:[2.1e6,1.8e6], n:"Homo erectus",                   d:"Long legs, small teeth, big range. The first hominin to leave Africa and probably the first to cook."},
+    {t:800000,      c:"human",  key:0, q:3, r:[1.5e6,400000], n:"Habitual fire",                  d:"Controlled fire becomes routine: warmth, safety, and pre-digested calories that help pay for a bigger brain."},
+    {t:300000,      c:"human",  key:1, q:2, r:[350000,200000], n:"Homo sapiens",                   d:"Anatomically modern humans appear in Africa, evidenced at Jebel Irhoud in Morocco."},
+    {t:70000,       c:"human",  key:1, q:2, r:[210000,50000], n:"Out of Africa",                  d:"The migration that populates Eurasia, meeting and interbreeding with Neanderthals and Denisovans along the way."},
+    {t:45000,       c:"human",  key:0, q:2, r:[100000,40000], n:"Art and symbols",                d:"Cave paintings, carved figurines and bone flutes — evidence of minds that tell stories."},
+    {t:15000,       c:"human",  key:0, q:3, r:[23000,14000], n:"People reach the Americas",      d:"Humans complete the spread to the last habitable continents."},
+    {t:12000,       c:"human",  key:1, q:1, r:[13000,10000], n:"Farming begins",                 d:"Wheat, rice and maize are domesticated independently. Surplus food makes permanent settlement — and inequality — possible."},
+    {t:11600,       c:"human",  key:0, q:1, r:[11700,11000], n:"Göbekli Tepe",                   d:"Monumental carved pillars built by people who had not yet adopted farming, upending the old story of what comes first."},
+    {t:5500,        c:"human",  key:1, q:1, r:[5500,5100], n:"Writing and cities",             d:"Sumerian accountants press marks into clay. History — the part we can actually read — starts here."},
+    {t:4600,        c:"human",  key:0, q:1, r:[4620,4540], n:"Great Pyramid",                  d:"Built around 2560 BCE. Cleopatra lived nearer in time to the Moon landing than to the building of this pyramid."},
+    {t:2400,        c:"human",  key:0, q:2, r:[2800,1500], n:"Classical antiquity",            d:"Greece, Persia, the Warring States, the Maurya Empire — the philosophical and political foundations still argued over today."},
+    {t:534,         c:"human",  key:0, q:1, r:[534,534], n:"Columbus, 1492",                 d:"The Columbian Exchange reconnects hemispheres separated for 15,000 years, moving crops, diseases and people."},
+    {t:266,         c:"human",  key:1, q:2, r:[286,186], n:"Industrial Revolution",          d:"Coal, steam and factories. Human population, energy use and carbon emissions all bend sharply upward from this point."},
+    {t:81,          c:"human",  key:1, q:1, r:[81,81], n:"Nuclear age, 1945",              d:"The first species capable of ending itself deliberately. Fallout isotopes now mark a global layer in the sediment."},
+    {t:57,          c:"human",  key:0, q:1, r:[57,57], n:"Moon landing, 1969",             d:"Life leaves its home world and stands on another, 4.5 billion years after that world was formed by an impact."},
+    {t:36,          c:"human",  key:0, q:1, r:[37,35], n:"World Wide Web",                 d:"Human knowledge becomes instantly copyable and universally addressable."},
+    {t:0,           c:"human",  key:1, q:1, r:[0,0], n:"Today",                          d:"You are here — in the last billionth of the chart, reading about the other 99.9999999% of it."}
+  ];
+
+  var PRESETS = [
+    {id:"log",  label:"Log · everything", mode:"log",  min:0,     max:T0,
+     note:"Logarithmic. Each dashed line is <b>10× older</b> than the one to its right — the only way all 13.8 billion years fit beside a human lifetime."},
+    {id:"earth",label:"Earth's history",  mode:"lin",  min:0,     max:4.6e9,
+     note:"Linear, 4.6 billion years. Notice how <b>life spends 3 billion years as slime</b> before anything with a body shows up."},
+    {id:"cplx", label:"Complex life",     mode:"lin",  min:0,     max:600e6,
+     note:"Linear, 600 million years. Five mass extinctions in one frame — the red marks are the resets."},
+    {id:"dino", label:"Age of dinosaurs", mode:"lin",  min:55e6,  max:260e6,
+     note:"Linear, 205 million years. Dinosaurs ruled for <b>165 million years</b>. We have managed 300,000."},
+    {id:"post", label:"Since the asteroid",mode:"lin", min:0,     max:66e6,
+     note:"Linear, 66 million years. Everything mammals became, and everything we did, sits inside this one window."},
+    {id:"human",label:"The human story",  mode:"lin",  min:0,     max:3.4e6,
+     note:"Linear, 3.4 million years. Our whole species occupies the last tenth of this frame."},
+    {id:"civ",  label:"Civilisation",     mode:"lin",  min:0,     max:15000,
+     note:"Linear, 15,000 years. Everything ever written, built or fought over is in here — <b>0.0001% of the chart's first view</b>."},
+    {id:"mod",  label:"Modern era",       mode:"lin",  min:0,     max:550,
+     note:"Linear, 550 years. At this depth the previous 13,799,999,450 years are entirely off-screen to the left."}
+  ];
+
+  // ---------- formatting ----------
+  function fmtAgo(t){
+    if(t === 0) return "today";
+    if(t >= 1e9) return trim(t/1e9) + " billion years ago";
+    if(t >= 1e6) return trim(t/1e6) + " million years ago";
+    if(t >= 10000) return Math.round(t/1000).toLocaleString("en") + ",000 years ago";
+    if(t >= 1000) return Math.round(t).toLocaleString("en") + " years ago";
+    return Math.round(t) + " years ago";
+  }
+  function fmtSpan(t){
+    if(t === 0) return "—";
+    if(t >= 1e9) return trim(t/1e9) + " billion yr";
+    if(t >= 1e6) return trim(t/1e6) + " million yr";
+    if(t >= 1000) return Math.round(t).toLocaleString("en") + " yr";
+    return Math.round(t) + " yr";
+  }
+  function trim(x){
+    if(x >= 100) return Math.round(x).toLocaleString("en");
+    if(x >= 10)  return (Math.round(x*10)/10).toString();
+    return (Math.round(x*100)/100).toString();
+  }
+  function tickLabel(t){
+    if(t === 0) return "now";
+    if(t >= 1e9) return trim(t/1e9)+" Ga";
+    if(t >= 1e6) return trim(t/1e6)+" Ma";
+    if(t >= 1e3) return trim(t/1e3)+" ka";
+    return Math.round(t)+" yr";
+  }
+  function cosmicCalendar(t){
+    var frac = (T0 - t) / T0;                 // 0 at Big Bang, 1 now
+    var ms = frac * 365 * 24 * 3600 * 1000;
+    var d = new Date(Date.UTC(2001,0,1));
+    d = new Date(d.getTime() + Math.min(ms, 365*24*3600*1000 - 1000));
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var hh = String(d.getUTCHours()).padStart(2,"0");
+    var mm = String(d.getUTCMinutes()).padStart(2,"0");
+    var ss = String(d.getUTCSeconds()).padStart(2,"0");
+    return months[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + hh + ":" + mm + ":" + ss;
+  }
+
+  var QN = {1:"firm", 2:"bracketed", 3:"contested"};
+  var QC = {1:"#3FA98C", 2:"#E5B93C", 3:"#D9543F"};
+  function fmtRange(e){
+    if(!e.r || e.r[0] === e.r[1]) return "exact date";
+    var w = e.r[0] - e.r[1];
+    return fmtAgo(e.r[0]).replace(/ ago$/,"") + " – " + fmtAgo(e.r[1]) + "  (±" + fmtSpan(w/2) + ")";
+  }
+  function fmtRangeShort(e){
+    if(!e.r || e.r[0] === e.r[1]) return "exact";
+    return "±" + fmtSpan((e.r[0]-e.r[1])/2);
+  }
+
+  // ---------- state ----------
+  var state = { preset: PRESETS[0], active: {}, selected: null };
+  CATS.forEach(function(c){ state.active[c.id] = true; });
+
+  var sorted = EVENTS.slice().sort(function(a,b){ return b.t - a.t; });
+  sorted.forEach(function(e,i){
+    e.gap = i === 0 ? 0 : (sorted[i-1].t - e.t);
+    e.idx = i;
+  });
+  var maxGap = Math.max.apply(null, sorted.map(function(e){ return e.gap; }));
+
+  // ---------- geometry ----------
+  var W = 1300, H = 700;
+  var M = {l:150, r:34, t:20, b:56};
+  var laneH = (H - M.t - M.b) / CATS.length;
+  var innerW = W - M.l - M.r;
+
+  function xOf(t){
+    var p = state.preset;
+    if(p.mode === "log"){
+      var lo = Math.log10(1), hi = Math.log10(T0 + 1);
+      return M.l + innerW * (hi - Math.log10(t + 1)) / (hi - lo);
+    }
+    return M.l + innerW * (p.max - t) / (p.max - p.min);
+  }
+  function visible(e){
+    if(!state.active[e.c]) return false;
+    var p = state.preset;
+    if(p.mode === "log") return true;
+    return e.t <= p.max && e.t >= p.min;
+  }
+
+  function logTicks(){
+    var out = [];
+    for(var e = 10; e >= 0; e--) out.push(Math.pow(10,e));
+    out.push(0);
+    return out;
+  }
+  function linTicks(){
+    var p = state.preset, span = p.max - p.min;
+    var raw = span / 7;
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var norm = raw / mag;
+    var step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+    var out = [], v = Math.ceil(p.min/step)*step;
+    while(v <= p.max + 1e-6){ out.push(v); v += step; }
+    if(p.min === 0 && out[0] !== 0) out.unshift(0);
+    return out;
+  }
+
+  // ---------- build controls ----------
+  var elPresets = document.getElementById("presets");
+  PRESETS.forEach(function(p){
+    var b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = p.label;
+    b.setAttribute("aria-pressed", p.id === state.preset.id ? "true":"false");
+    b.addEventListener("click", function(){
+      state.preset = p;
+      Array.prototype.forEach.call(elPresets.children, function(k){ k.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      render();
+    });
+    elPresets.appendChild(b);
+  });
+
+  var elLegend = document.getElementById("legend");
+  CATS.forEach(function(c){
+    var b = document.createElement("button");
+    b.className = "cat"; b.type = "button"; b.setAttribute("aria-pressed","true");
+    b.innerHTML = '<span class="swatch" style="background:'+c.color+'"></span>'+c.name;
+    b.addEventListener("click", function(){
+      state.active[c.id] = !state.active[c.id];
+      b.setAttribute("aria-pressed", state.active[c.id] ? "true":"false");
+      render();
+    });
+    elLegend.appendChild(b);
+  });
+
+  // ---------- chart ----------
+  var svg = document.getElementById("chart");
+  var tip = document.getElementById("tip");
+  var chartbox = svg.parentNode;
+  var NS = "http://www.w3.org/2000/svg";
+
+  function el(name, attrs){
+    var n = document.createElementNS(NS, name);
+    for(var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  function render(){
+    document.getElementById("scalenote").innerHTML = state.preset.note;
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var ticks = state.preset.mode === "log" ? logTicks() : linTicks();
+
+    // lane bands + gridlines
+    CATS.forEach(function(c,i){
+      var y = M.t + i*laneH;
+      svg.appendChild(el("rect",{x:0,y:y,width:W,height:laneH,class:"lane-band"+(i%2?" alt":"")}));
+      svg.appendChild(el("line",{x1:M.l,y1:y,x2:W-M.r,y2:y,class:"lane-rule"}));
+      var lbl = el("text",{x:14,y:y+laneH/2+4,class:"lane-name"});
+      lbl.textContent = c.name;
+      svg.appendChild(lbl);
+    });
+    svg.appendChild(el("line",{x1:M.l,y1:M.t+CATS.length*laneH,x2:W-M.r,y2:M.t+CATS.length*laneH,class:"lane-rule"}));
+
+    ticks.forEach(function(t){
+      if(state.preset.mode === "lin" && (t > state.preset.max || t < state.preset.min)) return;
+      var x = xOf(t);
+      if(x < M.l - 1 || x > W - M.r + 1) return;
+      svg.appendChild(el("line",{x1:x,y1:M.t,x2:x,y2:M.t+CATS.length*laneH,class:"grid"}));
+      var tl = el("text",{x:x,y:H-M.b+22,"text-anchor":"middle",class:"tick-label"+(t===0?" now":"")});
+      tl.textContent = tickLabel(t);
+      svg.appendChild(tl);
+    });
+    svg.appendChild(el("line",{x1:M.l,y1:M.t+CATS.length*laneH,x2:W-M.r,y2:M.t+CATS.length*laneH,class:"axis-line"}));
+
+    var axisCap = el("text",{x:M.l,y:H-M.b+42,class:"tick-label"});
+    axisCap.textContent = state.preset.mode === "log" ? "← older   (each gridline = 10× older)" : "← older";
+    svg.appendChild(axisCap);
+
+    // events, lane by lane, with greedy 2-track label placement
+    CATS.forEach(function(c,i){
+      var cy = M.t + i*laneH + laneH/2;
+      var lastRight = [-1e9, -1e9];
+      var list = sorted.filter(function(e){ return e.c === c.id; });
+      list.forEach(function(e){
+        var vis = visible(e);
+        var x = xOf(e.t);
+        var g = el("g",{class:"ev q"+e.q+(e.key?" key":"")+(state.selected===e?" sel":""),
+                        tabindex:"0", role:"button",
+                        "aria-label": e.n+", "+fmtAgo(e.t)+", dating confidence "+QN[e.q]});
+        g.style.transform = "translate("+x.toFixed(1)+"px,"+cy.toFixed(1)+"px)";
+        g.style.opacity = vis ? 1 : 0;
+        g.style.pointerEvents = vis ? "auto" : "none";
+
+        if(vis && e.r && e.r[0] !== e.r[1]){
+          var xa = xOf(e.r[0]) - x, xb = xOf(e.r[1]) - x;
+          if(Math.abs(xb - xa) > 1.5)
+            g.appendChild(el("line",{class:"err", x1:xa, y1:0, x2:xb, y2:0, stroke:c.color}));
+        }
+        g.appendChild(el("circle",{class:"halo", cx:0, cy:0, r:10, stroke:c.color}));
+        g.appendChild(el("circle",{class:"dot", cx:0, cy:0, r:e.key?5:3.5,
+                                   fill: e.q===3 ? "none" : c.color,
+                                   "fill-opacity": e.q===2 ? .5 : 1,
+                                   stroke:c.color, "stroke-width": e.q===3 ? 1.8 : (e.key?0:1.6)}));
+
+        if(vis){
+          var w = e.n.length * 6.1 + 12;
+          var track = -1;
+          if(x > lastRight[0] + 8) track = 0;
+          else if(x > lastRight[1] + 8) track = 1;
+          if(track >= 0){
+            lastRight[track] = x + w;
+            var ty = track === 0 ? -11 : 19;
+            var txt = el("text",{x:9,y:ty});
+            txt.textContent = e.n;
+            g.appendChild(txt);
+          }
+        }
+
+        g.addEventListener("mouseenter", function(){ showTip(e, x, cy, c.color); });
+        g.addEventListener("mouseleave", hideTip);
+        g.addEventListener("focus", function(){ showTip(e, x, cy, c.color); });
+        g.addEventListener("blur", hideTip);
+        g.addEventListener("click", function(){ select(e); });
+        g.addEventListener("keydown", function(ev){
+          if(ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); select(e); }
+        });
+        svg.appendChild(g);
+      });
+    });
+  }
+
+  function showTip(e, x, y, color){
+    var r = svg.getBoundingClientRect();
+    var b = chartbox.getBoundingClientRect();
+    var sx = r.width / W, sy = r.height / H;
+    tip.querySelector(".t-name").textContent = e.n;
+    tip.querySelector(".t-time").textContent = fmtAgo(e.t) + " · " + QN[e.q] + " " + fmtRangeShort(e);
+    tip.style.borderLeftColor = color;
+    tip.style.left = (x * sx + (r.left - b.left)) + "px";
+    tip.style.top  = (y * sy + (r.top - b.top)) + "px";
+    tip.style.opacity = 1;
+  }
+  function hideTip(){ tip.style.opacity = 0; }
+
+  // ---------- selection readout ----------
+  function select(e){
+    state.selected = e;
+    document.getElementById("selName").textContent = e.n;
+    var whenEl = document.getElementById("selWhen");
+    whenEl.textContent = fmtAgo(e.t);
+    whenEl.style.color = CATCOLOR[e.c];
+    document.getElementById("selDesc").textContent = e.d;
+
+    document.getElementById("statGap").innerHTML =
+      (e.gap === 0 ? "—" : fmtSpan(e.gap)) +
+      "<small>" + (e.gap === 0 ? "The beginning. Nothing before it."
+        : "of nothing much, since " + sorted[e.idx-1].n.toLowerCase()) + "</small>";
+
+    var pct = (T0 - e.t) / T0 * 100;
+    document.getElementById("statPct").innerHTML =
+      (pct >= 99.999 ? "99.999…" : pct < 0.01 ? pct.toExponential(2) : pct.toFixed(3)) + "%" +
+      "<small>of the universe's history had already passed</small>";
+
+    document.getElementById("statCal").innerHTML =
+      cosmicCalendar(e.t) +
+      "<small>If 13.8 billion years were squeezed into one calendar year.</small>";
+
+    document.getElementById("statConf").innerHTML =
+      QN[e.q].toUpperCase() +
+      "<small>" + fmtRange(e) + "</small>";
+
+    Array.prototype.forEach.call(document.querySelectorAll("tr.row"), function(tr){
+      tr.classList.toggle("sel", +tr.dataset.i === e.idx);
+    });
+    render();
+  }
+
+  // ---------- table ----------
+  var tb = document.getElementById("tbody");
+  sorted.forEach(function(e){
+    var tr = document.createElement("tr");
+    tr.className = "row"; tr.dataset.i = e.idx;
+    var barW = e.gap <= 0 ? 0 : Math.max(1, (e.gap / maxGap) * 100);
+    tr.innerHTML =
+      '<td><span class="catdot" style="background:'+CATCOLOR[e.c]+'"></span>'+e.n+'</td>'+
+      '<td class="num">'+fmtAgo(e.t)+'</td>'+
+      '<td class="rng">'+fmtRangeShort(e)+'<span class="qtag" style="color:'+QC[e.q]+';border-color:'+QC[e.q]+'">'+QN[e.q].toUpperCase()+'</span></td>'+
+      '<td class="gap">'+fmtSpan(e.gap)+'</td>'+
+      '<td class="barcell"><div class="bar" style="width:'+barW+'%;background:'+CATCOLOR[e.c]+'"></div></td>';
+    tr.addEventListener("click", function(){
+      select(e);
+      document.querySelector(".chartbox").scrollIntoView({behavior:"smooth", block:"center"});
+    });
+    tb.appendChild(tr);
+  });
+
+  render();
+  select(sorted[0]);
+})();
+
+/* ============ RATIO: magnification ladder + analogy translator ============ */
+(function(){
+  "use strict";
+  var T0 = 13.8e9, NS = "http://www.w3.org/2000/svg";
+
+  var LEVELS = [
+    {name:"All of time",         span:13.8e9,  slice:4.54e9,  sliceName:"Earth exists",       color:"#C98A3E"},
+    {name:"Earth",               span:4.54e9,  slice:600e6,   sliceName:"animals exist",      color:"#3FA98C"},
+    {name:"Animal life",         span:600e6,   slice:66e6,    sliceName:"since the asteroid", color:"#D9543F"},
+    {name:"Since the asteroid",  span:66e6,    slice:2.6e6,   sliceName:"ice-age cycles",     color:"#5AA9D6"},
+    {name:"Ice-age cycles",      span:2.6e6,   slice:300000,  sliceName:"Homo sapiens",       color:"#E5B93C"},
+    {name:"Homo sapiens",        span:300000,  slice:12000,   sliceName:"since farming",      color:"#E5B93C"},
+    {name:"Since farming",       span:12000,   slice:266,     sliceName:"the industrial era", color:"#E5B93C"}
+  ];
+
+  function span(y){
+    if(y >= 1e9) return round(y/1e9)+" billion years";
+    if(y >= 1e6) return round(y/1e6)+" million years";
+    if(y >= 1000) return Math.round(y).toLocaleString("en")+" years";
+    return Math.round(y)+" years";
+  }
+  function round(x){ return x >= 100 ? Math.round(x) : x >= 10 ? Math.round(x*10)/10 : Math.round(x*100)/100; }
+  function mag(x){
+    if(x >= 1e6) return "×"+(Math.round(x/1e5)/10)+"M";
+    if(x >= 1000) return "×"+Math.round(x).toLocaleString("en");
+    return "×"+round(x);
+  }
+
+  var svg = document.getElementById("ladder");
+  var X0 = 196, X1 = 1120, BW = X1 - X0, ROW = 34, GAP = 48, TOP = 26;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduce) svg.parentNode.classList.add("anim");
+
+  function el(n, a){ var e = document.createElementNS(NS,n); for(var k in a) e.setAttribute(k,a[k]); return e; }
+
+  LEVELS.forEach(function(L,i){
+    var top = TOP + i*(ROW+GAP), frac = L.slice/L.span;
+    var hiW = Math.max(3, BW*frac), hiX = X1 - hiW;
+
+    var name = el("text",{x:182,y:top+15,"text-anchor":"end",class:"lv-name"});
+    name.textContent = L.name; svg.appendChild(name);
+    var sp = el("text",{x:182,y:top+30,"text-anchor":"end",class:"lv-span"});
+    sp.textContent = span(L.span); svg.appendChild(sp);
+
+    svg.appendChild(el("rect",{x:X0,y:top,width:BW,height:ROW,class:"lv-track",rx:1}));
+
+    var hi = el("rect",{x:hiX,y:top,width:hiW,height:ROW,fill:L.color,class:"lv-hi",rx:1});
+    if(!reduce) hi.style.animationDelay = (0.12*i + 0.1)+"s";
+    svg.appendChild(hi);
+
+    var m = el("text",{x:1136,y:top+21,class:"lv-mag"});
+    m.textContent = mag(T0/L.span); svg.appendChild(m);
+
+    if(i < LEVELS.length-1){
+      var nextTop = top + ROW + GAP;
+      svg.appendChild(el("polygon",{
+        points:[hiX,top+ROW, X1,top+ROW, X1,nextTop, X0,nextTop].join(" "),
+        fill:L.color, class:"lv-funnel"}));
+      var note = el("text",{x:X0+BW/2, y:top+ROW+30, class:"lv-note"});
+      note.textContent = "the final " + round(frac*100) + "% — " + L.sliceName + " — magnified " + mag(1/frac);
+      svg.appendChild(note);
+    } else {
+      var last = el("text",{x:X0+BW/2, y:top+ROW+26, class:"lv-note"});
+      last.textContent = "the final " + round(frac*100) + "% is " + L.sliceName + ": 266 years";
+      svg.appendChild(last);
+    }
+  });
+
+  var totalMag = T0/266;
+  document.getElementById("punchNum").textContent = "0.0000019%";
+  document.getElementById("punchText").innerHTML =
+    "That's the industrial era's share of all time. To make it a single visible pixel, the top bar would have to be <b>" +
+    Math.round(totalMag).toLocaleString("en") + " pixels wide</b> — a screen roughly <b>13.7 km long</b>. " +
+    "Every bar above is one attempt to close that gap, and it still takes seven of them.";
+
+  /* ---------- analogy translator ---------- */
+  var UNITS = [
+    {id:"km",   label:"a 1 km walk",        total:1000,     kind:"len"},
+    {id:"track",label:"a 100 m track",      total:100,      kind:"len"},
+    {id:"day",  label:"24 hours",           total:86400,    kind:"time"},
+    {id:"year", label:"one calendar year",  total:31536000, kind:"time"},
+    {id:"px",   label:"this 1,300 px chart",total:1300,     kind:"px"}
+  ];
+  var MILE = [
+    {t:13.8e9,  n:"Big Bang"},
+    {t:4.568e9, n:"Solar System forms"},
+    {t:4.54e9,  n:"Earth forms"},
+    {t:3.7e9,   n:"Life begins"},
+    {t:600e6,   n:"First animals"},
+    {t:233e6,   n:"First dinosaurs"},
+    {t:66e6,    n:"Asteroid impact"},
+    {t:300000,  n:"Homo sapiens"},
+    {t:12000,   n:"Farming begins"},
+    {t:5500,    n:"Writing and cities"},
+    {t:266,     n:"Industrial Revolution"},
+    {t:0,       n:"Today"}
+  ];
+
+  function fmtLen(m){
+    if(m >= 1000) return (m/1000).toFixed(2)+" km";
+    if(m >= 1)    return (m < 10 ? m.toFixed(2) : m.toFixed(1))+" m";
+    if(m >= 1e-3) return (m*1e3 < 10 ? (m*1e3).toFixed(2) : (m*1e3).toFixed(1))+" mm";
+    if(m >= 1e-6) return (m*1e6).toFixed(1)+" µm";
+    return (m*1e9).toFixed(1)+" nm";
+  }
+  function fmtTime(s){
+    if(s >= 86400) return (s/86400).toFixed(1)+" days";
+    if(s >= 3600)  return (s/3600).toFixed(1)+" hours";
+    if(s >= 60)    return (s/60).toFixed(1)+" min";
+    if(s >= 1)     return s.toFixed(2)+" sec";
+    if(s >= 1e-3)  return (s*1e3).toFixed(1)+" ms";
+    return (s*1e6).toFixed(0)+" µs";
+  }
+  function fmtPx(p){
+    if(p >= 1)    return p.toFixed(1)+" px";
+    if(p >= 1e-4) return p.toFixed(5)+" px";
+    return p.toExponential(1)+" px";
+  }
+  function fmt(v, kind){ return kind === "len" ? fmtLen(v) : kind === "time" ? fmtTime(v) : fmtPx(v); }
+
+  var cur = UNITS[0];
+  var elUnits = document.getElementById("units");
+  UNITS.forEach(function(u){
+    var b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = u.label;
+    b.setAttribute("aria-pressed", u.id === cur.id ? "true":"false");
+    b.addEventListener("click", function(){
+      cur = u;
+      Array.prototype.forEach.call(elUnits.children, function(k){ k.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      drawUnits();
+    });
+    elUnits.appendChild(b);
+  });
+
+  var body = document.getElementById("unitBody");
+  function drawUnits(){
+    body.innerHTML = "";
+    MILE.forEach(function(m){
+      var at   = (T0 - m.t)/T0 * cur.total;
+      var left = m.t/T0 * cur.total;
+      var pct  = (T0 - m.t)/T0 * 100;
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td>'+m.n+'</td>'+
+        '<td class="unit">'+fmt(at, cur.kind)+'</td>'+
+        '<td class="unit tail">'+(m.t === 0 ? "—" : fmt(left, cur.kind))+'</td>'+
+        '<td class="meter"><div class="meterbar">'+
+          '<div class="meterfill" style="width:'+pct.toFixed(6)+'%"></div>'+
+          '<div class="meterpin" style="left:calc('+pct.toFixed(6)+'% - 1px)"></div>'+
+        '</div></td>';
+      body.appendChild(tr);
+    });
+  }
+  drawUnits();
+})();
+
+/* ============ EARTH'S SKIN: supercontinent cycles + crustal recycling ============ */
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  function el(n,a){ var e=document.createElementNS(NS,n); for(var k in a) e.setAttribute(k,a[k]); return e; }
+
+  // --- stat cards ---
+  var CARDS = [
+    {v:"~180 Myr", c:"#5AA9D6", k:"Full ocean-floor turnover",
+     d:"The time for every square metre of seabed to be created at a ridge and destroyed at a trench."},
+    {v:"64 Myr",   c:"#5AA9D6", k:"Average age of today's seafloor",
+     d:"The current coat is young. Most of it formed after the dinosaurs died."},
+    {v:"~25",      c:"#C98A3E", k:"Ocean floors Earth has worn",
+     d:"At today's rates, since the planet formed. Likely more — early tectonics ran hotter and faster."},
+    {v:"4.03 Gyr", c:"#3FA98C", k:"Oldest surviving continental rock",
+     d:"The Acasta Gneiss. Continents are never fully overwritten, only reworked."},
+    {v:"200–250 Myr", c:"#E5B93C", k:"Until the next supercontinent",
+     d:"The cycle runs roughly every 400–600 million years. Pangaea broke up 175 Myr ago."}
+  ];
+  var cw = document.getElementById("skinCards");
+  CARDS.forEach(function(c){
+    var d = document.createElement("div");
+    d.className = "card";
+    d.innerHTML = '<div class="cv" style="color:'+c.c+'">'+c.v+'</div>'+
+                  '<div class="ck">'+c.k+'</div><div class="cd">'+c.d+'</div>';
+    cw.appendChild(d);
+  });
+
+  // --- chart ---
+  // x axis: 4.3 Gyr from 4.0 Ga ago (left) to 300 Myr in the future (right). t<0 = future.
+  var W=1300, H=400, L=210, R=40, TOPY=54;
+  var IW = W - L - R;
+  var TMAX = 4.0e9, TMIN = -300e6, SPAN = TMAX - TMIN;
+  function X(t){ return L + IW * (TMAX - t) / SPAN; }
+
+  var svg = document.getElementById("skinChart");
+
+  var SUPERS = [
+    {n:"Kenorland",  a:2.72e9, b:2.10e9, q:1},
+    {n:"Nuna",       a:1.80e9, b:1.35e9, q:0},
+    {n:"Rodinia",    a:1.13e9, b:0.75e9, q:0},
+    {n:"Pannotia",   a:633e6,  b:573e6,  q:1},
+    {n:"Pangaea",    a:335e6,  b:175e6,  q:0},
+    {n:"Next one",   a:-200e6, b:-250e6, q:1}
+  ];
+
+  // future shading + now line
+  svg.appendChild(el("rect",{x:X(0),y:TOPY-20,width:W-R-X(0),height:236,class:"sk-future"}));
+
+  // axis gridlines
+  [4e9,3e9,2e9,1e9,0,-250e6].forEach(function(t){
+    var x = X(t);
+    svg.appendChild(el("line",{x1:x,y1:TOPY-20,x2:x,y2:TOPY+216,class:t===0?"sk-nowline":"sk-grid"}));
+    var lb = el("text",{x:x,y:TOPY+240,class:"sk-tick"});
+    lb.textContent = t === 0 ? "today" : t < 0 ? "+"+Math.abs(t/1e6)+" Myr" : (t/1e9)+" Ga";
+    svg.appendChild(lb);
+  });
+
+  function rowLabel(y, name, sub){
+    var a = el("text",{x:L-16,y:y+16,"text-anchor":"end",class:"sk-row-name"}); a.textContent=name;
+    var b = el("text",{x:L-16,y:y+31,"text-anchor":"end",class:"sk-row-sub"}); b.textContent=sub;
+    svg.appendChild(a); svg.appendChild(b);
+  }
+
+  // ROW 1 — supercontinents
+  var y1 = TOPY;
+  rowLabel(y1, "Supercontinents", "assembled → broken up");
+  SUPERS.forEach(function(s){
+    var x = X(s.a), w = Math.max(14, X(s.b) - X(s.a));
+    var r = el("rect",{x:x,y:y1,width:w,height:40,rx:2,class:"sk-band",
+                       fill:"#C98A3E", "fill-opacity": s.q ? 0.32 : 0.85});
+    if(s.q) r.setAttribute("stroke-dasharray","4 3");
+    svg.appendChild(r);
+    var inside = w > s.n.length*7.2 + 14;
+    var t = el("text",{x: inside ? x+w/2 : x+w+7, y:y1+25,
+                       "text-anchor": inside ? "middle" : "start",
+                       class: inside && !s.q ? "sk-band-lbl" : "sk-out-lbl"});
+    t.textContent = s.n; svg.appendChild(t);
+  });
+
+  // ROW 2 — ocean floor renewal ticks, every 180 Myr back from today
+  var y2 = TOPY + 78, P = 180e6;
+  rowLabel(y2, "Ocean floor", "wiped and rebuilt every ~180 Myr");
+  var count = 0;
+  for(var t = 0; t < 4.0e9; t += P){
+    var xa = Math.max(L, X(t + P)), xb = X(t), current = (t === 0);
+    svg.appendChild(el("rect",{x:xa, y:y2, width:Math.max(1, xb-xa-1.5), height:34, rx:1,
+      fill: current ? "#5AA9D6" : "#5AA9D6",
+      "fill-opacity": current ? 0.95 : (count % 2 ? 0.30 : 0.5)}));
+    count++;
+  }
+  var cur = el("text",{x:X(0)+10, y:y2+22, class:"sk-out-lbl"});
+  cur.textContent = "← the one we're standing on"; svg.appendChild(cur);
+  var cnt = el("text",{x:X(4.0e9), y:y2-8, class:"sk-out-lbl"});
+  cnt.textContent = count + " renewals shown — each block is a complete new seabed";
+  svg.appendChild(cnt);
+
+  // ROW 3 — continental crust: one unbroken bar
+  var y3 = TOPY + 152;
+  rowLabel(y3, "Continental crust", "never fully recycled");
+  svg.appendChild(el("rect",{x:X(4.03e9), y:y3, width:X(0)-X(4.03e9), height:34, rx:1,
+                             fill:"#3FA98C","fill-opacity":.85,class:"sk-band"}));
+  var cc = el("text",{x:X(4.03e9)+12, y:y3+22, class:"sk-band-lbl"});
+  cc.textContent = "one continuous survivor — 4.03 billion years, no reset";
+  svg.appendChild(cc);
+
+  var cap = el("text",{x:L, y:TOPY+268, class:"sk-out-lbl"});
+  cap.textContent = "Shaded region to the right of the dashed line is the future.";
+  svg.appendChild(cap);
+})();
+
+/* ============ DERIVED STATEMENTS ============ */
+(function(){
+  "use strict";
+  var CLS = {
+    E:{name:"Entailed",  color:"#3FA98C"},
+    O:{name:"Ordering",  color:"#8B7FD6"},
+    I:{name:"Inductive", color:"#E5B93C"},
+    L:{name:"Limits",    color:"#D9543F"}
+  };
+
+  var S = [
+    {c:"E", s:"The universe was already <b>twice Earth's present age</b> when Earth formed. <b>67.1%</b> of all time had passed before this planet existed at all.",
+     p:["Big Bang — 13.8 Ga","Earth forms — 4.54 Ga"]},
+    {c:"E", s:"Life has been present for <b>81.5%</b> of Earth's history. A living Earth is the normal state; a sterile one is the brief exception at the start.",
+     p:["Earth forms — 4.54 Ga","Life begins — 3.7 Ga"]},
+    {c:"E", s:"Yet <b>83.8%</b> of life's own history passed with nothing you could call an animal in it. Life is old; bodies are recent.",
+     p:["Life begins — 3.7 Ga","First animals — 600 Ma"]},
+    {c:"E", s:"Photosynthesis existed for <b>1.08 billion years</b> before it changed the air. A biological invention can sit dormant longer than the entire history of animals.",
+     p:["Photosynthesis — 3.48 Ga","Great Oxidation Event — 2.4 Ga"]},
+    {c:"E", s:"From the first complex cell to the first animal took <b>1.15 billion years</b> — nearly twice as long as everything animals have done since.",
+     p:["Complex cells — 1.75 Ga","First animals — 600 Ma"]},
+    {c:"E", s:"Dinosaurs held the planet for <b>167 million years</b>: <b>557×</b> the age of our species, and <b>2.5×</b> longer than the entire mammal era that replaced them.",
+     p:["First dinosaurs — 233 Ma","Chicxulub asteroid — 66 Ma","Homo sapiens — 300 ka"]},
+    {c:"E", s:"Mammals lived alongside dinosaurs for <b>159 million years</b> — <b>71%</b> of all mammalian history was spent small, nocturnal and subordinate.",
+     p:["First mammals — 225 Ma","Chicxulub asteroid — 66 Ma"]},
+    {c:"E", s:"Of our species' existence: <b>96%</b> was pre-agricultural, <b>98.2%</b> pre-writing, <b>99.911%</b> pre-industrial. Everything we consider normal is a rounding error in our own history.",
+     p:["Homo sapiens — 300 ka","Farming — 12 ka","Writing — 5.5 ka","Industrial Revolution — 266 yr"]},
+    {c:"E", s:"All five mass extinctions fall inside the last <b>9.8%</b> of Earth's history. Not because catastrophe is new, but because there was nothing complex to kill before that.",
+     p:["Ordovician — 445 Ma","Chicxulub — 66 Ma","Earth forms — 4.54 Ga"]},
+    {c:"E", s:"At <b>2.5 cm/year</b> of seafloor spreading, the Atlantic has widened about <b>137 m</b> since writing was invented and <b>6.7 m</b> since the Industrial Revolution. Drift is real, measurable, and irrelevant to human history.",
+     p:["Writing — 5.5 ka","Industrial Revolution — 266 yr","Ocean turnover — ~180 Myr"]},
+    {c:"E", s:"Our whole species occupies <b>0.17%</b> of a single ocean-floor turnover. Recorded history occupies <b>0.003%</b>.",
+     p:["Homo sapiens — 300 ka","Writing — 5.5 ka","Ocean turnover — ~180 Myr"]},
+    {c:"E", s:"Pick a year of Earth's history at random: <b>81%</b> chance life exists, <b>13%</b> chance animals do, <b>0.0066%</b> chance humans do, <b>0.0001%</b> chance anyone is writing it down.",
+     p:["All Earth-history dates on this page"]},
+    {c:"E", s:"Half of the 76 events on this page fall within the last <b>1.6%</b> of time. Only <b>5</b> fall in the first half of the universe's existence.",
+     p:["Full event list, 76 entries"]},
+
+    {c:"O", s:"The first dinosaurs <b>predate</b> the Triassic–Jurassic extinction by 32 Myr. That extinction did not create dinosaurs — it removed their competitors.",
+     p:["First dinosaurs — 233 Ma","Triassic–Jurassic extinction — 201.4 Ma"]},
+    {c:"O", s:"The first mammals predate the asteroid by <b>159 Myr</b>. The impact didn't invent mammals either. Extinctions don't produce successors; they remove ceilings.",
+     p:["First mammals — 225 Ma","Chicxulub asteroid — 66 Ma"]},
+    {c:"O", s:"Birds appear <b>84 Myr before</b> the asteroid. The dinosaur lineage was therefore never fully extinguished — it is still here, and outnumbers mammal species.",
+     p:["First birds — 150 Ma","Chicxulub asteroid — 66 Ma"]},
+    {c:"O", s:"Flowering plants predate the asteroid by 64 Myr. Today's plant world is <b>older</b> than today's animal world — the flowers watched the dinosaurs die.",
+     p:["Flowering plants — 130 Ma","Chicxulub asteroid — 66 Ma"]},
+    {c:"O", s:"Photosynthesis → oxygen crisis → first global glaciation is a strictly ordered sequence here. The data is <b>consistent with</b> life having caused Earth's first ice age. Consistency is not proof, but the order rules out the reverse.",
+     p:["Photosynthesis — 3.48 Ga","Great Oxidation — 2.4 Ga","Huronian snowball — 2.4 Ga"]},
+    {c:"O", s:"Polar ice predates our species by <b>34 million years</b>. No human who has ever lived has seen an ice-free Earth. We have no species memory of what this planet does without ice caps.",
+     p:["Antarctica freezes — 34 Ma","Ice-age cycles — 2.6 Ma","Homo sapiens — 300 ka"]},
+    {c:"O", s:"Every settlement, state and empire in the record postdates the Younger Dryas and sits inside one interglacial. The dataset contains <b>zero</b> examples of a complex society surviving a glacial transition — not because they failed, but because none has been tested.",
+     p:["Younger Dryas — 12.9 ka","Holocene begins — 11.7 ka","Farming — 12 ka","Writing — 5.5 ka"]},
+    {c:"O", s:"Every catastrophe inside the human window — Toba, Younger Dryas, Samalas, Tambora — is orders of magnitude smaller than any of the Big Five. Our species has <b>no experience whatsoever</b> of a mass-extinction-scale event.",
+     p:["Toba — 74 ka","Tambora — 211 yr","The Great Dying — 251.9 Ma","Chicxulub — 66 Ma"]},
+    {c:"O", s:"Plate recycling runs <b>600× slower</b> than our species is old. Nothing human has been, or could have been, destroyed by tectonics. Drowned human sites are drowned by <b>sea level</b>, not by subduction.",
+     p:["Ocean turnover — ~180 Myr","Homo sapiens — 300 ka","Last Glacial Maximum — 21 ka"]},
+
+    {c:"I", s:"Mean interval between the Big Five is <b>94.8 Myr</b>; <b>66 Myr</b> have passed since the last. That places us ~70% through an average gap — but with only five samples spread from 50 to 135 Myr, this supports <b>no rate at all</b>. Treat it as arithmetic, not a forecast.",
+     p:["The five extinction dates"]},
+    {c:"I", s:"Human milestone gaps collapse geometrically: <b>3 Myr → 230 kyr → 58 kyr → 6.5 kyr → 5.2 kyr → 185 yr → 81 yr</b>. Real acceleration — but partly an artifact, since we chose which recent events counted as milestones and had no such choice for the deep past.",
+     p:["Stone tools — 3.3 Ma","Homo sapiens — 300 ka","Out of Africa — 70 ka","Farming — 12 ka","Writing — 5.5 ka","Industrial — 266 yr","Nuclear age — 81 yr"]},
+    {c:"I", s:"At ~100 kyr per cycle there have been roughly <b>26</b> glacial cycles since the Quaternary began. Our species has lived through about <b>3</b>. Civilisation has lived through <b>none</b>.",
+     p:["Ice-age cycles begin — 2.6 Ma","Homo sapiens — 300 ka","Farming — 12 ka"]},
+    {c:"I", s:"The Holocene is <b>11,700 years</b> old and past interglacials ran 10–30 kyr, which would put us mid-range. The extrapolation has limited force: the orbital cycle is no longer the only thing setting the climate.",
+     p:["Holocene begins — 11.7 ka","Ice-age cycles — 2.6 Ma"]},
+    {c:"I", s:"The PETM took <b>thousands of years</b> to move carbon; the industrial era has run <b>266</b>. If the two are comparable in magnitude, the rate differs by at least an order of magnitude — which is why the closest natural analogue is only loosely analogous.",
+     p:["PETM — 56 Ma","Industrial Revolution — 266 yr"]},
+
+    {c:"L", s:"Event density rises exponentially toward the present, and that shape is <b>partly about us</b>. To survive into the deep-time record an event must be enormous; recent events need only be interesting. The distant past looks emptier than it was.",
+     p:["Full event list, 76 entries","Median event age — 225 Ma"]},
+    {c:"L", s:"The uncertainty on the origin of life spans 4.28–3.7 Ga — an error bar of <b>580 million years</b>, almost exactly the entire history of animal life (600 Myr). Precision is wildly uneven across this chart, and the dots don't show it.",
+     p:["Life begins — 3.7 Ga (range 4.28–3.7)","First animals — 600 Ma"]},
+    {c:"L", s:"\"Explosion\", \"sudden\" and \"rapid\" are scale-relative words. The Cambrian explosion took about <b>20 million years</b> — <b>67×</b> the age of our species. Nothing in deep time is fast in any sense you can feel.",
+     p:["Cambrian explosion — 538.8 Ma, ~20 Myr duration","Homo sapiens — 300 ka"]},
+    {c:"L", s:"Point events cannot represent overlapping processes. The Karoo Ice Age and the coal forests appear as two dots but were <b>one feedback loop</b> running simultaneously. Any timeline of dots understates causation.",
+     p:["Karoo Ice Age — 330 Ma","Coal forests — 320 Ma"]},
+    {c:"L", s:"Of the 76 events here, <b>37 are firmly dated</b>, <b>30 only bracketed</b>, and <b>9 actively contested</b>. The contested nine are not fringe entries — they include the origin of life, the origin of photosynthesis, the Moon-forming impact, the first stone tools and the peopling of the Americas. Several of the most quoted facts on this chart are among the least secure.",
+     p:["Confidence grade on all 76 events"]},
+    {c:"L", s:"This list contains what changed the planet <b>and</b> what we can date. Anything that changed the planet without leaving a datable signature is absent by construction — and its absence looks identical to it never having happened.",
+     p:["Selection criteria of the event list itself"]}
+  ];
+
+  var order = ["E","O","I","L"];
+  S.forEach(function(x){ x.i = 0; });
+  order.forEach(function(k){
+    var n = 0;
+    S.forEach(function(x){ if(x.c === k){ n++; x.id = k + (n < 10 ? "0"+n : n); } });
+  });
+
+  var filter = "ALL";
+  var fb = document.getElementById("stFilter");
+  [{k:"ALL",n:"All "+S.length}].concat(order.map(function(k){
+    return {k:k, n:CLS[k].name+" "+S.filter(function(x){return x.c===k;}).length};
+  })).forEach(function(o){
+    var b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = o.n;
+    b.setAttribute("aria-pressed", o.k === "ALL" ? "true" : "false");
+    b.addEventListener("click", function(){
+      filter = o.k;
+      Array.prototype.forEach.call(fb.children, function(c){ c.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      draw();
+    });
+    fb.appendChild(b);
+  });
+
+  var box = document.getElementById("stmts");
+  function draw(){
+    box.innerHTML = "";
+    var list = S.filter(function(x){ return filter === "ALL" || x.c === filter; });
+    list.forEach(function(x){
+      var d = document.createElement("div");
+      d.className = "stmt";
+      d.style.borderLeftColor = CLS[x.c].color;
+      d.innerHTML =
+        '<div class="sid" style="color:'+CLS[x.c].color+'">'+x.id+' · '+CLS[x.c].name.toUpperCase()+'</div>'+
+        '<div class="sbody">'+x.s+'</div>'+
+        '<div class="prem"><span>'+x.p.join('</span><span>')+'</span></div>';
+      box.appendChild(d);
+    });
+    document.getElementById("stCount").textContent =
+      "Showing " + list.length + " of " + S.length + " statements. Premises listed under each are the only inputs used.";
+  }
+  draw();
+})();
+</script>
+
+<script src="embed.js"></script>
+</body>
+</html>

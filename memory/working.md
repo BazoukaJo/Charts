@@ -4,64 +4,37 @@ Agents: update every milestone. Long runs: follow `docs/agent/LONGEVITY.md`.
 
 ## Session / heartbeat
 
-- Goal:
-- Status: `idle` / `in_progress` / `blocked` / `done`
-- Pillar: `web` / `game` / `hybrid`
-- Bridge mode: `no` / `partial` / `yes`
-- Mutation policy: `read_only` / `lift_per_task` / `agent_may_edit`
-- Started:
-- Last compact at:
-- Context pressure: `low` / `soft` / `hard`
-- Active task:
+- Goal: Screenshot Deep Time in docs; push LearningLogic and Charts
+- Status: `in_progress`
+- Pillar: `web`
+- Bridge mode: `yes`
+- Mutation policy: `agent_may_edit`
+- Started: 2026-08-13
+- Last compact at: —
+- Context pressure: `low`
+- Active task: Docs screenshot + GitHub push (LearningLogic + Charts)
 - Retries: 0
-- Last verify:
-- Stop reason: _(empty if running)_
-- Model primary / fallback:
+- Last verify: Charts overview smoke tests passed; LearningLogic package pending
+- Stop reason: —
+- Model primary / fallback: —
 
 ## Decisions (settled — do not re-ask)
 
--
+- Deep Time ships as a static page under `apps/web/public/deep-time/` and is embedded like World Charts.
+- Same page copied into Bureau/Charts as `deep-time/` with a header link from the dashboard.
 
 ## Paths & artifacts
 
 | Path | Why it matters |
 |------|----------------|
-| | |
-
-## Unreal (game/hybrid)
-
-| Field | Value |
-|-------|-------|
-| Active map / GameMode | |
-| Assets touched (`/Game/...`) | |
-| Modules dirty (need compile?) | |
-| Editor restart required? | `yes` / `no` |
-| Last compile / cook / PIE | |
-| Recipe id(s) used | |
-| Open human gates | |
-
-## Web (web/hybrid)
-
-| Field | Value |
-|-------|-------|
-| Routes / packages touched | |
-| Recipe id(s) used | |
-| Last lint/test result | |
-
-## Last error → fix
-
-- Class: `build` / `runtime` / `tool` / `empty_model` / `intent` / `verify`
-- Gist:
-- Fix:
+| `docs/deep-time-screenshot.png` | README / LOCAL / GO_LIVE preview |
+| `Charts/deep-time/` | Standalone copy in the Charts repo |
+| `Charts/deep-time-screenshot.png` | Charts README preview |
 
 ## Next step
 
-1.
-
-## Archive pointers
-
-- Latest archive:
+Package LearningLogic, commit + push both repos.
 
 ## Queue
 
-- Active task (see `TASKS.md` / `memory/queue.json`):
+- Active task: screenshot + push

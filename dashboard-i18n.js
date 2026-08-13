@@ -1345,7 +1345,10 @@
           ? t("lang.labelEs")
           : t("lang.labelEn");
     var btn = document.getElementById("lang-toggle");
-    if (btn) btn.setAttribute("title", t("lang.toggleTitle"));
+    if (btn) {
+      btn.setAttribute("title", t("lang.toggleTitle"));
+      btn.setAttribute("aria-label", t("lang.toggleTitle"));
+    }
   }
 
   function applyDataI18nAttributes() {

@@ -209,6 +209,12 @@
             user-select: none;
         }
 
+        #lang-toggle {
+            min-width: 44px;
+            width: auto;
+            padding: 0 8px;
+        }
+
         .theme-header .header-action-btn:focus-visible {
             outline: 2px solid var(--accent-color);
             outline-offset: 2px;
@@ -1448,9 +1454,9 @@
 <body class="dark-theme">
     <!-- Theme Toggle -->
     <div class="theme-header">
-        <a href="deep-time/index.html" class="header-action-btn" title="Deep Time timeline" aria-label="Open Deep Time timeline">
-            <i class="material-icons">timeline</i>
-        </a>
+        <button type="button" id="lang-toggle" class="header-action-btn" onclick="DashboardI18n.toggleLocale()" title="Switch language" aria-label="Switch language">
+            <span id="lang-toggle-label">EN</span>
+        </button>
         <a href="#" id="theme-toggle-btn" class="header-action-btn" onclick="toggleTheme(); return false;" title="Toggle light/dark theme" aria-label="Toggle theme">
             <i class="material-icons" id="theme-icon">light_mode</i>
         </a>
@@ -6482,14 +6488,14 @@ function applyWdiAccuracyBadges(wdiMergeSucceeded) {
 }
     </script>
 
-    <script src="dashboard-phase1.js?v=20260813i18n"></script>
-    <script src="dashboard-phase2.js?v=20260813i18n"></script>
-    <script src="dashboard-i18n.js?v=20260813i18n"></script>
-    <script src="dashboard-i18n-fr-content.js?v=20260813i18n"></script>
-    <script src="dashboard-i18n-es.js?v=20260813i18n"></script>
-    <script src="dashboard-core.js?v=20260813i18n"></script>
-    <script src="dashboard-nav.js?v=20260813i18n"></script>
-    <script src="dashboard-overview.js?v=20260813i18n"></script>
+    <script src="dashboard-phase1.js?v=20260813lang"></script>
+    <script src="dashboard-phase2.js?v=20260813lang"></script>
+    <script src="dashboard-i18n.js?v=20260813lang"></script>
+    <script src="dashboard-i18n-fr-content.js?v=20260813lang"></script>
+    <script src="dashboard-i18n-es.js?v=20260813lang"></script>
+    <script src="dashboard-core.js?v=20260813lang"></script>
+    <script src="dashboard-nav.js?v=20260813lang"></script>
+    <script src="dashboard-overview.js?v=20260813lang"></script>
 
     <!-- Chart Management Script -->
     <script>

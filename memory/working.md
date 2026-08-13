@@ -4,7 +4,7 @@ Agents: update every milestone. Long runs: follow `docs/agent/LONGEVITY.md`.
 
 ## Session / heartbeat
 
-- Goal: Pack Charts for jonathanpratte.com/charts/
+- Goal: Build, commit, and push Charts
 - Status: `done`
 - Pillar: `web`
 - Bridge mode: `yes`
@@ -14,19 +14,17 @@ Agents: update every milestone. Long runs: follow `docs/agent/LONGEVITY.md`.
 - Context pressure: `low`
 - Active task: —
 - Retries: 0
-- Last verify: `npm run pack` + overview smoke tests passed
+- Last verify: `npm run pack`
 - Stop reason: queue complete
 - Model primary / fallback: —
 
 ## Decisions (settled — do not re-ask)
 
-- Charts deploys as static files to `public_html/charts/` on jonathanpratte.com (not tobelogic.com).
-- Subfolder `.htaccess` turns RewriteEngine Off so WordPress does not 404 /charts/.
-- Map fetch tries world-map.geojson then world-map.json.
+- No Deep Time in this repo. Language toggle stays in the header.
 
 ## Next step
 
-Human: FTP contents of `Charts/deploy/` into `public_html/charts/` on jonathanpratte.com.
+FTP `Charts/deploy/` to jonathanpratte.com/charts/.
 
 ## Queue
 

@@ -24,8 +24,6 @@ const files = [
   'fr.json',
 ]
 
-const dirs = ['deep-time']
-
 if (existsSync(out)) rmSync(out, { recursive: true, force: true })
 mkdirSync(out, { recursive: true })
 
@@ -36,12 +34,6 @@ for (const name of files) {
     process.exit(1)
   }
   cpSync(src, join(out, name))
-}
-
-for (const name of dirs) {
-  const src = join(root, name)
-  if (!existsSync(src)) continue
-  cpSync(src, join(out, name), { recursive: true })
 }
 
 writeFileSync(

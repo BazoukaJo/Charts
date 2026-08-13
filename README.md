@@ -8,12 +8,6 @@ Dark theme (default). The preview is a **fixed viewport** (about 1440×1520px)�
 
 ![Dashboard screenshot](dashboard-screenshot.png)
 
-## Deep Time
-
-A second page in this folder: logarithmic timeline from the Big Bang to today (`deep-time/index.html`). Same teal/coral skin as the overview. Open it from the timeline icon in the dashboard header, or go to `http://127.0.0.1:8765/deep-time/`. Fixed viewport preview:
-
-![Deep Time screenshot](deep-time-screenshot.png)
-
 ## Countries
 
 Selectable chips include (among others): United States, Canada, United Kingdom, France, Germany, Italy, Japan, Norway, Sweden, Finland, South Korea, China, India, Russia, Brazil, Malaysia, UAE, South Africa, New Zealand, and more—see the country row on the page for the full list.
@@ -54,13 +48,11 @@ npm run test:overview
    `python -m http.server 8765`
    Then open `http://127.0.0.1:8765/` and choose `index.html` if needed.
 3. Select countries with the chips, use the **search bar** or **group tabs**, and explore charts. Hover for values.
-4. Open Deep Time from the timeline icon in the header, or `http://127.0.0.1:8765/deep-time/`.
 
 ### Example URLs
 
 - Governance + Gini: `index.html?tab=tab-wellbeing&chart=giniChart`
 - France + Germany + US: `index.html?countries=FRA,DEU,USA&tab=tab-labor`
-- Deep Time: `deep-time/index.html`
 
 ## Project structure
 
@@ -79,8 +71,6 @@ Charts/
 ├── dashboard-core.js             # Shared chart update utilities
 ├── shortcuts.html                # Optional: developer keyboard shortcuts reference
 ├── dashboard-screenshot.png      # README preview
-├── deep-time/                    # Deep Time timeline (index.html + theme + embed)
-├── deep-time-screenshot.png      # README preview of Deep Time
 ├── README.md                     # This file
 └── scripts/                      # overview-smoke-test.mjs + helpers
 ```

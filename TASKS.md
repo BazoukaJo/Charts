@@ -12,7 +12,7 @@ Agents: pick the top **in progress** or first **pending** item unless the human 
 
 ## Done (recent)
 
-- [x] Add Deep Time timeline page (`deep-time/`) with README screenshot and dashboard header link — _(2026-08-13, overview smoke tests passed)_
+- [x] Remove Deep Time from this repo (header link, `deep-time/` page, pack copy) — Charts ships indicators only — _(2026-08-13)_
 
 ## Blocked
 
@@ -22,4 +22,4 @@ Agents: pick the top **in progress** or first **pending** item unless the human 
 
 ## Notes for next session
 
-Deep Time is a sibling page to the WDI dashboard, not a tab inside it.
+Deep Time lives on To Be Logic Free Knowledge, not in this dashboard.

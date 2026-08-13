@@ -1322,11 +1322,16 @@
       .replace(/\{prev\}/g, tok.prev);
   }
 
-  function t(key) {
+  function resolved(key) {
     var loc = getLocale();
     var pack = MSGS[loc] || MSGS.en;
-    var raw = (pack && pack[key]) || MSGS.en[key] || key;
+    var raw = (pack && pack[key]) || (MSGS.en && MSGS.en[key]);
+    if (!raw || raw === key) return null;
     return applyYearTokens(raw);
+  }
+
+  function t(key) {
+    return resolved(key) || key;
   }
 
   function updateLangToggleUi() {
@@ -1347,7 +1352,8 @@
     document.querySelectorAll("[data-i18n]").forEach(function (el) {
       var key = el.getAttribute("data-i18n");
       if (!key) return;
-      var val = t(key);
+      var val = resolved(key);
+      if (!val) return;
       if (el.getAttribute("data-i18n-html") === "true") {
         el.innerHTML = val;
       } else {
@@ -1356,11 +1362,13 @@
     });
     document.querySelectorAll("[data-i18n-title]").forEach(function (el) {
       var key = el.getAttribute("data-i18n-title");
-      if (key) el.setAttribute("title", t(key));
+      var val = key && resolved(key);
+      if (val) el.setAttribute("title", val);
     });
     document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
       var key = el.getAttribute("data-i18n-aria");
-      if (key) el.setAttribute("aria-label", t(key));
+      var val = key && resolved(key);
+      if (val) el.setAttribute("aria-label", val);
     });
   }
 
@@ -1378,7 +1386,8 @@
       if (first.classList.contains("accuracy-badge") && spans[1])
         first = spans[1];
       if (!first.classList.contains("accuracy-badge")) {
-        first.textContent = t("ct." + id);
+        var title = resolved("ct." + id);
+        if (title) first.textContent = title;
       }
     });
   }

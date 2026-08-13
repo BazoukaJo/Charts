@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:overview": "node scripts/overview-smoke-test.mjs"
+    "test:overview": "node scripts/overview-smoke-test.mjs",
+    "pack": "node scripts/pack-deploy.mjs"
   }
 }

@@ -1,0 +1,16 @@
+# Isolate this folder from the WordPress rewrite on jonathanpratte.com
+# so /charts/ and world-map.geojson are real files, not 404s into index.php.
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_mime.c>
+  AddType application/geo+json .geojson
+  AddType application/json .geojson
+  AddType application/json .json
+  AddType text/javascript .js
+  AddType text/css .css
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine Off
+</IfModule>

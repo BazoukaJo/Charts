@@ -622,6 +622,14 @@
             box-sizing: border-box;
         }
 
+        .container > #statisticsSummary {
+            display: none !important;
+        }
+
+        .container > div[id^="tab-"]:not(.active) {
+            display: none !important;
+        }
+
         .country-selector .chart-title {
             margin-bottom: 10px;
         }
@@ -1805,7 +1813,7 @@
         </div>
 
         <!-- Economic Tab -->
-        <div id="tab-economic">
+        <div id="tab-economic" class="active">
             <div class="section-header">
                 <h2><i class="material-icons left">trending_up</i><span data-i18n="sec.economic">Economic Indicators</span></h2>
             </div>
@@ -8863,14 +8871,7 @@ function getSummaryBarOptions() {
 }
 
 function initializeSummaryCharts() {
-    SUMMARY_LINE_CHARTS.forEach(function (cfg) {
-        if (!document.getElementById(cfg.id)) return;
-        createChart(cfg.id, getChartData(cfg.data()), getLocalizedChartOptions(cfg.optKey));
-    });
-    SUMMARY_YOY_CHARTS.forEach(function (cfg) {
-        if (!document.getElementById(cfg.id)) return;
-        createBarChart(cfg.id, getYoyBarData(cfg.data()), getSummaryBarOptions());
-    });
+    return;
 }
 
 function updateSummaryCharts() {
@@ -8900,16 +8901,7 @@ function updateSummaryCharts() {
 
 function updateStatisticsSummary() {
     const statsSection = document.getElementById('statisticsSummary');
-    if (!statsSection) return;
-    if (selectedCountries.length > 0) {
-        statsSection.style.display = 'block';
-    } else {
-        statsSection.style.display = 'none';
-        return;
-    }
-
-    updateSummaryCharts();
-    updateComparisonTable();
+    if (statsSection) statsSection.style.display = 'none';
 }
 
 function updateComparisonTable() {

@@ -851,21 +851,30 @@
 
   function loadGeojson() {
     if (state.geojson) return Promise.resolve(state.geojson);
-    var url = "world-map.geojson";
+    var geoUrl = "world-map.geojson";
+    var jsonUrl = "world-map.json";
     try {
       var scripts = document.getElementsByTagName("script");
       for (var i = 0; i < scripts.length; i++) {
         var src = scripts[i].src || "";
         if (src.indexOf("dashboard-overview.js") !== -1) {
-          url = src.replace(/dashboard-overview\.js(\?.*)?$/, "world-map.geojson");
+          geoUrl = src.replace(/dashboard-overview\.js(\?.*)?$/, "world-map.geojson");
+          jsonUrl = src.replace(/dashboard-overview\.js(\?.*)?$/, "world-map.json");
           break;
         }
       }
     } catch (_) {}
-    return fetch(url)
-      .then(function (r) {
-        if (!r.ok) throw new Error("geojson " + r.status);
-        return r.json();
+    function parseMap(r) {
+      if (!r.ok) throw new Error("geojson " + r.status);
+      return r.json().then(function (geo) {
+        if (!geo || !geo.features) throw new Error("geojson not a FeatureCollection");
+        return geo;
+      });
+    }
+    return fetch(geoUrl)
+      .then(parseMap)
+      .catch(function () {
+        return fetch(jsonUrl).then(parseMap);
       })
       .then(function (geo) {
         state.geojson = geo;

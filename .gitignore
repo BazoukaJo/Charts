@@ -34,6 +34,7 @@ yarn-error.log*
 node_modules/
 dist/
 build/
+deploy/
 
 # Secrets and local env (keep out of repo)
 .env
